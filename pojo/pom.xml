@@ -9,7 +9,7 @@
 	</parent>
 	<artifactId>pojo</artifactId>
 	<name>pojo for eenet oauth2 security</name>
-	
+
 	<packaging>bundle</packaging>
 	<build>
 		<plugins>
@@ -25,4 +25,12 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.eenet.framework</groupId>
+			<artifactId>base-pojo</artifactId>
+			<version>${dev-framework.version}</version>
+		</dependency>
+	</dependencies>
 </project>

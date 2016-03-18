@@ -25,4 +25,12 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	<dependencies>
+		<dependency>
+			<groupId>eenet.security.oauth2</groupId>
+			<artifactId>pojo</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
 </project>
