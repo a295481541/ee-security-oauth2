@@ -1,0 +1,27 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>eenet.security.oauth2</groupId>
+		<artifactId>plugins</artifactId>
+		<version>1.00-SNAPSHOT</version>
+	</parent>
+	<artifactId>service-provider-plugin</artifactId>
+	<name>service provider protect for eenet oauth2 security</name>
+
+	<packaging>bundle</packaging>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Export-Package>eenet.security.oauth2.service-provider-plugin</Export-Package>
+					</instructions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
