@@ -12,12 +12,12 @@ public interface IdentityAuthenticationBizService {
 	 * @param consumer 
 	 * @return
 	 */
-	public ServiceAuthenResponse consumerAuthen(ServiceAuthenRequest consumer);
+	public ServiceAuthenResponse consumerAuthen(ServiceAuthenRequest request);
 	
 	/**
 	 * 服务消费者与最终用户认证
 	 * @param consumer
 	 * @return
 	 */
-	public ServiceAuthenResponse consumerNUserAuthen(ServiceAuthenRequest consumer);
+	public ServiceAuthenResponse consumerNUserAuthen(ServiceAuthenRequest request);
 }

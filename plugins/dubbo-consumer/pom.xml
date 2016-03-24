@@ -2,14 +2,14 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>eenet.security.oauth2</groupId>
+		<groupId>eenet.security.oauth2.plugins</groupId>
 		<artifactId>plugins</artifactId>
 		<version>1.00-SNAPSHOT</version>
 	</parent>
-	<artifactId>service-provider-plugin</artifactId>
-	<name>service provider protect for eenet oauth2 security</name>
-
+	<artifactId>dubbo-consumer</artifactId>
 	<packaging>bundle</packaging>
+	<name>as plugin of service consumer base dubbo @ eenet oauth2 security</name>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -18,7 +18,7 @@
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
-						<Export-Package>eenet.security.oauth2.service-provider-plugin</Export-Package>
+						<Export-Package>eenet.security.oauth2.plugins.dubbo-consumer</Export-Package>
 					</instructions>
 				</configuration>
 			</plugin>

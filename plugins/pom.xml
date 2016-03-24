@@ -7,10 +7,12 @@
 		<version>1.00-SNAPSHOT</version>
 		<relativePath>../parent/pom.xml</relativePath>
 	</parent>
+	<groupId>eenet.security.oauth2.plugins</groupId>
 	<artifactId>plugins</artifactId>
 	<packaging>pom</packaging>
 	<modules>
 		<module>web-plugin</module>
-		<module>service-provider-plugin</module>
+		<module>dubbo-provider</module>
+		<module>dubbo-consumer</module>
 	</modules>
 </project>

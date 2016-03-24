@@ -9,6 +9,7 @@ import com.eenet.base.SimpleResponse;
 public class ServiceAuthenResponse extends SimpleResponse {
 	private static final long serialVersionUID = -7227380164377259947L;
 	private boolean identityConfirm = false;
+	private ServiceConsumer serviceConsumer;
 	/**
 	 * @return 身份确认
 	 */
@@ -20,5 +21,17 @@ public class ServiceAuthenResponse extends SimpleResponse {
 	 */
 	public void setIdentityConfirm(boolean identityConfirm) {
 		this.identityConfirm = identityConfirm;
+	}
+	/**
+	 * @return the serviceConsumer
+	 */
+	public ServiceConsumer getServiceConsumer() {
+		return serviceConsumer;
+	}
+	/**
+	 * @param serviceConsumer the serviceConsumer to set
+	 */
+	public void setServiceConsumer(ServiceConsumer serviceConsumer) {
+		this.serviceConsumer = serviceConsumer;
 	}
 }

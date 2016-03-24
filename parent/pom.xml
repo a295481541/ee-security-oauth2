@@ -7,6 +7,6 @@
 	<packaging>pom</packaging>
 	
 	<properties>
-		<dev-framework.version>1.00</dev-framework.version>
+		<dev-framework.version>1.01</dev-framework.version>
 	</properties>
 </project>

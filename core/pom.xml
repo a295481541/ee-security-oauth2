@@ -9,7 +9,7 @@
 	</parent>
 	<artifactId>core</artifactId>
 	<name>core process for eenet oauth2 security</name>
-	
+
 	<packaging>bundle</packaging>
 	<build>
 		<plugins>
@@ -25,4 +25,18 @@
 			</plugin>
 		</plugins>
 	</build>
+	<dependencies>
+		<dependency>
+			<groupId>eenet.security.oauth2</groupId>
+			<artifactId>service</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+		<!-- framework -->
+		<dependency>
+			<groupId>com.eenet.framework</groupId>
+			<artifactId>base-biz</artifactId>
+			<version>${dev-framework.version}</version>
+		</dependency>
+	</dependencies>
 </project>
