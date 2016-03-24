@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<typeAlias alias="com.eenet.authen.ServiceConsumer" type="com.eenet.authen.ServiceConsumer" />
+	</typeAliases>
+	<mappers>
+		<!--公共SQL配置-->
+        <mapper resource="conf/base.Oracle.mbt.xml" />
+        <mapper resource="conf/base.PostgreSQL.mbt.xml" />
+        <mapper resource="conf/base.MySQL.mbt.xml" />
+        <!-- Demo -->
+		<mapper resource="DBMapping/ServiceConsumer.xml" />
+	</mappers>
+</configuration>

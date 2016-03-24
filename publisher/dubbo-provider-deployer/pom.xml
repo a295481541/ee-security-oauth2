@@ -6,9 +6,9 @@
 		<artifactId>publisher</artifactId>
 		<version>1.00-SNAPSHOT</version>
 	</parent>
-	<artifactId>service-provider-deployer</artifactId>
+	<artifactId>dubbo-provider-deployer</artifactId>
 	<packaging>war</packaging>
-	<name>deployer of service provider for eenet oauth2 security</name>
+	<name>deployer of dubbo provider @ eenet oauth2 security</name>
 
 	<build>
 		<finalName>root</finalName>

@@ -11,20 +11,6 @@
 	<name>core process for eenet oauth2 security</name>
 
 	<packaging>bundle</packaging>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<extensions>true</extensions>
-				<configuration>
-					<instructions>
-						<Export-Package>eenet.security.oauth2.core</Export-Package>
-					</instructions>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 	<dependencies>
 		<dependency>
 			<groupId>eenet.security.oauth2</groupId>
