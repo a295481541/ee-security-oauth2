@@ -8,20 +8,20 @@
 	</parent>
 	<artifactId>dubbo-provider</artifactId>
 	<packaging>bundle</packaging>
-	<name>as plugin of service provider base dubbo @ eenet oauth2 security</name>
+	<name>plugin for service provider base dubbo</name>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
-				<extensions>true</extensions>
-				<configuration>
-					<instructions>
-						<Export-Package>eenet.security.oauth2.plugins.dubbo-provider</Export-Package>
-					</instructions>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+	<dependencies>
+		<dependency>
+			<groupId>eenet.security.oauth2</groupId>
+			<artifactId>service</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<!-- dubbo -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>dubbo</artifactId>
+			<version>${dubbo.version}</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
 </project>

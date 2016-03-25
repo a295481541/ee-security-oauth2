@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<bean id="JedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxTotal" value="1000"/><!-- 最大连接数 -->
+		<property name="maxIdle" value="20"/><!-- 最大空闲连接数 -->
+		<property name="maxWaitMillis" value="3000"/>
+		<property name="testOnBorrow" value="true"/>
+		<property name="testOnReturn" value="true"/>
+		<property name="testWhileIdle" value="true"/>
+	</bean>
+	
+	<bean id="ShardedJedisPool" class="redis.clients.jedis.ShardedJedisPool">
+		<constructor-arg index="0" ref="JedisPoolConfig"/>
+		<constructor-arg index="1">
+			<list>
+				<bean class="redis.clients.jedis.JedisShardInfo">
+					<constructor-arg index="0" value="${redis.server.1}"/>
+				</bean>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="RedisClient" class="com.eenet.common.cache.RedisClientImpl">
+		<property name="redisDataSource" ref="ShardedJedisPool"/>
+	</bean>
+</beans>

@@ -13,7 +13,7 @@ import com.eenet.util.EEBeanUtils;
 
 public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizService {
 	private RedisClient redisClient;
-	private BaseDAOService daoService;
+	private BaseDAOService DAOService;
 
 	public ServiceAuthenResponse consumerAuthen(ServiceAuthenRequest request) {
 		ServiceAuthenResponse response = new ServiceAuthenResponse();
@@ -33,7 +33,7 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 		/* 缓存中没有消费者信息，从数据库取 */
 		if (consumer == null) {
 			try {
-				consumer = daoService.get(request.getConsumerCode(), ServiceConsumer.class);
+				consumer = getDAOService().get(request.getConsumerCode(), ServiceConsumer.class);
 				SynServiceConsumerToRedis.syn(getRedisClient(), consumer);//将该消费者信息同步到缓存中
 			} catch (DBOPException e) {
 				/* 缓存和数据库均没有指定的消费者信息 */
@@ -77,15 +77,15 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 	/**
 	 * @return the daoService
 	 */
-	public BaseDAOService getDaoService() {
-		return daoService;
+	public BaseDAOService getDAOService() {
+		return DAOService;
 	}
 
 	/**
 	 * @param daoService
 	 *            the daoService to set
 	 */
-	public void setDaoService(BaseDAOService daoService) {
-		this.daoService = daoService;
+	public void setDAOService(BaseDAOService DAOService) {
+		this.DAOService = DAOService;
 	}
 }
