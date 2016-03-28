@@ -7,4 +7,5 @@ public final class CommonKey {
 	public final static String ENDUSER_INNER_ACCOUNT = "enduser_inner_account";
 	public final static String ENDUSER_ACCESS_TOCKEN = "enduser_access_tocken";
 	public final static String IDENTITY_CONFIRM = "identity_confirm";
+	public final static String IDENTITY_CONFIRM_FAIL_REASON = "identity_confirm_fail_reason";
 }

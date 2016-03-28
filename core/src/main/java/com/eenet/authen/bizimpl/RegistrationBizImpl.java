@@ -11,7 +11,15 @@ import com.eenet.common.cache.RedisClient;
 public class RegistrationBizImpl extends SimpleBizImpl implements RegistrationBizService {
 	private RedisClient redisClient;
 	
+	@Override
 	public ServiceConsumer serviceConsumerRegiste(ServiceConsumer consumer) {
+		System.out.println("==============================================================");
+		System.out.println("==============================================================");
+		System.out.println("==============================================================");
+		System.out.println("==============================================================");
+		System.out.println("==============================================================");
+		System.out.println("==============================================================");
+		
 		ServiceConsumer result = super.save(consumer);
 		
 		/* 保存成功，写缓存 */
@@ -21,14 +29,21 @@ public class RegistrationBizImpl extends SimpleBizImpl implements RegistrationBi
 		result.setSecretKey(null);
 		return result;
 	}
-
+	
+	@Override
 	public SingleSignOnSystem singleSignOnSystemRegiste(SingleSignOnSystem client) {
 		return null;
 	}
 	
-	
+	@Override
 	public SimpleResponse serviceConsumerDrop(String... code) {
-		return null;
+		SimpleResponse result = super.delete(ServiceConsumer.class,code);
+		
+		/* 删除成功，同时从缓存中删除 */
+		if (result.isSuccessful())
+			SynServiceConsumerToRedis.del(getRedisClient(), code);
+		
+		return result;
 	}
 
 	@Override
@@ -48,5 +63,10 @@ public class RegistrationBizImpl extends SimpleBizImpl implements RegistrationBi
 	 */
 	public void setRedisClient(RedisClient redisClient) {
 		this.redisClient = redisClient;
+	}
+
+	@Override
+	public boolean authenProviderPing() {
+		return true;
 	}
 }

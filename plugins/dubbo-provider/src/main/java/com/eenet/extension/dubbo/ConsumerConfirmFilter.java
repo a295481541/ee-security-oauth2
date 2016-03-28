@@ -1,9 +1,9 @@
 package com.eenet.extension.dubbo;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
-import com.alibaba.dubbo.common.Constants;
-import com.alibaba.dubbo.common.extension.Activate;
 import com.alibaba.dubbo.rpc.Filter;
 import com.alibaba.dubbo.rpc.Invocation;
 import com.alibaba.dubbo.rpc.Invoker;
@@ -20,10 +20,8 @@ import com.eenet.base.IBaseEntity;
  * 2016年3月25日
  * @author Orion
  */
-@Activate(group = Constants.PROVIDER)
-public class ConsumerConfirmFilter implements Filter {
-	@Autowired
-	private IdentityAuthenticationBizService AuthenService;
+public class ConsumerConfirmFilter implements Filter,ApplicationContextAware {
+	private static ApplicationContext applicationContext;
 
 	/**
 	 * 请求（invocation）的Attachment中应该包含：consumer_code，consumer_secret
@@ -32,18 +30,36 @@ public class ConsumerConfirmFilter implements Filter {
 	@Override
 	public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
 		Result result = null;
+		if (ConsumerConfirmFilter.applicationContext==null || !ConsumerConfirmFilter.applicationContext.containsBean("IdentityAuthenticationBizService")) {
+			result = new RpcResult();
+			result.getAttachments().put(CommonKey.IDENTITY_CONFIRM, String.valueOf(false));
+			result.getAttachments().put(CommonKey.IDENTITY_CONFIRM_FAIL_REASON, "业务服务Provider配置文件有误");
+			return result;
+		}
+		
+		IdentityAuthenticationBizService AuthenService = (IdentityAuthenticationBizService) ConsumerConfirmFilter.applicationContext.getBean("IdentityAuthenticationBizService");
+		
 		/* 执行业务服务前 */
 		ServiceAuthenRequest request = new ServiceAuthenRequest();
 		request.setConsumerCode(invocation.getAttachment(CommonKey.SERVICE_CONSUMER_CODE));
 		request.setConsumerSecretKey(invocation.getAttachment(CommonKey.SERVICE_CONSUMER_SECRET));
-		ServiceAuthenResponse response = this.AuthenService.consumerAuthen(request);
+		ServiceAuthenResponse response = AuthenService.consumerAuthen(request);
 		
-		if ((!response.isIdentityConfirm()) || (!response.isSuccessful())) {//没验证通过
+		/* 身份认证失败 */
+		if (!response.isSuccessful()) {
 			result = new RpcResult();
 			result.getAttachments().put(CommonKey.IDENTITY_CONFIRM, String.valueOf(false));
+			result.getAttachments().put(CommonKey.IDENTITY_CONFIRM_FAIL_REASON, "服务消费者认证异常："+response.getStrMessage());
+			return result;
+		}
+		if (!response.isIdentityConfirm()) {
+			result = new RpcResult();
+			result.getAttachments().put(CommonKey.IDENTITY_CONFIRM, String.valueOf(false));
+			result.getAttachments().put(CommonKey.IDENTITY_CONFIRM_FAIL_REASON, "服务消费者认证异常：用户编码(code)和秘钥不匹配(secretKey)");
 			return result;
 		}
 		
+		/* 注入当前系统调用者 */
 		for (Object arg : invocation.getArguments()) {
 			if (arg instanceof IBaseEntity) {
 				((IBaseEntity) arg).setMdss(request.getConsumerCode());
@@ -55,6 +71,11 @@ public class ConsumerConfirmFilter implements Filter {
 		/* 执行业务服务后 */
 		// do nothing
 		return result;
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		ConsumerConfirmFilter.applicationContext = applicationContext;
 	}
 
 }

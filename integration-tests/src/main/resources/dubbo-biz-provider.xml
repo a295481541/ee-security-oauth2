@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF8" ?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -11,15 +11,26 @@
 						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
 						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 						http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
-	<!-- 服务提供者(provider)信息，用于计算依赖关系 -->
-	<dubbo:application name="eenet.security.provider" />
 	
-	<!-- 用dubbo协议在20880端口暴露服务 -->
-	<dubbo:protocol name="dubbo" port="${dubbo.port}" host="172.16.165.220"/><!-- host="172.16.165.220" -->
+	<bean id="ConsumerConfirmFilter" class="com.eenet.extension.dubbo.ConsumerConfirmFilter"/>
 	
+	<!-- 服务消费者(consumer)信息，用于计算依赖关系 -->
+	<dubbo:application name="eenet.security.bizProviderMock" />
 	<!-- 使用zookeeper注册中心进行注册 -->
 	<dubbo:registry protocol="zookeeper" address="${zookeeper.address}" client="curator"/>
+	<!-- 启动时检查所有服务的可用性 -->
+	<dubbo:consumer check="false" /><!-- 任何服务不可以均会导致系统无法启动 -->
 	
+	<!-- 用dubbo协议在20881端口暴露服务 -->
+	<dubbo:protocol name="dubbo" port="20881" />
 	<!-- provider全局配置 -->
 	<dubbo:provider retries="2" timeout="20000" loadbalance="leastactive" />
+	
+	<!-- 认证服务定义 -->
+	<dubbo:reference id="RegistrationBizService" interface="com.eenet.authen.RegistrationBizService" />
+	<dubbo:reference id="IdentityAuthenticationBizService" interface="com.eenet.authen.IdentityAuthenticationBizService" />
+	
+	<!-- 业务服务提供者定义 -->
+	<bean id="MockBizImpl" class="com.eenet.test.bizmock.MockBizImpl"/>
+	<dubbo:service interface="com.eenet.test.bizmock.MockBizService" ref="MockBizImpl" filter="consumerConfirm" />
 </beans>

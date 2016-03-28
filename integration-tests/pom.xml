@@ -70,6 +70,16 @@
 			<artifactId>service</artifactId>
 			<version>${eenet.security.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>eenet.security.oauth2.plugins</groupId>
+			<artifactId>dubbo-provider</artifactId>
+			<version>${eenet.security.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>eenet.security.oauth2.plugins</groupId>
+			<artifactId>dubbo-consumer</artifactId>
+			<version>${eenet.security.version}</version>
+		</dependency>
 
 		<!-- Spring -->
 		<dependency>
