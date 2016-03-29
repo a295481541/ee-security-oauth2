@@ -20,7 +20,7 @@ public interface RegistrationBizService {
 	 * @param client
 	 * @return
 	 */
-	public SingleSignOnSystem singleSignOnSystemRegiste(SingleSignOnSystem client);
+//	public ThirdPartSSOWebSystem thirdPartSSOWebSystemRegiste(ThirdPartSSOWebSystem client);
 	
 	/**
 	 * 最终用户注册

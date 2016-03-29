@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eenet.security.oauth2</groupId>
 	<artifactId>integration-tests</artifactId>
-	<version>1.00</version>
+	<version>1.50-SNAPSHOT</version>
 	<name>security framework integration test</name>
 
 	<profiles>

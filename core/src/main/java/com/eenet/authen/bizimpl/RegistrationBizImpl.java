@@ -2,7 +2,6 @@ package com.eenet.authen.bizimpl;
 
 import com.eenet.authen.RegistrationBizService;
 import com.eenet.authen.ServiceConsumer;
-import com.eenet.authen.SingleSignOnSystem;
 import com.eenet.authen.cacheSyn.SynServiceConsumerToRedis;
 import com.eenet.base.SimpleResponse;
 import com.eenet.base.biz.SimpleBizImpl;
@@ -21,11 +20,6 @@ public class RegistrationBizImpl extends SimpleBizImpl implements RegistrationBi
 		
 		result.setSecretKey(null);
 		return result;
-	}
-	
-	@Override
-	public SingleSignOnSystem singleSignOnSystemRegiste(SingleSignOnSystem client) {
-		return null;
 	}
 	
 	@Override
