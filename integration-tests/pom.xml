@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eenet.security.oauth2</groupId>
 	<artifactId>integration-tests</artifactId>
-	<version>1.00-SNAPSHOT</version>
+	<version>1.00</version>
 	<name>security framework integration test</name>
 
 	<profiles>
@@ -129,4 +129,24 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<distributionManagement>
+		<repository>
+			<id>Academic Release</id>
+			<name>Academic Release Repository</name>
+			<url>http://172.16.146.130:8081/nexus/content/repositories/academic-release/</url>
+		</repository>
+		<snapshotRepository>
+			<id>Academic Snapshots</id>
+			<name>Academic Snapshots Repository</name>
+			<url>http://172.16.146.130:8081/nexus/content/repositories/academic-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<id>public</id>
+			<url>http://172.16.146.130:8081/nexus/content/groups/public/</url>
+		</repository>
+	</repositories>
 </project>

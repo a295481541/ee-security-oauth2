@@ -35,6 +35,4 @@ public interface RegistrationBizService {
 	 * @return
 	 */
 	public SimpleResponse serviceConsumerDrop(String... code);
-	
-	public boolean authenProviderPing();
 }

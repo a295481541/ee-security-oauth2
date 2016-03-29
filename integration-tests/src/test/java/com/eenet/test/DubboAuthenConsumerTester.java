@@ -23,7 +23,7 @@ public class DubboAuthenConsumerTester {
 		RegistrationBizService regisService = (RegistrationBizService)context.getBean("RegistrationBizService");
 		IdentityAuthenticationBizService authenService = (IdentityAuthenticationBizService)context.getBean("IdentityAuthenticationBizService");
 		
-		System.out.println("----------------- service is ok ?"+regisService.authenProviderPing()+"--------------------------");
+		System.out.println("----------------- service is ok ?"+authenService.authenServiceProviderPing()+"--------------------------");
 		
 		/* 注册消费者客户端 */
 		ServiceConsumer consumer = new ServiceConsumer();

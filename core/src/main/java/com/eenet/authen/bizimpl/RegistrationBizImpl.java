@@ -13,13 +13,6 @@ public class RegistrationBizImpl extends SimpleBizImpl implements RegistrationBi
 	
 	@Override
 	public ServiceConsumer serviceConsumerRegiste(ServiceConsumer consumer) {
-		System.out.println("==============================================================");
-		System.out.println("==============================================================");
-		System.out.println("==============================================================");
-		System.out.println("==============================================================");
-		System.out.println("==============================================================");
-		System.out.println("==============================================================");
-		
 		ServiceConsumer result = super.save(consumer);
 		
 		/* 保存成功，写缓存 */
@@ -63,10 +56,5 @@ public class RegistrationBizImpl extends SimpleBizImpl implements RegistrationBi
 	 */
 	public void setRedisClient(RedisClient redisClient) {
 		this.redisClient = redisClient;
-	}
-
-	@Override
-	public boolean authenProviderPing() {
-		return true;
 	}
 }

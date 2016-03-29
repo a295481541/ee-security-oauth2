@@ -58,6 +58,11 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 	public ServiceAuthenResponse consumerNUserAuthen(ServiceAuthenRequest request) {
 		return null;
 	}
+	
+	@Override
+	public boolean authenServiceProviderPing() {
+		return true;
+	}
 
 	/**
 	 * @return the redisClient
