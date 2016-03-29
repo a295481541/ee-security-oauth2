@@ -11,9 +11,6 @@
 						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
 						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 						http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
-	
-	<bean id="ConsumerConfirmFilter" class="com.eenet.extension.dubbo.ConsumerConfirmFilter"/>
-	
 	<!-- 服务消费者(consumer)信息，用于计算依赖关系 -->
 	<dubbo:application name="eenet.security.bizProviderMock" />
 	<!-- 使用zookeeper注册中心进行注册 -->
@@ -29,6 +26,10 @@
 	<!-- 认证服务定义 -->
 	<dubbo:reference id="RegistrationBizService" interface="com.eenet.authen.RegistrationBizService" />
 	<dubbo:reference id="IdentityAuthenticationBizService" interface="com.eenet.authen.IdentityAuthenticationBizService" />
+	<!-- 安全框架集成配置 -->
+	<bean id="ConsumerConfirmFilter" class="com.eenet.extension.dubbo.ConsumerConfirmFilter">
+		<property name="AuthenServiceID" value="IdentityAuthenticationBizService" />
+	</bean>
 	
 	<!-- 业务服务提供者定义 -->
 	<bean id="MockBizImpl" class="com.eenet.test.bizmock.MockBizImpl"/>

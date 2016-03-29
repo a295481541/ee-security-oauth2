@@ -20,4 +20,12 @@ public interface IdentityAuthenticationBizService {
 	 * @return
 	 */
 	public ServiceAuthenResponse consumerNUserAuthen(ServiceAuthenRequest request);
+	
+	/**
+	 * 检查服务提供者状态
+	 * @return
+	 * 2016年3月29日
+	 * @author Orion
+	 */
+	public boolean authenServiceProviderPing();
 }

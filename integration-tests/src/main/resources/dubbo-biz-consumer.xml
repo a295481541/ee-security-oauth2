@@ -9,8 +9,6 @@
 						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
 						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 						http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
-	<bean id="ConsumerInjectFilter" class="com.eenet.extension.dubbo.ConsumerInjectFilter"/>
-	
 	<!-- 服务消费者(consumer)信息，用于计算依赖关系 -->
 	<dubbo:application name="eenet.security.bizProviderMock" />
 	<!-- 使用zookeeper注册中心进行注册 -->
@@ -18,9 +16,13 @@
 	<!-- 启动时检查所有服务的可用性 -->
 	<dubbo:consumer check="false" /><!-- 任何服务不可以均会导致系统无法启动 -->
 	
+	<!-- 安全框架集成配置 -->
 	<bean id="ConsumerIdentity" class="com.eenet.authen.ServiceConsumer"><!-- 当前服务消费者身份 -->
 		<property name="code" value="b90680abcf854943b0a12ca23830ea00" />
 		<property name="secretKey" value="ABB76B8CA8F54D4388513024DCB8A340" />
+	</bean>
+	<bean id="ConsumerInjectFilter" class="com.eenet.extension.dubbo.ConsumerInjectFilter">
+		<property name="IdentityBeanId" value="ConsumerIdentity" />
 	</bean>
 	
 	<!-- 业务服务定义 -->

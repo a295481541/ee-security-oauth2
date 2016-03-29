@@ -22,6 +22,7 @@ import com.eenet.base.IBaseEntity;
  */
 public class ConsumerConfirmFilter implements Filter,ApplicationContextAware {
 	private static ApplicationContext applicationContext;
+	private static String AuthenServiceID;
 
 	/**
 	 * 请求（invocation）的Attachment中应该包含：consumer_code，consumer_secret
@@ -30,14 +31,14 @@ public class ConsumerConfirmFilter implements Filter,ApplicationContextAware {
 	@Override
 	public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
 		Result result = null;
-		if (ConsumerConfirmFilter.applicationContext==null || !ConsumerConfirmFilter.applicationContext.containsBean("IdentityAuthenticationBizService")) {
+		if (ConsumerConfirmFilter.applicationContext==null || !ConsumerConfirmFilter.applicationContext.containsBean(AuthenServiceID)) {
 			result = new RpcResult();
 			result.getAttachments().put(CommonKey.IDENTITY_CONFIRM, String.valueOf(false));
 			result.getAttachments().put(CommonKey.IDENTITY_CONFIRM_FAIL_REASON, "业务服务Provider配置文件有误");
 			return result;
 		}
 		
-		IdentityAuthenticationBizService AuthenService = (IdentityAuthenticationBizService) ConsumerConfirmFilter.applicationContext.getBean("IdentityAuthenticationBizService");
+		IdentityAuthenticationBizService AuthenService = (IdentityAuthenticationBizService) ConsumerConfirmFilter.applicationContext.getBean(AuthenServiceID);
 		
 		/* 执行业务服务前 */
 		ServiceAuthenRequest request = new ServiceAuthenRequest();
@@ -75,7 +76,12 @@ public class ConsumerConfirmFilter implements Filter,ApplicationContextAware {
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		ConsumerConfirmFilter.applicationContext = applicationContext;
+		if (ConsumerConfirmFilter.applicationContext == null)
+			ConsumerConfirmFilter.applicationContext = applicationContext;
 	}
 
+	public void setAuthenServiceID(String authenServiceID) {
+		if (ConsumerConfirmFilter.AuthenServiceID == null)
+			ConsumerConfirmFilter.AuthenServiceID = authenServiceID;
+	}
 }

@@ -16,10 +16,17 @@ public class MockBizImpl implements MockBizService {
 		p2.setFirstName("p2");
 		p3.setFirstName("p3");
 		
+		result.setSuccessful(true);
 		result.addResult(p1);
 		result.addResult(p2);
 		result.addResult(p3);
+		
 		return result;
+	}
+
+	@Override
+	public String withoutIBaseResponse(String anything) {
+		return "hello"+anything;
 	}
 
 }
