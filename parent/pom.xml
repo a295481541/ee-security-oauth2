@@ -30,7 +30,7 @@
 	</profiles>
 
 	<properties>
-		<dev-framework.version>1.01</dev-framework.version>
+		<dev-framework.version>1.02</dev-framework.version>
 		<db.driverClassName>com.mysql.jdbc.Driver</db.driverClassName>
 		<db.type>mysql</db.type>
 		<spring.version>4.2.2.RELEASE</spring.version>

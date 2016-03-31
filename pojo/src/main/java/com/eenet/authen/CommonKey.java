@@ -16,7 +16,7 @@ public final class CommonKey {
 	/**
 	 * 
 	 */
-	public final static String ENDUSER_INNER_ACCOUNT = "enduser_inner_account";
+	public final static String ENDUSER_LOGIN_ACCOUNT = "enduser_login_account";
 	/**
 	 * 
 	 */
