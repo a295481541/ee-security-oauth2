@@ -13,13 +13,13 @@ public interface RegistrationBizService {
 	 * @param consumer 设置消费者中文名和秘钥
 	 * @return 附带登录编码，不带身份认证秘钥
 	 */
-	public ServiceConsumer serviceConsumerRegiste(ServiceConsumer consumer);
+	public ServiceConsumer registeServiceConsumer(ServiceConsumer consumer);
 	/**
 	 * 废弃服务消费者
 	 * @param code 登录编码
 	 * @return
 	 */
-	public SimpleResponse serviceConsumerDrop(String... codes);
+	public SimpleResponse removeServiceConsumer(String... codes);
 	
 	
 	/**
@@ -29,7 +29,7 @@ public interface RegistrationBizService {
 	 * 2016年3月30日
 	 * @author Orion
 	 */
-	public ThirdPartySSOAPP thirdPartySSOAppRegiste(ThirdPartySSOAPP app);
+	public ThirdPartySSOAPP registeThirdPartySSOApp(ThirdPartySSOAPP app);
 	/**
 	 * 废弃单点登录系统
 	 * @param code
@@ -37,7 +37,7 @@ public interface RegistrationBizService {
 	 * 2016年3月30日
 	 * @author Orion
 	 */
-	public SimpleResponse thirdPartySSOAppPDrop(String... apIds);
+	public SimpleResponse removeThirdPartySSOApp(String... apIds);
 	
 	
 	/**
@@ -45,7 +45,7 @@ public interface RegistrationBizService {
 	 * @param user
 	 * @return
 	 */
-	public EENetEndUserLoginAccount endUserLoginAccountRegiste(EENetEndUserLoginAccount user);
+	public EENetEndUserLoginAccount registeEndUserLoginAccount(EENetEndUserLoginAccount user);
 	/**
 	 * 最终用户登录账号废弃
 	 * @param code
@@ -53,7 +53,7 @@ public interface RegistrationBizService {
 	 * 2016年3月30日
 	 * @author Orion
 	 */
-	public SimpleResponse endUserLoginAccountDrop(String... loginAccounts);
+	public SimpleResponse removeEndUserLoginAccount(String... loginAccounts);
 	
 	/**
 	 * 初始化用户登录密码

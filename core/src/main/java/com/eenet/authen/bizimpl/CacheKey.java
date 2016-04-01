@@ -13,9 +13,9 @@ public class CacheKey {
 	public final static String SERVICE_CONSUMER = "SERVICE_CONSUMER";
 	/**
 	 * 单点登录应用
-	 * key:code，value:序列化的ThirdPartySSOAPP对象
+	 * key:appId，value:序列化的ThirdPartySSOAPP对象
 	 */
-	public final static String SSO_APP = "third_party_sso_app";
+	public final static String SSO_APP = "3PARTY_SSO_APP";
 	/**
 	 * 授权码前缀
 	 */

@@ -18,6 +18,7 @@ import com.eenet.base.query.QueryCondition;
 import com.eenet.base.query.RangeType;
 import com.eenet.common.cache.RedisClient;
 import com.eenet.common.exception.RedisOPException;
+import com.eenet.common.util.RemoveMapItemFromRedisThread;
 import com.eenet.util.EEBeanUtils;
 import com.eenet.util.cryptography.EncryptException;
 import com.eenet.util.cryptography.RSADecrypt;
@@ -35,8 +36,16 @@ public class RegistrationBizImpl extends SimpleBizImpl implements RegistrationBi
 	**                                                                         **
 	****************************************************************************/
 	@Override
-	public ServiceConsumer serviceConsumerRegiste(ServiceConsumer consumer) {
+	public ServiceConsumer registeServiceConsumer(ServiceConsumer consumer) {
 		ServiceConsumer result = null;
+		/* 参数检查 */
+		if (consumer == null) {
+			result = new ServiceConsumer();
+			result.setSuccessful(false);
+			result.addMessage("要注册的服务消费者未知("+this.getClass().getName()+")");
+			return result;
+		}
+		
 		/* 秘钥加密 */
 		try {
 			String ciphertext = RSAUtil.encrypt(getRedisRSAEncrypt(), consumer.getSecretKey());
@@ -61,12 +70,20 @@ public class RegistrationBizImpl extends SimpleBizImpl implements RegistrationBi
 	}
 	
 	@Override
-	public SimpleResponse serviceConsumerDrop(String... code) {
-		SimpleResponse result = super.delete(ServiceConsumer.class,code);
+	public SimpleResponse removeServiceConsumer(String... code) {
+		SimpleResponse result = null;
+		/* 参数检查 */
+		if (code == null || code.length==0) {
+			result = new SimpleResponse();
+			result.setSuccessful(false);
+			result.addMessage("未指定要删除的服务消费者("+this.getClass().getName()+")");
+			return result;
+		}
 		
+		result = super.delete(ServiceConsumer.class,code);
 		/* 删除成功，同时从缓存中删除 */
 		if (result.isSuccessful())
-			SynServiceConsumerToRedis.del(getRedisClient(), code);
+			RemoveMapItemFromRedisThread.execute(getRedisClient(), code, CacheKey.SERVICE_CONSUMER);
 		
 		return result;
 	}
@@ -77,8 +94,16 @@ public class RegistrationBizImpl extends SimpleBizImpl implements RegistrationBi
 	**                                                                         **
 	****************************************************************************/
 	@Override
-	public ThirdPartySSOAPP thirdPartySSOAppRegiste(ThirdPartySSOAPP app) {
+	public ThirdPartySSOAPP registeThirdPartySSOApp(ThirdPartySSOAPP app) {
 		ThirdPartySSOAPP result = null;
+		/* 参数检查 */
+		if (app == null) {
+			result = new ThirdPartySSOAPP();
+			result.setSuccessful(false);
+			result.addMessage("要注册的单点登录系统未知("+this.getClass().getName()+")");
+			return result;
+		}
+		
 		/* 秘钥加密 */
 		try {
 			String ciphertext = RSAUtil.encrypt(getRedisRSAEncrypt(), app.getSecretKey());
@@ -103,12 +128,20 @@ public class RegistrationBizImpl extends SimpleBizImpl implements RegistrationBi
 	}
 	
 	@Override
-	public SimpleResponse thirdPartySSOAppPDrop(String... appIds) {
-		SimpleResponse result = super.delete(ThirdPartySSOAPP.class,appIds);
+	public SimpleResponse removeThirdPartySSOApp(String... appIds) {
+		SimpleResponse result = null;
+		/* 参数检查 */
+		if (appIds == null || appIds.length==0) {
+			result = new SimpleResponse();
+			result.setSuccessful(false);
+			result.addMessage("要废弃得单点登录系统未知("+this.getClass().getName()+")");
+			return result;
+		}
 		
+		result = super.delete(ThirdPartySSOAPP.class,appIds);
 		/* 删除成功，同时从缓存中删除 */
 		if (result.isSuccessful())
-			SynThirdPartySSOAPPToRedis.del(getRedisClient(), appIds);
+			RemoveMapItemFromRedisThread.execute(getRedisClient(), appIds, CacheKey.SSO_APP);
 		
 		return result;
 	}
@@ -119,9 +152,18 @@ public class RegistrationBizImpl extends SimpleBizImpl implements RegistrationBi
 	**                                                                         **
 	****************************************************************************/
 	@Override
-	public EENetEndUserLoginAccount endUserLoginAccountRegiste(EENetEndUserLoginAccount user) {
+	public EENetEndUserLoginAccount registeEndUserLoginAccount(EENetEndUserLoginAccount user) {
+		EENetEndUserLoginAccount result = null;
+		/* 参数检查 */
+		if (user == null) {
+			user = new EENetEndUserLoginAccount();
+			user.setSuccessful(false);
+			user.addMessage("要注册的用户登录账号未知("+this.getClass().getName()+")");
+			return user;
+		}
+		
 		/* 保存到数据库 */
-		EENetEndUserLoginAccount result = super.save(user);
+		result = super.save(user);
 		
 		/* 保存成功，写缓存 */
 		if (result.isSuccessful())
@@ -131,12 +173,20 @@ public class RegistrationBizImpl extends SimpleBizImpl implements RegistrationBi
 	}
 
 	@Override
-	public SimpleResponse endUserLoginAccountDrop(String... loginAccounts) {
-		SimpleResponse result = super.delete(EENetEndUserLoginAccount.class, loginAccounts);
-
+	public SimpleResponse removeEndUserLoginAccount(String... loginAccounts) {
+		SimpleResponse result = null;
+		/* 参数检查 */
+		if (loginAccounts==null || loginAccounts.length==0) {
+			result = new SimpleResponse();
+			result.setSuccessful(false);
+			result.addMessage("要废弃的最终用户登录账号未知("+this.getClass().getName()+")");
+			return result;
+		}
+		
+		result = super.delete(EENetEndUserLoginAccount.class, loginAccounts);
 		/* 删除成功，同时从缓存中删除 */
 		if (result.isSuccessful())
-			SynEENetEndUserLoginAccountToRedis.del(getRedisClient(), loginAccounts);
+			RemoveMapItemFromRedisThread.execute(getRedisClient(), loginAccounts, CacheKey.ENDUSER_LOGIN_ACCOUNT);
 
 		return result;
 	}
@@ -149,6 +199,13 @@ public class RegistrationBizImpl extends SimpleBizImpl implements RegistrationBi
 	@Override
 	public SimpleResponse initUserLoginPassword(EENetEndUserCredential credential) {
 		SimpleResponse result = new SimpleResponse();
+		/* 参数检查 */
+		if (credential == null) {
+			result.setSuccessful(false);
+			result.addMessage("要初始化用户登录秘钥未知("+this.getClass().getName()+")");
+			return result;
+		}
+		
 		/* 判断主账号是否存在 */
 		QueryCondition query = new QueryCondition();
 		query.addCondition(new ConditionItem("account",RangeType.EQUAL,credential.getMainAccount().getAccount(),null));
@@ -213,6 +270,12 @@ public class RegistrationBizImpl extends SimpleBizImpl implements RegistrationBi
 	@Override
 	public SimpleResponse changeUserLoginPassword(EENetEndUserCredential curCredential, String newSecretKey) {
 		SimpleResponse result = new SimpleResponse();
+		/* 参数检查 */
+		if (curCredential == null || EEBeanUtils.isNULL(newSecretKey)) {
+			result.setSuccessful(false);
+			result.addMessage("要修改的最终用户秘钥参数不完整("+this.getClass().getName()+")");
+			return result;
+		}
 		
 		/* 判断主账号是否存在 */
 		QueryCondition query = new QueryCondition();
