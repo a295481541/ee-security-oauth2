@@ -35,6 +35,33 @@ public final class SynThirdPartySSOAPPToRedis {
 		}
 	}
 	
+	public static ThirdPartySSOAPP ssoApp(final RedisClient client, final String appId) throws RedisOPException, ClassCastException {
+		if (EEBeanUtils.isNULL(appId) || client == null)
+			return null;
+		return new SynThirdPartySSOAPPToRedis().new ThirdPartySSOAPPFromRedis(client).ssoApp(appId);
+	}
+	
+	/**
+	 * 根据app id获得第三方sso系统
+	 * 2016年4月7日
+	 * @author Orion
+	 */
+	private class ThirdPartySSOAPPFromRedis{
+		private final RedisClient redisClient;
+		
+		public ThirdPartySSOAPP ssoApp(String appId) throws RedisOPException,ClassCastException {
+			ThirdPartySSOAPP ssoApp = null;
+			Object ssoAppObj = this.redisClient.getMapValue(CacheKey.SSO_APP, appId);
+			if (ssoAppObj != null)
+				ssoApp = ThirdPartySSOAPP.class.cast(ssoAppObj);
+			return ssoApp;
+		}
+
+		public ThirdPartySSOAPPFromRedis(RedisClient redisClient) {
+			super();
+			this.redisClient = redisClient;
+		}
+	}
 	
 	/**
 	 * 将单点登录系统同步到Redis

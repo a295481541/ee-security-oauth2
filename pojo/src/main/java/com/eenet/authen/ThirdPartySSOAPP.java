@@ -25,6 +25,7 @@ public class ThirdPartySSOAPP extends BaseEntity {
 	
 	/**
 	 * 跳转地址前缀
+	 * 含协议，如：http://
 	 * 2016年3月30日
 	 * @author Orion
 	 */

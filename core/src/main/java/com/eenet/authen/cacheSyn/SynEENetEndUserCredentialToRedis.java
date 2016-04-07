@@ -8,6 +8,9 @@ import com.eenet.authen.bizimpl.CacheKey;
 import com.eenet.common.cache.RedisClient;
 import com.eenet.common.exception.RedisOPException;
 import com.eenet.util.EEBeanUtils;
+import com.eenet.util.cryptography.EncryptException;
+import com.eenet.util.cryptography.RSADecrypt;
+import com.eenet.util.cryptography.RSAUtil;
 
 public class SynEENetEndUserCredentialToRedis {
 	/**
@@ -26,6 +29,69 @@ public class SynEENetEndUserCredentialToRedis {
 			thread.start();
 		} catch (Exception e) {
 			e.printStackTrace();// 同步到Redis失败
+		}
+	}
+	
+	/**
+	 * 根据主账号获得秘钥
+	 * @param client
+	 * @param mainAccount
+	 * @param redisRSADecrypt
+	 * @return redisRSADecrypt为空时返回密文，redisRSADecrypt不为空是返回明文
+	 * @throws RedisOPException
+	 * @throws EncryptException
+	 * 2016年4月3日
+	 * @author Orion
+	 * @throws ClassCastException 
+	 */
+	public static String secretKey(RedisClient client, String mainAccount, RSADecrypt redisRSADecrypt) throws RedisOPException, ClassCastException, EncryptException {
+		if (client == null || mainAccount == null)
+			return null;
+		SecretKeyFromRedis get = null;
+		if (redisRSADecrypt == null) {
+			get = new SynEENetEndUserCredentialToRedis().new SecretKeyFromRedis(client);
+			return get.ciphertext(mainAccount);
+		} else {
+			get = new SynEENetEndUserCredentialToRedis().new SecretKeyFromRedis(client,redisRSADecrypt);
+			return get.plaintext(mainAccount);
+		}
+	}
+	
+	/**
+	 * 根据主账号获得秘钥
+	 * 2016年4月3日
+	 * @author Orion
+	 */
+	private class SecretKeyFromRedis {
+		private final RedisClient redisClient;
+		private final RSADecrypt redisRSADecrypt;
+		
+		public String plaintext(String mainAccount) throws RedisOPException, EncryptException,ClassCastException{
+			String plaintext = null;
+			String ciphertext = this.ciphertext(mainAccount);
+			if (ciphertext != null)
+				plaintext = RSAUtil.decrypt(redisRSADecrypt, ciphertext);
+			return plaintext;
+		}
+		
+		public String ciphertext(String mainAccount) throws RedisOPException,ClassCastException {
+			String secertKey = null;
+			Object secertKeyObj = this.redisClient.getMapValue(CacheKey.ENDUSER_CREDENTIAL, mainAccount);
+			if (secertKeyObj != null)
+				secertKey = String.class.cast(secertKeyObj);
+			return secertKey;
+		}
+
+		public SecretKeyFromRedis(RedisClient redisClient, RSADecrypt redisRSADecrypt) {
+			super();
+			this.redisClient = redisClient;
+			this.redisRSADecrypt = redisRSADecrypt;
+		}
+
+		public SecretKeyFromRedis(RedisClient redisClient) {
+			super();
+			this.redisClient = redisClient;
+			this.redisRSADecrypt = null;
 		}
 	}
 	

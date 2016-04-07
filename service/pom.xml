@@ -11,12 +11,18 @@
 	<name>service for eenet oauth2 security</name>
 
 	<packaging>bundle</packaging>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>eenet.security.oauth2</groupId>
 			<artifactId>pojo</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.eenet.framework</groupId>
+			<artifactId>util</artifactId>
+			<version>${dev-framework.version}</version>
 		</dependency>
 	</dependencies>
 </project>

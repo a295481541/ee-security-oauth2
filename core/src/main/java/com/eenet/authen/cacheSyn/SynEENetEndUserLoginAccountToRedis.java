@@ -31,6 +31,44 @@ public final class SynEENetEndUserLoginAccountToRedis {
 	}
 	
 	/**
+	 * 获得最终用户主账号
+	 * @param client
+	 * @param loginAccount
+	 * @return
+	 * @throws RedisOPException
+	 * 2016年4月3日
+	 * @author Orion
+	 * @throws ClassCastException 
+	 */
+	public static String mainAccount(RedisClient client, String loginAccount) throws RedisOPException, ClassCastException {
+		if (client == null || EEBeanUtils.isNULL(loginAccount))
+			return null;
+		return new SynEENetEndUserLoginAccountToRedis().new MainAccountFromRedis(client).mainAccount(loginAccount);
+	}
+	
+	/**
+	 * 获得最终用户主账号
+	 * 2016年4月3日
+	 * @author Orion
+	 */
+	private class MainAccountFromRedis {
+		private final RedisClient redisClient;
+		
+		public String mainAccount(String loginAccount) throws RedisOPException,ClassCastException {
+			String mainAccount = null;
+			Object mainAccountObj = this.redisClient.getMapValues(CacheKey.ENDUSER_LOGIN_ACCOUNT, loginAccount);
+			if (mainAccountObj != null)
+				mainAccount = String.class.cast(mainAccountObj);
+			return mainAccount;
+		}
+
+		public MainAccountFromRedis(RedisClient redisClient) {
+			super();
+			this.redisClient = redisClient;
+		}
+	}
+	
+	/**
 	 * 将用户登录账号同步到Redis
 	 * 2016年4月1日
 	 * @author Orion

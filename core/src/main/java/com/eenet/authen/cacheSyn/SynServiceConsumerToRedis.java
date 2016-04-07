@@ -34,6 +34,34 @@ public final class SynServiceConsumerToRedis {
 		}
 	}
 	
+	public static ServiceConsumer consumer(RedisClient client, String code) throws RedisOPException, ClassCastException {
+		if (client == null || EEBeanUtils.isNULL(code))
+			return null;
+		return new SynServiceConsumerToRedis().new ServiceConsumerFromRedis(client).consumer(code);
+	}
+	
+	/**
+	 * 根据编码获得服务消费者对象
+	 * 2016年4月3日
+	 * @author Orion
+	 */
+	private class ServiceConsumerFromRedis {
+		private final RedisClient redisClient;
+		
+		public ServiceConsumer consumer(String code) throws RedisOPException,ClassCastException {
+			ServiceConsumer consumer = null;
+			Object consumerObj = this.redisClient.getMapValue(CacheKey.SERVICE_CONSUMER, code);
+			if (consumerObj != null)
+				consumer = ServiceConsumer.class.cast(consumerObj);
+			return consumer;
+		}
+		
+		public ServiceConsumerFromRedis(RedisClient redisClient) {
+			super();
+			this.redisClient = redisClient;
+		}
+	}
+	
 	/**
 	 * 将消费者数据同步到Redis
 	 * 
