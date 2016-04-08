@@ -12,6 +12,6 @@
 	<modules>
 		<module>provider-spring-config</module>
 		<module>dubbo-provider-deployer</module>
-		<module>service-consumer-deployer</module>
+		<module>dubbo-ssosys-deployer</module>
 	</modules>
 </project>

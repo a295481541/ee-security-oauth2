@@ -1,7 +1,7 @@
 CREATE TABLE `authen_service_consumer` (
   `ID` varchar(32) NOT NULL,
   `CONSUMER_NAME` varchar(40) NOT NULL,
-  `SECRT_KEY` varchar(128) NOT NULL,
+  `SECRT_KEY` varchar(256) NOT NULL,
   `CREATED_BY` varchar(32) NOT NULL,
   `UPDATED_BY` varchar(32) NOT NULL DEFAULT 'NEVER_CHANGE',
   `CREATED_DT` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,

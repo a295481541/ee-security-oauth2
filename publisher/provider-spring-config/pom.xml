@@ -7,7 +7,7 @@
 		<version>1.50-SNAPSHOT</version>
 	</parent>
 	<artifactId>provider-spring-config</artifactId>
-	<name>service provider spring config for eenet oauth2 security</name>
+	<name>service provider spring config</name>
 
 	<packaging>bundle</packaging>
 	<dependencies>
