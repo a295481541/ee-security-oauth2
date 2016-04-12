@@ -7,10 +7,10 @@ import org.springframework.context.ApplicationContext;
 
 import com.alibaba.dubbo.rpc.RpcException;
 import com.eenet.authen.IdentityAuthenticationBizService;
-import com.eenet.authen.RegistrationBizService;
 import com.eenet.authen.ServiceAuthenRequest;
 import com.eenet.authen.ServiceAuthenResponse;
 import com.eenet.authen.ServiceConsumer;
+import com.eenet.authen.ServiceConsumerBizService;
 import com.eenet.base.SimpleResponse;
 import com.eenet.test.env.DubboAuthenConsumerENV;
 import static org.junit.Assert.*;
@@ -20,7 +20,7 @@ public class DubboAuthenConsumerTester {
 	@Test
 	public void test(){
 		ApplicationContext context = DubboAuthenConsumerENV.getInstance().getContext();
-		RegistrationBizService regisService = (RegistrationBizService)context.getBean("RegistrationBizService");
+		ServiceConsumerBizService regisService = (ServiceConsumerBizService)context.getBean("ServiceConsumerBizService");
 		IdentityAuthenticationBizService authenService = (IdentityAuthenticationBizService)context.getBean("IdentityAuthenticationBizService");
 		
 		System.out.println("----------------- service is ok ?"+authenService.authenServiceProviderPing()+"--------------------------");
@@ -31,7 +31,7 @@ public class DubboAuthenConsumerTester {
 		consumer.setSecretKey("123456");
 		ServiceConsumer savedConsumer = null;
 		try {
-			savedConsumer = regisService.serviceConsumerRegiste(consumer);
+			savedConsumer = regisService.registeServiceConsumer(consumer);
 		} catch (RpcException ex) {
 			System.err.println(ex.getMessage());
 			if (ex.getMessage().indexOf("Please check if the providers have been started and registered") != -1) {
@@ -75,7 +75,7 @@ public class DubboAuthenConsumerTester {
 		System.out.println("authen second : "+responseSecond.isIdentityConfirm());
 		
 		/* 删除数据 */
-		SimpleResponse delResult = regisService.serviceConsumerDrop(savedConsumer.getCode());
+		SimpleResponse delResult = regisService.removeServiceConsumer(savedConsumer.getCode());
 		if (!delResult.isSuccessful()) {
 			System.out.println(delResult.getStrMessage());
 		}

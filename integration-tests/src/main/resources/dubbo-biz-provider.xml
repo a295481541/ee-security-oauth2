@@ -24,7 +24,6 @@
 	<dubbo:provider retries="2" timeout="20000" loadbalance="leastactive" />
 	
 	<!-- 认证服务定义 -->
-	<dubbo:reference id="RegistrationBizService" interface="com.eenet.authen.RegistrationBizService" />
 	<dubbo:reference id="IdentityAuthenticationBizService" interface="com.eenet.authen.IdentityAuthenticationBizService" />
 	<!-- 安全框架集成配置 -->
 	<bean id="ConsumerConfirmFilter" class="com.eenet.extension.dubbo.ConsumerConfirmFilter">

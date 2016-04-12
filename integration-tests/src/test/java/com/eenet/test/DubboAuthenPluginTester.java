@@ -5,8 +5,8 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
-import com.eenet.authen.RegistrationBizService;
 import com.eenet.authen.ServiceConsumer;
+import com.eenet.authen.ServiceConsumerBizService;
 import com.eenet.base.SimpleResultSet;
 import com.eenet.common.exception.AuthenException;
 import com.eenet.test.bizmock.MockBizService;
@@ -57,12 +57,12 @@ public class DubboAuthenPluginTester extends DubboBizProviderENV {
 	public void createConsumer() {
 		/* 消费者身份注册 */
 		ApplicationContext context = DubboAuthenConsumerENV.getInstance().getContext();
-		RegistrationBizService regisService = (RegistrationBizService)context.getBean("RegistrationBizService");
+		ServiceConsumerBizService regisService = (ServiceConsumerBizService)context.getBean("ServiceConsumerBizService");
 		ServiceConsumer consumer = new ServiceConsumer();
 		consumer.setConsumerName("单元测试用户");
 		consumer.setSecretKey("abb76b8ca8f54d4388513024dcb8a340".toUpperCase());
 		System.out.println("密码："+consumer.getSecretKey());
-		ServiceConsumer savedConsumer = regisService.serviceConsumerRegiste(consumer);
+		ServiceConsumer savedConsumer = regisService.registeServiceConsumer(consumer);
 		System.out.println("用户名："+savedConsumer.getCode());
 		/* 消费者身份删除 */
 	}

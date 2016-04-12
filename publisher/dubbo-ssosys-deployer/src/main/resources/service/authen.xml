@@ -12,7 +12,16 @@
 						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 						http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
 	
-	<!-- demo模块 -->
-	<dubbo:reference id="studentInfoBizService" interface="com.eenet.demo.StudentInfoBizService" />
-	<dubbo:reference id="complexQueryBizService" interface="com.eenet.demo.ComplexQueryBizService" />
+	<!-- 最终用户登录秘钥服务 -->
+	<dubbo:reference id="credentialService" interface="com.eenet.authen.EENetEndUserCredentialBizService" />
+	<!-- 最终用户登录账号服务 -->
+	<dubbo:reference id="loginAccountService" interface="com.eenet.authen.EndUserLoginAccountBizService" />
+	<!-- 身份认证服务 -->
+	<dubbo:reference id="authenticationService" interface="com.eenet.authen.IdentityAuthenticationBizService" />
+	<!-- 服务消费者服务 -->
+	<dubbo:reference id="consumerService" interface="com.eenet.authen.ServiceConsumerBizService" />
+	<!-- 单点登录服务 -->
+	<dubbo:reference id="signOnService" interface="com.eenet.authen.SingleSignOnBizService" />
+	<!-- 第三方单点登录系统服务 -->
+	<dubbo:reference id="SSOAppBizService" interface="com.eenet.authen.ThirdPartySSOAppBizService" />
 </beans>

@@ -19,6 +19,6 @@
 	<dubbo:consumer check="false" /><!-- 任何服务不可以均会导致系统无法启动 -->
 	
 	<!-- 业务服务定义 -->
-	<dubbo:reference id="RegistrationBizService" interface="com.eenet.authen.RegistrationBizService" />
+	<dubbo:reference id="ServiceConsumerBizService" interface="com.eenet.authen.ServiceConsumerBizService"/>
 	<dubbo:reference id="IdentityAuthenticationBizService" interface="com.eenet.authen.IdentityAuthenticationBizService" />
 </beans>

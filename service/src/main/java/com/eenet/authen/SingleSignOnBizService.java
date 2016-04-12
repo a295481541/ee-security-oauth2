@@ -1,7 +1,8 @@
 package com.eenet.authen;
 
 /**
- * 单点登录服务 2016年3月29日
+ * 单点登录服务
+ * 2016年3月29日
  * 
  * @author Orion
  */
