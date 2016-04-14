@@ -133,4 +133,7 @@ public class ServiceConsumerBizImpl extends SimpleBizImpl implements ServiceCons
 		return redisRSAEncrypt;
 	}
 
+	public void setRedisRSAEncrypt(RSAEncrypt redisRSAEncrypt) {
+		this.redisRSAEncrypt = redisRSAEncrypt;
+	}
 }

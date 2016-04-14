@@ -12,6 +12,6 @@
 						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 						http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
 	
-	<dubbo:service interface="com.eenet.authen.RegistrationBizService" ref="RegistrationBizImpl" />
+	<dubbo:service interface="com.eenet.authen.ServiceConsumerBizService" ref="ServiceConsumerBizImpl" />
 	<dubbo:service interface="com.eenet.authen.IdentityAuthenticationBizService" ref="IdentityAuthenticationBizImpl" />
 </beans>

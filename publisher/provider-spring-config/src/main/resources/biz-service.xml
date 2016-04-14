@@ -12,6 +12,7 @@
 	<bean id="IdentityAuthenticationBizImpl" class="com.eenet.authen.bizimpl.IdentityAuthenticationBizImpl">
 		<property name="DAOService" ref="GenericDAO" />
 		<property name="redisClient" ref="RedisClient"/>
+		<property name="redisRSADecrypt" ref="RedisRSADecrypt"/>
 	</bean>
 	
 	<bean id="EENetEndUserCredentialBizImpl" class="com.eenet.authen.bizimpl.EENetEndUserCredentialBizImpl">

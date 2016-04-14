@@ -6,6 +6,7 @@ public class EENetEndUserLoginAccount extends BaseEntity {
 	private static final long serialVersionUID = -6762737260719096975L;
 	private EENetEndUserMainAccount mainAccount;
 	private String loginAccount;
+	private EndUserLoginAccountType accountType;
 	/**
 	 * 主账号
 	 * @return
@@ -31,4 +32,16 @@ public class EENetEndUserLoginAccount extends BaseEntity {
 		this.loginAccount = loginAccount;
 	}
 	
+	/**
+	 * 账号类型
+	 * @return
+	 * 2016年4月14日
+	 * @author Orion
+	 */
+	public EndUserLoginAccountType getAccountType() {
+		return accountType;
+	}
+	public void setAccountType(EndUserLoginAccountType accountType) {
+		this.accountType = accountType;
+	}
 }

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.eenet.authen.EENetEndUserMainAccount" >
+	<resultMap type="com.eenet.authen.EENetEndUserMainAccount" id="default">
+		<id column="ACCOUNT" property="account" jdbcType="VARCHAR" />
+	    <!-- <result column="STUDENT_ID" property="studentId" jdbcType="VARCHAR" />
+	    <result column="STAFF_ID" property="staffId" jdbcType="VARCHAR" />
+	    <result column="CUSTOMER_USER_ID" property="customerUserId" jdbcType="VARCHAR" /> -->
+	</resultMap>
+	<sql id="biz_columns" >
+		ACCOUNT
+	</sql>
+	
+	<select id="query_count" resultType="java.lang.Integer" parameterType="com.eenet.base.dao.SQLCondition">
+		<![CDATA[
+		SELECT count(*) FROM (
+			SELECT * FROM V_USER_AUTH
+		) TB WHERE 1=1 
+		]]>
+		<include refid="com.eenet.base.${db.type}.query_quote" />
+	</select>
+	
+	<select id="query" resultMap="default" parameterType="com.eenet.base.dao.SQLCondition">
+		<include refid="com.eenet.base.${db.type}.rowNum_query_prefix" />
+		<![CDATA[
+		SELECT * FROM (
+			SELECT * FROM V_USER_AUTH
+		) TB WHERE 1=1 
+		]]>
+		<include refid="com.eenet.base.${db.type}.query_quote" />
+		<include refid="com.eenet.base.${db.type}.orderBy_quote" />
+		<include refid="com.eenet.base.${db.type}.rowNum_quote_suffix" />
+	</select>
+	
+	<select id="selectByPrimaryKey" resultMap="default" parameterType="java.lang.String" >
+		<![CDATA[
+  		select 
+		    ]]>
+		    <include refid="biz_columns" />
+		    <![CDATA[
+		    from V_USER_AUTH
+	    where ACCOUNT = #{account,jdbcType=VARCHAR}
+	  	]]>
+	</select>
+</mapper>

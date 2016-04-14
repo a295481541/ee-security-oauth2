@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.eenet.authen.ThirdPartySSOAPP" >
+	<resultMap type="com.eenet.authen.ThirdPartySSOAPP" id="default">
+		<id column="ID" property="atid" jdbcType="VARCHAR" />
+		<result column="CREATED_DT" property="crdt" jdbcType="TIMESTAMP" />
+	    <result column="CREATED_BY" property="crps" jdbcType="VARCHAR" />
+	    <result column="CREATED_SID" property="crss" jdbcType="VARCHAR" />
+	    <result column="UPDATED_DT" property="mddt" jdbcType="TIMESTAMP" />
+	    <result column="UPDATED_BY" property="mdps" jdbcType="VARCHAR" />
+	    <result column="UPDATED_SID" property="mdss" jdbcType="VARCHAR" />
+	    <result column="REMARK" property="dataDescription" jdbcType="VARCHAR" />
+	    
+	    <result column="APP_NAME" property="appName" jdbcType="VARCHAR" />
+	    <result column="APP_TYPE" property="appType" jdbcType="VARCHAR" />
+	    <result column="SECRT_KEY" property="secretKey" jdbcType="VARCHAR" />
+	    <result column="REDIRECT_URI_PREFIX" property="redirectURIPrefix" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="biz_columns" >
+		APP_NAME, APP_TYPE, SECRT_KEY, REDIRECT_URI_PREFIX
+	</sql>
+	
+	<select id="query_count" resultType="java.lang.Integer" parameterType="com.eenet.base.dao.SQLCondition">
+		<![CDATA[
+		SELECT count(*) FROM (
+			SELECT * FROM AUTHEN_SSO_SYSTEM
+		) TB WHERE 1=1 
+		]]>
+		<include refid="com.eenet.base.${db.type}.query_quote" />
+	</select>
+	
+	<select id="query" resultMap="default" parameterType="com.eenet.base.dao.SQLCondition">
+		<include refid="com.eenet.base.${db.type}.rowNum_query_prefix" />
+		<![CDATA[
+		SELECT * FROM (
+			SELECT * FROM AUTHEN_SSO_SYSTEM
+		) TB WHERE 1=1 
+		]]>
+		<include refid="com.eenet.base.${db.type}.query_quote" />
+		<include refid="com.eenet.base.${db.type}.orderBy_quote" />
+		<include refid="com.eenet.base.${db.type}.rowNum_quote_suffix" />
+	</select>
+	
+	<insert id="insert" parameterType="com.eenet.authen.ThirdPartySSOAPP">
+		<![CDATA[
+		INSERT INTO AUTHEN_SSO_SYSTEM(
+			ID, CREATED_BY, CREATED_SID, REMARK,
+			]]><include refid="biz_columns" /><![CDATA[
+		) VALUES (
+			#{atid,jdbcType=VARCHAR}, #{crps,jdbcType=VARCHAR}, #{crss,jdbcType=VARCHAR}, #{dataDescription,jdbcType=VARCHAR},
+			#{appName,jdbcType=VARCHAR}, #{appType,jdbcType=VARCHAR}, #{secretKey,jdbcType=VARCHAR}, #{redirectURIPrefix,jdbcType=VARCHAR}
+		)
+		]]>
+	</insert>
+	<update id="update" parameterType="com.eenet.authen.ThirdPartySSOAPP" >
+		<![CDATA[
+		UPDATE AUTHEN_SSO_SYSTEM SET
+			UPDATED_DT = ]]><include refid="com.eenet.base.${db.type}.current_function" /><![CDATA[,
+			UPDATED_BY = #{mdps,jdbcType=VARCHAR},
+			UPDATED_SID = #{mdss,jdbcType=VARCHAR},
+			REMARK = #{dataDescription,jdbcType=VARCHAR},
+			APP_NAME = #{appName,jdbcType=VARCHAR},
+			APP_TYPE = #{appType,jdbcType=VARCHAR},
+			SECRT_KEY = #{secretKey,jdbcType=VARCHAR},
+			REDIRECT_URI_PREFIX = #{redirectURIPrefix,jdbcType=VARCHAR}
+		WHERE ID = #{atid,jdbcType=VARCHAR}
+		]]>
+	</update>
+	<select id="selectByPrimaryKey" resultMap="default" parameterType="java.lang.String" >
+		<![CDATA[
+  		select 
+		    ID, CREATED_DT, CREATED_BY, CREATED_SID, UPDATED_DT, UPDATED_BY, UPDATED_SID, REMARK,
+		    ]]><include refid="biz_columns" /><![CDATA[
+		    from AUTHEN_SSO_SYSTEM
+	    where ID = #{atid,jdbcType=VARCHAR}
+	  	]]>
+	</select>
+	<delete id="delete">
+		<![CDATA[
+		delete from AUTHEN_SSO_SYSTEM WHERE ID IN
+  		]]>
+  		<foreach item="atid" index="index" collection="array" open="(" separator="," close=")">
+  			<![CDATA[#{atid,jdbcType=VARCHAR}]]>
+  		</foreach>
+	</delete>
+	<insert id="backup" parameterType="com.eenet.base.biz.BackupData">
+		<![CDATA[
+		INSERT INTO LOG_AUTHEN_SSO_SYSTEM (
+			ID, CREATED_DT, CREATED_BY, CREATED_SID, UPDATED_DT, UPDATED_BY, UPDATED_SID, REMARK,]]><include refid="biz_columns" /><![CDATA[, BACKUP4
+		) SELECT
+			ID, CREATED_DT, CREATED_BY, CREATED_SID, UPDATED_DT, UPDATED_BY, UPDATED_SID, REMARK,]]><include refid="biz_columns" /><![CDATA[, #{backup4,jdbcType=VARCHAR}
+		FROM AUTHEN_SSO_SYSTEM WHERE ID IN
+		]]>
+		<foreach item="atid" index="index" collection="atids" open="(" separator="," close=")">
+			<![CDATA[#{atid,jdbcType=VARCHAR}]]>
+		</foreach>
+	</insert>
+</mapper>

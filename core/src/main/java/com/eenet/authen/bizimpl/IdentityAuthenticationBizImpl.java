@@ -10,10 +10,14 @@ import com.eenet.common.cache.RedisClient;
 import com.eenet.common.exception.DBOPException;
 import com.eenet.common.exception.RedisOPException;
 import com.eenet.util.EEBeanUtils;
+import com.eenet.util.cryptography.EncryptException;
+import com.eenet.util.cryptography.RSADecrypt;
+import com.eenet.util.cryptography.RSAUtil;
 
 public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizService {
 	private RedisClient redisClient;
 	private BaseDAOService DAOService;
+	private RSADecrypt redisRSADecrypt;
 
 	public ServiceAuthenResponse consumerAuthen(ServiceAuthenRequest request) {
 		ServiceAuthenResponse response = new ServiceAuthenResponse();
@@ -43,9 +47,17 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 				return response;
 			}
 		}
+		
+		/* 密码解密 */
+		String secretKeyPlaintext = null;
+		try {
+			secretKeyPlaintext = RSAUtil.decrypt(getRedisRSADecrypt(), consumer.getSecretKey());
+		} catch (EncryptException e) {
+			e.printStackTrace();
+		}
 
 		/* 校对密码 */
-		if (request.getConsumerSecretKey().equals(consumer.getSecretKey())) {
+		if (request.getConsumerSecretKey().equals(secretKeyPlaintext)) {
 			response.setIdentityConfirm(true);
 			consumer.setSecretKey(null);// 清空密码
 			response.setServiceConsumer(consumer);
@@ -63,7 +75,13 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 	public boolean authenServiceProviderPing() {
 		return true;
 	}
-
+	
+	/****************************************************************************
+	**                                                                         **
+	**                           Getter & Setter                               **
+	**                                                                         **
+	****************************************************************************/
+	
 	/**
 	 * @return the redisClient
 	 */
@@ -92,5 +110,13 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 	 */
 	public void setDAOService(BaseDAOService DAOService) {
 		this.DAOService = DAOService;
+	}
+
+	public RSADecrypt getRedisRSADecrypt() {
+		return redisRSADecrypt;
+	}
+
+	public void setRedisRSADecrypt(RSADecrypt redisRSADecrypt) {
+		this.redisRSADecrypt = redisRSADecrypt;
 	}
 }

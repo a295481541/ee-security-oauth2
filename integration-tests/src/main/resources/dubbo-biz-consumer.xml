@@ -18,7 +18,7 @@
 	
 	<!-- 安全框架集成配置 -->
 	<bean id="ConsumerIdentity" class="com.eenet.authen.ServiceConsumer"><!-- 当前服务消费者身份 -->
-		<property name="code" value="b90680abcf854943b0a12ca23830ea00" />
+		<property name="code" value="5C164336AD3446F9AAE9F306ACE3E1A9" />
 		<property name="secretKey" value="ABB76B8CA8F54D4388513024DCB8A340" />
 	</bean>
 	<bean id="ConsumerInjectFilter" class="com.eenet.extension.dubbo.ConsumerInjectFilter">

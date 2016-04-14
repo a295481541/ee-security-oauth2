@@ -18,7 +18,7 @@ import com.eenet.test.env.DubboBizProviderENV;
 public class DubboAuthenPluginTester extends DubboBizProviderENV {
 	/**
 	 * 必须已经注册了服务消费者：
-	 * code:b90680abcf854943b0a12ca23830ea00
+	 * code:5C164336AD3446F9AAE9F306ACE3E1A9
 	 * secretKey:ABB76B8CA8F54D4388513024DCB8A340
 	 * 2016年3月29日
 	 * @author Orion
