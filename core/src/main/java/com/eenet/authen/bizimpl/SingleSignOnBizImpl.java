@@ -38,6 +38,10 @@ public class SingleSignOnBizImpl implements SingleSignOnBizService {
 		SignOnGrant grant = new SignOnGrant();
 		grant.setSuccessful(false);
 		/* 参数检查 */
+		if (EEBeanUtils.isNULL(appId) || EEBeanUtils.isNULL(endUserLoginAccount) || EEBeanUtils.isNULL(endUserPassword)) {
+			grant.addMessage("参数不完整");
+			return grant;
+		}
 
 		/* 单点登录系统身份认证、权限校验 */
 		if (!this.validateSSOSystem(SSOSystem)) {
@@ -120,33 +124,45 @@ public class SingleSignOnBizImpl implements SingleSignOnBizService {
 		try {
 			getRedisClient().remove(CacheKey.AUTHEN_CODE_PREFIX + ":" + grantCode + ":" + appId);
 		} catch (RedisOPException e) {
-			e.printStackTrace();
+			token.addMessage("grantCode（授权码）销毁失败： "+e.toString());
+			return token;
 		}
 		
 		/* 生成并记录访问令牌 */
 		String accessToken = generateNCacheAccessToken(appId, mainAccount);
 		if (EEBeanUtils.isNULL(accessToken)) {
-			token.addMessage("记录refreshToken失败");
+			token.addMessage("生成访问令牌失败");
 			return token;
 		}
 		
 		/* 生成并记录刷新令牌 */
 		String refreshToken = generateNCacheRefreshToken(appId, mainAccount);
 		if (EEBeanUtils.isNULL(refreshToken)) {
-			token.addMessage("记录refreshToken失败");
+			token.addMessage("生成并记录刷新令牌失败");
 			return token;
 		}
 		
-		token.setAccessToken(accessToken);
-		token.setRefreshToken(refreshToken);
 		EENetEndUserMainAccount mainAccountObj = new EENetEndUserMainAccount();
 		mainAccountObj.setAccount(mainAccount);
+		token.setAccessToken(accessToken);
+		token.setRefreshToken(refreshToken);
 		token.setMainAccount(mainAccountObj);
 		token.setSuccessful(true);
 		return token;
 	}
 
 	@Override
+	/**
+	 * 处理流程：
+	 * |
+	 * V 验证第三方系统
+	 * | 验证刷新令牌-refreshToken
+	 * V 删除验证刷新令牌-refreshToken
+	 * | 生成并记录访问令牌-accessToken
+	 * V 置换刷新令牌-refreshToken
+	 * |
+	 * V
+	 */
 	public AccessToken refreshAccessToken(String appId, String secretKey, String refreshToken) {
 		AccessToken token = new AccessToken();
 		token.setSuccessful(false);
@@ -164,25 +180,39 @@ public class SingleSignOnBizImpl implements SingleSignOnBizService {
 		
 		/* 验证刷新令牌 */
 		String mainAccount = null;
+		try {
+			mainAccount = getRedisClient().getObject(CacheKey.REFRESS_TOKEN_PREFIX + ":" + refreshToken + ":" + appId, String.class);
+		} catch (RedisOPException e) {
+			token.addMessage("refreshToken（刷新令牌）无效或已过期： "+e.toString());
+			return token;
+		}
+		
+		/* 删除刷新令牌（刷新令牌只能用一次） */
+		try {
+			getRedisClient().remove(CacheKey.REFRESS_TOKEN_PREFIX + ":" + refreshToken + ":" + appId);
+		} catch (RedisOPException e) {
+			token.addMessage("refreshToken（刷新令牌）销毁失败： "+e.toString());
+			return token;
+		}
 		
 		/* 生成并记录访问令牌 */
 		String accessToken = generateNCacheAccessToken(appId, mainAccount);
 		if (EEBeanUtils.isNULL(accessToken)) {
-			token.addMessage("记录refreshToken失败");
+			token.addMessage("生成访问令牌失败");
 			return token;
 		}
 		
 		/* 生成并记录刷新令牌 */
 		String newRefreshToken = generateNCacheRefreshToken(appId, mainAccount);
 		if (EEBeanUtils.isNULL(newRefreshToken)) {
-			token.addMessage("记录refreshToken失败");
+			token.addMessage("生成并记录刷新令牌失败");
 			return token;
 		}
 		
-		token.setAccessToken(accessToken);
-		token.setRefreshToken(newRefreshToken);
 		EENetEndUserMainAccount mainAccountObj = new EENetEndUserMainAccount();
 		mainAccountObj.setAccount(mainAccount);
+		token.setAccessToken(accessToken);
+		token.setRefreshToken(newRefreshToken);
 		token.setMainAccount(mainAccountObj);
 		token.setSuccessful(true);
 		return token;
@@ -339,10 +369,12 @@ public class SingleSignOnBizImpl implements SingleSignOnBizService {
 	private String generateNCacheAccessToken(String appId, String mainAccount) {
 		try {
 			String accessToken = EEBeanUtils.getUUID();
-			int expire = ThirdPartyAPPType.WEBAPP.equals(
-					getSSOAppService().retrieveThirdPartySSOApp(appId).getAppType()) ? 60 * 5 : 60 * 60 * 24 * 7;
-			getRedisClient().setObject(CacheKey.ACCESS_TOKEN_PREFIX + ":" + accessToken + ":" + appId, mainAccount,
-					expire);
+			//第三方应用类型
+			ThirdPartyAPPType appType = getSSOAppService().retrieveThirdPartySSOApp(appId).getAppType();
+			//访问令牌有效期
+			int expire = ThirdPartyAPPType.WEBAPP.equals(appType) ? 60 * 5 : 60 * 60 * 24 * 7;
+			//记录令牌
+			getRedisClient().setObject(CacheKey.ACCESS_TOKEN_PREFIX + ":" + accessToken + ":" + appId, mainAccount, expire);
 			return accessToken;
 		} catch (RedisOPException e) {
 			e.printStackTrace();
@@ -371,7 +403,9 @@ public class SingleSignOnBizImpl implements SingleSignOnBizService {
 	}
 
 	/****************************************************************************
-	 ** ** Getter & Setter ** **
+	 ** 
+	 ** Getter & Setter
+	 **
 	 ****************************************************************************/
 
 	public IdentityAuthenticationBizService getAuthenService() {

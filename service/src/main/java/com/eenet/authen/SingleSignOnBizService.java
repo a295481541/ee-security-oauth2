@@ -40,8 +40,8 @@ public interface SingleSignOnBizService {
 	 * 业务规则：单accessToken失效后通过refreshToken重新获取，有效期30天
 	 * 当refreshToken作重新获取refreshToken时，一次性失效并重新颁发
 	 * 当refreshToken用于系统跳转时，可多次使用
-	 * @param appId
-	 * @param secretKey
+	 * @param appId 第三方应用标识
+	 * @param secretKey 第三方应用秘钥（明文）
 	 * @param refreshToken
 	 * @return
 	 * 2016年4月21日
