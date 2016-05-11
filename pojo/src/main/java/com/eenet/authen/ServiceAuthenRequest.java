@@ -11,8 +11,6 @@ public class ServiceAuthenRequest implements Serializable {
 	private static final long serialVersionUID = -8522386568621829527L;
 	private String consumerCode;//消费者编码
 	private String consumerSecretKey;//消费者秘钥
-	private String endUserAccount;//用户主账号
-	private String endUserTocken;//用户令牌
 	/**
 	 * @return 消费者编码
 	 */
@@ -36,29 +34,5 @@ public class ServiceAuthenRequest implements Serializable {
 	 */
 	public void setConsumerSecretKey(String consumerSecretKey) {
 		this.consumerSecretKey = consumerSecretKey;
-	}
-	/**
-	 * @return 用户主账号
-	 */
-	public String getEndUserAccount() {
-		return endUserAccount;
-	}
-	/**
-	 * @param 用户主账号
-	 */
-	public void setEndUserAccount(String endUserAccount) {
-		this.endUserAccount = endUserAccount;
-	}
-	/**
-	 * @return 用户令牌
-	 */
-	public String getEndUserTocken() {
-		return endUserTocken;
-	}
-	/**
-	 * @param 用户令牌
-	 */
-	public void setEndUserTocken(String endUserTocken) {
-		this.endUserTocken = endUserTocken;
 	}
 }
