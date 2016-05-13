@@ -13,7 +13,6 @@ import com.eenet.authen.ThirdPartyAPPType;
 import com.eenet.authen.ThirdPartySSOAPP;
 import com.eenet.authen.ThirdPartySSOAppBizService;
 import com.eenet.base.StringResponse;
-import com.eenet.base.dao.BaseDAOService;
 import com.eenet.common.cache.RedisClient;
 import com.eenet.common.exception.RedisOPException;
 import com.eenet.util.EEBeanUtils;
@@ -29,7 +28,6 @@ public class SingleSignOnBizImpl implements SingleSignOnBizService {
 	private ThirdPartySSOAppBizService SSOAppService;
 	private String SSOSystemConsumerCode;
 	private RSADecrypt redisRSADecrypt;
-	private BaseDAOService DAOService;
 	private RedisClient redisClient;
 
 	@Override
@@ -422,25 +420,6 @@ public class SingleSignOnBizImpl implements SingleSignOnBizService {
 
 	public void setRedisClient(RedisClient redisClient) {
 		this.redisClient = redisClient;
-	}
-
-	/**
-	 * 利用IOC机制，通过此方法注入数据库操作服务对象。
-	 * 
-	 * @param daoService
-	 *            数据库操作服务对象
-	 */
-	public void setDAOService(BaseDAOService daoService) {
-		this.DAOService = daoService;
-	}
-
-	/**
-	 * 获得数据库操作服务对象。
-	 * 
-	 * @return 数据库操作服务对象
-	 */
-	public BaseDAOService getDAOService() {
-		return this.DAOService;
 	}
 
 	public RSADecrypt getRedisRSADecrypt() {

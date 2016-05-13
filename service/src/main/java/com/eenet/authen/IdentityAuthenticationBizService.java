@@ -1,7 +1,7 @@
 package com.eenet.authen;
 
 /**
- * 身份认证服务
+ * 身份认证服务，含：服务消费者、最终用户
  * @author Orion
  *
  */

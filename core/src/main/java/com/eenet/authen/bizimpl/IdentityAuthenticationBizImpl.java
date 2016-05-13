@@ -9,7 +9,6 @@ import com.eenet.authen.ServiceConsumer;
 import com.eenet.authen.ServiceConsumerBizService;
 import com.eenet.authen.ThirdPartySSOAPP;
 import com.eenet.authen.ThirdPartySSOAppBizService;
-import com.eenet.base.dao.BaseDAOService;
 import com.eenet.common.cache.RedisClient;
 import com.eenet.common.exception.RedisOPException;
 import com.eenet.util.EEBeanUtils;
@@ -19,7 +18,6 @@ import com.eenet.util.cryptography.RSAUtil;
 
 public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizService {
 	private RedisClient redisClient;
-	private BaseDAOService DAOService;
 	private RSADecrypt redisRSADecrypt;
 	private ServiceConsumerBizService consumerService;
 	private ThirdPartySSOAppBizService appService;
@@ -123,21 +121,6 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 	 */
 	public void setRedisClient(RedisClient redisClient) {
 		this.redisClient = redisClient;
-	}
-
-	/**
-	 * @return the daoService
-	 */
-	public BaseDAOService getDAOService() {
-		return DAOService;
-	}
-
-	/**
-	 * @param daoService
-	 *            the daoService to set
-	 */
-	public void setDAOService(BaseDAOService DAOService) {
-		this.DAOService = DAOService;
 	}
 
 	public RSADecrypt getRedisRSADecrypt() {

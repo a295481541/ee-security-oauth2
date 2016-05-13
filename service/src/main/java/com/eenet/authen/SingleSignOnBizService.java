@@ -1,7 +1,8 @@
 package com.eenet.authen;
 
 /**
- * 单点登录服务
+ * 单点登录服务，身份认证服务见：
+ * @see com.eenet.authen.IdentityAuthenticationBizService
  * 2016年3月29日
  * 
  * @author Orion
