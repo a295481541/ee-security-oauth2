@@ -11,6 +11,12 @@
 						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
 						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 						http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+	<!--
+	|
+	| 模拟单点登录系统
+	|
+	 -->
+	
 	<!-- 服务消费者(consumer)信息，用于计算依赖关系 -->
 	<dubbo:application name="eenet.security.consumer" />
 	<!-- 使用zookeeper注册中心进行注册 -->
@@ -18,7 +24,26 @@
 	<!-- 启动时检查所有服务的可用性 -->
 	<dubbo:consumer check="false" /><!-- 任何服务不可以均会导致系统无法启动 -->
 	
-	<!-- 业务服务定义 -->
+	<!-- 单点登录系统身份配置 -->
+	<bean id="ConsumerIdentity" class="com.eenet.authen.ServiceConsumer">
+		<property name="code" value="13B243FE054F4B0E9D80E28132B6D643" /><!-- 单点登录系统 -->
+		<property name="secretKey" value="1429D423ED444F2983D0B048B409F173" />
+	</bean>
+	<!-- <bean id="ConsumerInjectFilter" class="com.eenet.extension.dubbo.ConsumerInjectFilter">
+		<property name="IdentityBeanId" value="ConsumerIdentity" />
+	</bean> -->
+	
+	<!-- 服务消费者服务 -->
 	<dubbo:reference id="ServiceConsumerBizService" interface="com.eenet.authen.ServiceConsumerBizService"/>
+	<!-- 最终用户登录秘钥服务 -->
+	<dubbo:reference id="EENetEndUserCredentialBizService" interface="com.eenet.authen.EENetEndUserCredentialBizService"/>
+	<!-- 最终用户登录账号服务 -->
+	<dubbo:reference id="EndUserLoginAccountBizService" interface="com.eenet.authen.EndUserLoginAccountBizService"/>
+	<!-- 第三方单点登录系统服务 -->
+	<dubbo:reference id="ThirdPartySSOAppBizService" interface="com.eenet.authen.ThirdPartySSOAppBizService"/>
+	
+	<!-- 身份认证服务 -->
 	<dubbo:reference id="IdentityAuthenticationBizService" interface="com.eenet.authen.IdentityAuthenticationBizService" />
+	<!-- 单点登录服务 -->
+	<dubbo:reference id="SingleSignOnBizService" interface="com.eenet.authen.SingleSignOnBizService"/>
 </beans>

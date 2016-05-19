@@ -1,5 +1,6 @@
 package com.eenet.test.bizmock;
 
+import com.eenet.base.BaseEntity;
 import com.eenet.base.SimpleResultSet;
 import com.eenet.base.query.QueryCondition;
 
@@ -28,5 +29,5 @@ public class MockBizImpl implements MockBizService {
 	public String withoutIBaseResponse(String anything) {
 		return "hello"+anything;
 	}
-
+	
 }

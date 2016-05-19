@@ -20,7 +20,7 @@ public class ThirdPartySSOAPP extends BaseEntity {
 		return super.getAtid();
 	}
 	public void setAppId(String appId) {
-		this.setAppId(appId);
+		this.setAtid(appId);
 	}
 	
 	/**

@@ -14,7 +14,7 @@ public class DubboBizProviderENV {
 	}
 	
 	@AfterClass
-	public static void stopService() {
+	public static void stopServiceProvider() {
 		if (context != null) {
 			context.stop();
 			context.close();

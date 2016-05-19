@@ -15,8 +15,22 @@ import com.eenet.base.SimpleResponse;
 import com.eenet.test.env.DubboAuthenConsumerENV;
 import static org.junit.Assert.*;
 
-public class DubboAuthenConsumerTester {
+public class ServiceConsumerAuthenTester {
 	
+	/**
+	 * 测试流程：
+	 * |
+	 * | 注册服务消费者 - 预期成功
+	 * | 服务消费者认证 - 预期成功
+	 * | 服务消费者认证 - 预期失败 ：错误密码
+	 * | 删除服务消费者 - 预期成功
+	 * | 服务消费者认证 - 预期失败：消费者不存在（在上一步已被删除）
+	 * |
+	 * V
+	 * 
+	 * 2016年5月16日
+	 * @author Orion
+	 */
 	@Test
 	public void test(){
 		ApplicationContext context = DubboAuthenConsumerENV.getInstance().getContext();
@@ -81,7 +95,7 @@ public class DubboAuthenConsumerTester {
 		}
 		assertTrue(delResult.isSuccessful());
 		
-		/* 认证失败 */
+		/* 认证失败（数据已被删除） */
 		request.setConsumerSecretKey("123456");
 		ServiceAuthenResponse responseThird = null;
 		try {

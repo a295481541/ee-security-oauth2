@@ -15,7 +15,7 @@ public interface SingleSignOnBizService {
 	 * @param appId 第三方应用
 	 * @param redirectURI 跳转地址（非web系统可空）
 	 * @param endUserLoginAccount 最终用户登录账号
-	 * @param endUserPassword 最终用户登录密码
+	 * @param endUserPassword 最终用户登录密码（明文）
 	 * @return 授权码
 	 * 2016年4月7日
 	 * @author Orion
