@@ -1,2 +1,2 @@
 consumerInject=com.eenet.extension.dubbo.ConsumerInjectFilter
-EndUserInjectFilter=com.eenet.extension.dubbo.EndUserInjectFilter
+endUserInjectFilter=com.eenet.extension.dubbo.EndUserInjectFilter

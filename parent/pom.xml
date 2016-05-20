@@ -11,7 +11,7 @@
 			<id>DEV-ENV</id>
 			<properties>
 				<!-- mysql配置 -->
-				<connection.url><![CDATA[jdbc:mysql://172.16.165.159:3306/passport?useUnicode=true&amp;characterEncoding=UTF-8]]></connection.url>
+				<connection.url><![CDATA[jdbc:mysql://172.16.165.223:3306/passport?useUnicode=true&amp;characterEncoding=UTF-8]]></connection.url>
 				<connection.user>passport</connection.user>
 				<connection.password>passport$W3</connection.password>
 				<!-- Redis配置 --><!-- redis://:[PASSWORD]@[IP]:[PORT]/[DB] -->

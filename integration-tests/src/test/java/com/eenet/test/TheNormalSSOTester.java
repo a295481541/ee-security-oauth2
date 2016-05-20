@@ -94,6 +94,7 @@ public class TheNormalSSOTester extends DubboBizConsumerENV {
 	/**
 	 * 测试前提条件：
 	 * 主账号表（表名：V_USER_AUTH）存在账号（字段名：ACCOUNT）：OrionTest
+	 * 单点登录接入系统表（表名：AUTHEN_SSO_SYSTEM）存在ID（字段名：ID）：74821455C9A9484FB57FAB8642440F70、密码（字段名：SECRT_KEY）：web#APp99
 	 * 
 	 * 2016年5月18日
 	 * @author Orion

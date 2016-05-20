@@ -32,8 +32,12 @@
 	
 	<!-- 认证服务定义 -->
 	<dubbo:reference id="IdentityAuthenticationBizService" interface="com.eenet.authen.IdentityAuthenticationBizService" />
-	<!-- 安全框架集成配置 -->
+	<!-- 服务消费者身份认证过滤器配置 -->
 	<bean id="ConsumerConfirmFilter" class="com.eenet.extension.dubbo.ConsumerConfirmFilter">
+		<property name="AuthenServiceID" value="IdentityAuthenticationBizService" />
+	</bean>
+	<!-- 最终用户身份认证过滤器配置 -->
+	<bean id="EndUserConfirmFilter" class="com.eenet.extension.dubbo.EndUserConfirmFilter">
 		<property name="AuthenServiceID" value="IdentityAuthenticationBizService" />
 	</bean>
 	

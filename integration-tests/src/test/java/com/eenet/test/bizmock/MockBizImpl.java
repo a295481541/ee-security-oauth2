@@ -1,6 +1,5 @@
 package com.eenet.test.bizmock;
 
-import com.eenet.base.BaseEntity;
 import com.eenet.base.SimpleResultSet;
 import com.eenet.base.query.QueryCondition;
 

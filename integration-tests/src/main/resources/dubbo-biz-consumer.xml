@@ -23,13 +23,21 @@
 	<!-- 启动时检查所有服务的可用性 -->
 	<dubbo:consumer check="false" /><!-- 任何服务不可以均会导致系统无法启动 -->
 	
-	<!-- 安全框架集成配置 -->
+	<!-- 服务消费者身份配置 -->
 	<bean id="ConsumerIdentity" class="com.eenet.authen.ServiceConsumer"><!-- 当前服务消费者身份 -->
 		<property name="code" value="5C164336AD3446F9AAE9F306ACE3E1A9" />
 		<property name="secretKey" value="ABB76B8CA8F54D4388513024DCB8A340" />
 	</bean>
 	<bean id="ConsumerInjectFilter" class="com.eenet.extension.dubbo.ConsumerInjectFilter">
 		<property name="IdentityBeanId" value="ConsumerIdentity" />
+	</bean>
+	<!-- 第三方系统身份配置 -->
+	<bean id="ThirdPartySSOAPPIdentity" class="com.eenet.authen.ThirdPartySSOAPP">
+		<property name="appId" value="74821455C9A9484FB57FAB8642440F70" />
+		<property name="secretKey" value="web#APp99" />
+	</bean>
+	<bean id="EndUserInjectFilter" class="com.eenet.extension.dubbo.EndUserInjectFilter">
+		<property name="thirdPartyIdentityBeanId" value="ThirdPartySSOAPPIdentity" />
 	</bean>
 	
 	<!-- 数据解密私钥：为了取回已存在的秘钥 -->
@@ -51,5 +59,5 @@
 	
 	<!-- 业务服务定义 -->
 	<dubbo:reference id="MockBizService" interface="com.eenet.test.bizmock.MockBizService" filter="consumerInject" />
-	<dubbo:reference id="MockBizWithUserService" interface="com.eenet.test.bizmock.MockBizWithUserService" filter="consumerInject,EndUserInjectFilter" />
+	<dubbo:reference id="MockBizWithUserService" interface="com.eenet.test.bizmock.MockBizWithUserService" filter="consumerInject,endUserInjectFilter" />
 </beans>

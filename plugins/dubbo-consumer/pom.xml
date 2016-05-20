@@ -16,6 +16,11 @@
 			<artifactId>pojo</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>eenet.security.oauth2</groupId>
+			<artifactId>service</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<!-- dubbo -->
 		<dependency>
 			<groupId>com.alibaba</groupId>

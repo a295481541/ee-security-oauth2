@@ -12,7 +12,8 @@ import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.Result;
 import com.alibaba.dubbo.rpc.RpcException;
 import com.alibaba.dubbo.rpc.RpcResult;
-import com.eenet.authen.CommonKey;
+import com.eenet.auth.CommonKey;
+import com.eenet.auth.IdentityConfirmFailFrom;
 import com.eenet.authen.ServiceConsumer;
 import com.eenet.base.IBaseResponse;
 import com.eenet.common.exception.AuthenException;
@@ -79,7 +80,18 @@ public class ConsumerInjectFilter implements Filter,ApplicationContextAware {
 		}
 		
 		/* 如果不是IBaseResponse的子类，则抛出异常 */
-		throw new AuthenException("服务消费者端身份认证未通过："+result.getAttachment(CommonKey.IDENTITY_CONFIRM_FAIL_REASON));
+		String exceptionMessage = "未知错误";
+		String confirmFailFrom = String.valueOf(result.getAttachment(CommonKey.IDENTITY_CONFIRM_FAIL_FROM));
+		if (confirmFailFrom.equals(IdentityConfirmFailFrom.syserr.toString())){
+			exceptionMessage = "系统错误";
+		} else if (confirmFailFrom.equals(IdentityConfirmFailFrom.thirdPartySys.toString())){
+			exceptionMessage = "第三方业务系统（单点登录集成）身份校验错误";
+		} else if (confirmFailFrom.equals(IdentityConfirmFailFrom.endUser.toString())){
+			exceptionMessage = "用户令牌校验错误";
+		} else if (confirmFailFrom.equals(IdentityConfirmFailFrom.consumer.toString())){
+			exceptionMessage = "服务消费者身份校验错误";
+		}
+		throw new AuthenException(exceptionMessage+"："+result.getAttachment(CommonKey.IDENTITY_CONFIRM_FAIL_REASON));
 	}
 
 	@Override
