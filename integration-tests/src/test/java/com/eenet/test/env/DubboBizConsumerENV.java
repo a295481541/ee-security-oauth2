@@ -8,6 +8,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class DubboBizConsumerENV {
 	private static DubboBizConsumerENV INSTANCE;
 	private static ClassPathXmlApplicationContext context;
+	private boolean providerStartByMe = false;
 	
 	public static DubboBizConsumerENV getInstance() {
 		if (INSTANCE == null)
@@ -17,12 +18,12 @@ public class DubboBizConsumerENV {
 	
 	public ApplicationContext getContext() {
 		if (DubboBizConsumerENV.context == null)
-			this.initServiceConsumer();
+			initServiceConsumer();
 		return context;
 	}
 	
 	@BeforeClass
-	private void initServiceConsumer(){
+	public static void initServiceConsumer(){
 		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[] { "dubbo-biz-consumer.xml" });
 		context.start();
 		DubboBizConsumerENV.context = context;

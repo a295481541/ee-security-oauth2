@@ -12,7 +12,7 @@
 	    <result column="REMARK" property="dataDescription" jdbcType="VARCHAR" />
 	    
 	    <result column="APP_NAME" property="appName" jdbcType="VARCHAR" />
-	    <result column="APP_TYPE" property="appType" jdbcType="VARCHAR" />
+	    <result column="APP_TYPE" property="appType" jdbcType="VARCHAR" typeHandler="org.apache.ibatis.type.EnumTypeHandler" />
 	    <result column="SECRT_KEY" property="secretKey" jdbcType="VARCHAR" />
 	    <result column="REDIRECT_URI_PREFIX" property="redirectURIPrefix" jdbcType="VARCHAR" />
 	</resultMap>

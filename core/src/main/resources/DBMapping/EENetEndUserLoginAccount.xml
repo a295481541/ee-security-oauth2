@@ -14,7 +14,7 @@
 	    <result column="LOGIN_ACCOUNT" property="loginAccount" jdbcType="VARCHAR" />
 	    <result column="ACCOUNT_TYPE" property="accountType" jdbcType="VARCHAR" />
 	    <association column="USER_ACCOUNT" property="mainAccount" javaType="com.eenet.authen.EENetEndUserMainAccount" 
-	    			resultMap="com.eenet.authen.EENetEndUserMainAccount"/>
+	    			resultMap="com.eenet.authen.EENetEndUserMainAccount.default"/>
 	</resultMap>
 	<sql id="biz_columns" >
 		USER_ACCOUNT, LOGIN_ACCOUNT, ACCOUNT_TYPE

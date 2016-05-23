@@ -17,6 +17,7 @@ import com.eenet.auth.IdentityConfirmFailFrom;
 import com.eenet.authen.ServiceConsumer;
 import com.eenet.base.IBaseResponse;
 import com.eenet.common.exception.AuthenException;
+import com.eenet.util.EEBeanUtils;
 
 /**
  * 服务消费者身份注入
@@ -40,6 +41,9 @@ public class ConsumerInjectFilter implements Filter,ApplicationContextAware {
 		invocation.getAttachments().put(CommonKey.SERVICE_CONSUMER_SECRET, ConsumerIdentity.getSecretKey());
 		
 		result = invoker.invoke(invocation);
+		/* 没有身份确认信息（即服务提供者无身份校验要求），直接返回  */
+		if (EEBeanUtils.isNULL(result.getAttachment(CommonKey.IDENTITY_CONFIRM)))
+			return result;
 		
 		/* 身份确认，直接返回 */
 		boolean identityConfirm = Boolean.valueOf(result.getAttachment(CommonKey.IDENTITY_CONFIRM));

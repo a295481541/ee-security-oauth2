@@ -61,7 +61,7 @@ public class SingleSignOnBizImpl implements SingleSignOnBizService {
 		}
 		
 		/* 最终用户身份认证 */
-		if (this.validateEndUserCredential(mainAccount, endUserPassword)) {
+		if (!this.validateEndUserCredential(mainAccount, endUserPassword)) {
 			grant.addMessage("登录用户的账号、密码不匹配");
 			return grant;
 		}

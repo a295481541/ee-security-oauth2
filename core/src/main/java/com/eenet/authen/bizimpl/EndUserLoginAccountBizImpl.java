@@ -50,7 +50,25 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 			return result;
 		}
 		
-		result = super.delete(EENetEndUserLoginAccount.class, loginAccounts);
+		/* 从数据库取得要删除登录账号的ID */
+		String[] loginAccountIDs = new String[loginAccounts.length];
+		QueryCondition query = new QueryCondition();
+		SimpleResultSet<EENetEndUserLoginAccount> queryResult = null;
+		for (int i=0;i<loginAccounts.length;i++) {
+			query.cleanAllCondition();
+			query.addCondition(new ConditionItem("loginAccount",RangeType.EQUAL,loginAccounts[i],null));
+			queryResult = super.query(query, EENetEndUserLoginAccount.class);
+			if (queryResult.getResultSet().size() == 1){
+				loginAccountIDs[i] = queryResult.getResultSet().get(0).getAtid();
+			}
+			try {
+				getRedisClient().removeMapItem(CacheKey.ENDUSER_LOGIN_ACCOUNT, loginAccounts[i]);
+			} catch (RedisOPException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		result = super.delete(EENetEndUserLoginAccount.class, loginAccountIDs);
 		/* 删除成功，同时从缓存中删除 */
 		if (result.isSuccessful())
 			RemoveMapItemFromRedisThread.execute(getRedisClient(), loginAccounts, CacheKey.ENDUSER_LOGIN_ACCOUNT);
@@ -78,20 +96,22 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 		}
 		
 		/* 从数据库取数据 */
+		SimpleResultSet<EENetEndUserLoginAccount> queryResultDB = null;
 		if (result.getResult() == null) {
 			QueryCondition query = new QueryCondition();
 			query.addCondition(new ConditionItem("loginAccount",RangeType.EQUAL,loginAccount,null));
-			SimpleResultSet<EENetEndUserLoginAccount> queryResult = super.query(query, EENetEndUserLoginAccount.class);
-			if (queryResult.getResultSet().size() == 1) {
-				result.setResult(queryResult.getResultSet().get(0).getMainAccount().getAccount());
-				SynEENetEndUserLoginAccountToRedis.syn(getRedisClient(), queryResult.getResultSet().get(0));
-			}
+			queryResultDB = super.query(query, EENetEndUserLoginAccount.class);
+			if (queryResultDB.getResultSet().size() == 1) {
+				result.setResult(queryResultDB.getResultSet().get(0).getMainAccount().getAccount());
+				SynEENetEndUserLoginAccountToRedis.syn(getRedisClient(), queryResultDB.getResultSet().get(0));
+			} else
+				queryResultDB.addMessage("存在"+queryResultDB.getResultSet().size()+"个登录账号："+loginAccount);
 		}
 		
 		/* 从数据库也取不到数据 */
 		if (EEBeanUtils.isNULL(result.getResult())) {
 			result.setSuccessful(false);
-			result.addMessage("未找到登录账号为："+loginAccount+"的主账号");
+			result.addMessage("未找到登录账号为："+loginAccount+"的主账号，可能的原因："+queryResultDB.getStrMessage());
 		}
 		return result;
 	}

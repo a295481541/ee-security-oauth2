@@ -17,6 +17,8 @@ import com.eenet.authen.SingleSignOnBizService;
 import com.eenet.authen.ThirdPartySSOAPP;
 import com.eenet.base.IBaseResponse;
 import com.eenet.common.exception.AuthenException;
+import com.eenet.util.EEBeanUtils;
+
 import static com.eenet.auth.ThreadSharedAuthParameter.*;
 
 import java.lang.reflect.Constructor;
@@ -45,6 +47,9 @@ public class EndUserInjectFilter implements Filter, ApplicationContextAware {
 		invocation.getAttachments().put(CommonKey.ENDUSER_ACCESS_TOCKEN, CurEndUserToken.get().getAccessToken());
 		
 		result = invoker.invoke(invocation);
+		/* 没有身份确认信息（即服务提供者无身份校验要求），直接返回  */
+		if (EEBeanUtils.isNULL(result.getAttachment(CommonKey.IDENTITY_CONFIRM)))
+			return result;
 		
 		/* 身份确认，直接返回 */
 		boolean identityConfirm = Boolean.valueOf(result.getAttachment(CommonKey.IDENTITY_CONFIRM));

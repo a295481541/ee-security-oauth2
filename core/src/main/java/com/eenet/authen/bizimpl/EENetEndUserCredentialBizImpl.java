@@ -1,5 +1,7 @@
 package com.eenet.authen.bizimpl;
 
+import java.lang.reflect.InvocationTargetException;
+
 import com.eenet.authen.EENetEndUserCredential;
 import com.eenet.authen.EENetEndUserCredentialBizService;
 import com.eenet.authen.EENetEndUserMainAccount;
@@ -119,28 +121,25 @@ public class EENetEndUserCredentialBizImpl extends SimpleBizImpl implements EENe
 			return result;
 		}
 		
-		/* 从缓存取最终用户密码信息 */
-		EENetEndUserCredential credential = null;//从缓存或数据库中取回的对象
-		try {
-			EENetEndUserCredential.class.cast(getRedisClient().getMapValue(CacheKey.ENDUSER_CREDENTIAL,
-					curCredential.getMainAccount().getAccount()));
-		} catch (RedisOPException | ClassCastException e) {
-			e.printStackTrace();
-		}
+		/* 从数据库取最终用户密码信息（涉及到表ID问题所以不从缓存中取） */
+		query.cleanAllCondition();
+		query.addCondition(new ConditionItem("mainAccount.account",RangeType.EQUAL,curCredential.getMainAccount().getAccount(),null));
+		SimpleResultSet<EENetEndUserCredential> existCredentialRS = super.query(query, EENetEndUserCredential.class);
 		
-		/* 缓存中没有最终用户密码信息，从数据库取 */
-		if (credential == null) {
-			query.cleanAllCondition();
-			query.addCondition(new ConditionItem("mainAccount.account",RangeType.EQUAL,curCredential.getMainAccount().getAccount(),null));
-			SimpleResultSet<EENetEndUserCredential> existCredential = super.query(query, EENetEndUserCredential.class);
-			if (existCredential.getResultSet().size() == 1)
-				credential = existCredential.getResultSet().get(0);
-		}
-		
-		/* 判断是否已设置最终用户密码，没有则返回错误信息*/
-		if (credential == null) {
+		if (!existCredentialRS.isSuccessful()) {//从数据库中取密码时报错
 			result.setSuccessful(false);
-			result.addMessage("账号："+curCredential.getMainAccount().getAccount()+"未初始化密码，不可修改密码");
+			result.addMessage("获得\""+curCredential.getMainAccount().getAccount()+"\"原始密码时错误：\n"+existCredentialRS.getStrMessage());
+			return result;
+		}
+		if (existCredentialRS.getCount()!=1) {//未设置最终用户密码，返回错误信息
+			result.setSuccessful(false);
+			result.addMessage("账号："+curCredential.getMainAccount().getAccount()+"现有["+existCredentialRS.getCount()+"]个主密码，不可修改密码");
+			return result;
+		}
+		EENetEndUserCredential existCredential = existCredentialRS.getResultSet().get(0);
+		if (!EEBeanUtils.isNULL(curCredential.getAtid()) && !(existCredential.getAtid().equals(curCredential.getAtid()))) {
+			result.setSuccessful(false);
+			result.addMessage(curCredential.getAtid()+"不是用户"+existCredential.getMainAccount().getAccount()+"秘钥的流水号");
 			return result;
 		}
 		
@@ -148,7 +147,7 @@ public class EENetEndUserCredentialBizImpl extends SimpleBizImpl implements EENe
 		//解密从缓存或数据库中取得的密码
 		String plaintext = null;
 		try {
-			plaintext = RSAUtil.decrypt(getRedisRSADecrypt(), credential.getSecretKey());
+			plaintext = RSAUtil.decrypt(getRedisRSADecrypt(), existCredential.getSecretKey());
 			if (EEBeanUtils.isNULL(plaintext));
 				throw new EncryptException("无法解密已存在的密码");
 		} catch (EncryptException e) {
@@ -168,18 +167,20 @@ public class EENetEndUserCredentialBizImpl extends SimpleBizImpl implements EENe
 		String ciphertext = null;
 		try {
 			ciphertext = RSAUtil.encrypt(getRedisRSAEncrypt(), newSecretKey);
-			if (EEBeanUtils.isNULL(ciphertext));
+			if (EEBeanUtils.isNULL(ciphertext))
 				throw new EncryptException("无法加密新密码");
-		} catch (EncryptException e) {
+			EEBeanUtils.coverProperties(existCredential, curCredential);//将用户传入的数据覆盖数据库中的数据
+		} catch (EncryptException | IllegalAccessException | InvocationTargetException e) {
 			result.setSuccessful(false);
 			result.addMessage(e.toString());
 		}
 		if (EEBeanUtils.isNULL(ciphertext))
 			return result;
+		
 		//保存数据
-		curCredential.setSecretKey(ciphertext);
-		EENetEndUserCredential savedResult = super.save(curCredential);
-		if (savedResult.isSuccessful() == false) {
+		existCredential.setSecretKey(ciphertext);
+		EENetEndUserCredential savedResult = super.save(existCredential);
+		if (!savedResult.isSuccessful()) {
 			result.setSuccessful(false);
 			result.addMessage(savedResult.getStrMessage());
 		}
@@ -218,6 +219,8 @@ public class EENetEndUserCredentialBizImpl extends SimpleBizImpl implements EENe
 			QueryCondition query = new QueryCondition();
 			query.addCondition(new ConditionItem("mainAccount.account",RangeType.EQUAL,mainAccount,null));
 			SimpleResultSet<EENetEndUserCredential> queryResult = super.query(query, EENetEndUserCredential.class);
+			if (!queryResult.isSuccessful())
+				result.addMessage(queryResult.getStrMessage());
 			if (queryResult.getResultSet().size() == 1) {
 				result.setResult(queryResult.getResultSet().get(0).getSecretKey());
 				SynEENetEndUserCredentialToRedis.syn(getRedisClient(), queryResult.getResultSet().get(0));
@@ -227,7 +230,7 @@ public class EENetEndUserCredentialBizImpl extends SimpleBizImpl implements EENe
 		/* 从数据库也取不到数据 */
 		if (EEBeanUtils.isNULL(result.getResult())) {
 			result.setSuccessful(false);
-			result.addMessage("未找到主账号为："+mainAccount+"的秘钥");
+			result.addMessage("未找到主账号为："+mainAccount+"的秘钥（密文）");
 		}
 		return result;
 	}
@@ -262,12 +265,12 @@ public class EENetEndUserCredentialBizImpl extends SimpleBizImpl implements EENe
 			return result;
 		}
 		
-		if (!EEBeanUtils.isNULL(plaintext)) {
+		if (EEBeanUtils.isNULL(plaintext)) {
 			result.setSuccessful(false);
 			result.addMessage("无法解密主账号："+mainAccount+"的登录秘钥");
 		} else
 			result.setResult(plaintext);
-		return null;
+		return result;
 	}
 
 	/****************************************************************************

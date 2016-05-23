@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eenet.security.oauth2</groupId>
 	<artifactId>parent</artifactId>
-	<version>1.50-SNAPSHOT</version>
+	<version>1.50</version>
 	<packaging>pom</packaging>
 
 	<profiles>
@@ -30,7 +30,7 @@
 	</profiles>
 
 	<properties>
-		<dev-framework.version>1.02</dev-framework.version>
+		<dev-framework.version>1.03</dev-framework.version>
 		<db.driverClassName>com.mysql.jdbc.Driver</db.driverClassName>
 		<db.type>mysql</db.type>
 		<spring.version>4.2.2.RELEASE</spring.version>

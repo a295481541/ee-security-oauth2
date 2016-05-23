@@ -56,7 +56,7 @@ public final class SynEENetEndUserLoginAccountToRedis {
 		
 		public String mainAccount(String loginAccount) throws RedisOPException,ClassCastException {
 			String mainAccount = null;
-			Object mainAccountObj = this.redisClient.getMapValues(CacheKey.ENDUSER_LOGIN_ACCOUNT, loginAccount);
+			Object mainAccountObj = this.redisClient.getMapValue(CacheKey.ENDUSER_LOGIN_ACCOUNT, loginAccount);
 			if (mainAccountObj != null)
 				mainAccount = String.class.cast(mainAccountObj);
 			return mainAccount;
