@@ -3,13 +3,21 @@
 <configuration>
 	<typeAliases>
 		<typeAlias alias="com.eenet.authen.ServiceConsumer" type="com.eenet.authen.ServiceConsumer" />
+		<typeAlias alias="com.eenet.authen.EENetEndUserMainAccount" type="com.eenet.authen.EENetEndUserMainAccount" />
+		<typeAlias alias="com.eenet.authen.EENetEndUserCredential" type="com.eenet.authen.EENetEndUserCredential" />
+		<typeAlias alias="com.eenet.authen.EENetEndUserLoginAccount" type="com.eenet.authen.EENetEndUserLoginAccount" />
+		<typeAlias alias="com.eenet.authen.ThirdPartySSOAPP" type="com.eenet.authen.ThirdPartySSOAPP" />
 	</typeAliases>
 	<mappers>
 		<!--公共SQL配置-->
         <mapper resource="conf/base.Oracle.mbt.xml" />
         <mapper resource="conf/base.PostgreSQL.mbt.xml" />
         <mapper resource="conf/base.MySQL.mbt.xml" />
-        <!-- Demo -->
+        <!-- 业务模块 -->
 		<mapper resource="DBMapping/ServiceConsumer.xml" />
+		<mapper resource="DBMapping/EENetEndUserMainAccount.xml"/>
+		<mapper resource="DBMapping/EENetEndUserCredential.xml" />
+		<mapper resource="DBMapping/EENetEndUserLoginAccount.xml" />
+		<mapper resource="DBMapping/ThirdPartySSOAPP.xml" />
 	</mappers>
 </configuration>

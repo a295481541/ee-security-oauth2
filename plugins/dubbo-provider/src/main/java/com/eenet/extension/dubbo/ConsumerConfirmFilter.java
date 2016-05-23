@@ -10,7 +10,8 @@ import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.Result;
 import com.alibaba.dubbo.rpc.RpcException;
 import com.alibaba.dubbo.rpc.RpcResult;
-import com.eenet.authen.CommonKey;
+import com.eenet.auth.CommonKey;
+import com.eenet.auth.IdentityConfirmFailFrom;
 import com.eenet.authen.IdentityAuthenticationBizService;
 import com.eenet.authen.ServiceAuthenRequest;
 import com.eenet.authen.ServiceAuthenResponse;
@@ -34,6 +35,7 @@ public class ConsumerConfirmFilter implements Filter,ApplicationContextAware {
 		if (ConsumerConfirmFilter.applicationContext==null || !ConsumerConfirmFilter.applicationContext.containsBean(AuthenServiceID)) {
 			result = new RpcResult();
 			result.getAttachments().put(CommonKey.IDENTITY_CONFIRM, String.valueOf(false));
+			result.getAttachments().put(CommonKey.IDENTITY_CONFIRM_FAIL_FROM, String.valueOf(IdentityConfirmFailFrom.syserr));
 			result.getAttachments().put(CommonKey.IDENTITY_CONFIRM_FAIL_REASON, "业务服务Provider配置文件有误");
 			return result;
 		}
@@ -50,23 +52,25 @@ public class ConsumerConfirmFilter implements Filter,ApplicationContextAware {
 		if (!response.isSuccessful()) {
 			result = new RpcResult();
 			result.getAttachments().put(CommonKey.IDENTITY_CONFIRM, String.valueOf(false));
+			result.getAttachments().put(CommonKey.IDENTITY_CONFIRM_FAIL_FROM, String.valueOf(IdentityConfirmFailFrom.syserr));
 			result.getAttachments().put(CommonKey.IDENTITY_CONFIRM_FAIL_REASON, "服务消费者认证异常："+response.getStrMessage());
 			return result;
 		}
 		if (!response.isIdentityConfirm()) {
 			result = new RpcResult();
 			result.getAttachments().put(CommonKey.IDENTITY_CONFIRM, String.valueOf(false));
-			result.getAttachments().put(CommonKey.IDENTITY_CONFIRM_FAIL_REASON, "服务消费者认证异常：用户编码(code)和秘钥不匹配(secretKey)");
+			result.getAttachments().put(CommonKey.IDENTITY_CONFIRM_FAIL_FROM, String.valueOf(IdentityConfirmFailFrom.consumer));
+			result.getAttachments().put(CommonKey.IDENTITY_CONFIRM_FAIL_REASON, "服务消费者认证异常：用户编码(code)和秘钥(secretKey)不匹配");
 			return result;
 		}
 		
 		/* 注入当前系统调用者 */
 		for (Object arg : invocation.getArguments()) {
 			if (arg instanceof IBaseEntity) {
+				((IBaseEntity) arg).setCrss(request.getConsumerCode());
 				((IBaseEntity) arg).setMdss(request.getConsumerCode());
 			}
 		}
-		
 		result = invoker.invoke(invocation);
 		result.getAttachments().put(CommonKey.IDENTITY_CONFIRM, String.valueOf(true));
 		/* 执行业务服务后 */

@@ -1,11 +1,14 @@
 package com.eenet.test.env;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class DubboBizConsumerENV {
 	private static DubboBizConsumerENV INSTANCE;
-	private static ApplicationContext context;
+	private static ClassPathXmlApplicationContext context;
+	private boolean providerStartByMe = false;
 	
 	public static DubboBizConsumerENV getInstance() {
 		if (INSTANCE == null)
@@ -15,16 +18,23 @@ public class DubboBizConsumerENV {
 	
 	public ApplicationContext getContext() {
 		if (DubboBizConsumerENV.context == null)
-			this.initEnvironment();
+			initServiceConsumer();
 		return context;
 	}
 	
-	private void initEnvironment(){
+	@BeforeClass
+	public static void initServiceConsumer(){
 		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[] { "dubbo-biz-consumer.xml" });
 		context.start();
 		DubboBizConsumerENV.context = context;
 	}
 	
-	private DubboBizConsumerENV() {
+	@AfterClass
+	public static void stopServiceConsumer() {
+		if (context != null) {
+			context.stop();
+			context.close();
+			context = null;
+		}
 	}
 }

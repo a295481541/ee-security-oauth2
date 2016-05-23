@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eenet.security.oauth2</groupId>
 	<artifactId>integration-tests</artifactId>
-	<version>1.00</version>
+	<version>1.50</version>
 	<name>security framework integration test</name>
 
 	<profiles>
@@ -19,7 +19,7 @@
 	</profiles>
 	<properties>
 		<junit.version>4.12</junit.version>
-		<eenet.security.version>1.00-SNAPSHOT</eenet.security.version>
+		<eenet.security.version>1.50-SNAPSHOT</eenet.security.version>
 		<spring.version>4.2.2.RELEASE</spring.version>
 		<aspectj.version>1.8.7</aspectj.version>
 		<dubbo.version>2.5.3</dubbo.version>

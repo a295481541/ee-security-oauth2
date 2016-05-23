@@ -11,6 +11,13 @@
 						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
 						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 						http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+	
+	<!--
+	|
+	| 模拟接入dubbo的业务服务提供者
+	|
+	 -->
+	
 	<!-- 服务消费者(consumer)信息，用于计算依赖关系 -->
 	<dubbo:application name="eenet.security.bizProviderMock" />
 	<!-- 使用zookeeper注册中心进行注册 -->
@@ -24,14 +31,21 @@
 	<dubbo:provider retries="2" timeout="20000" loadbalance="leastactive" />
 	
 	<!-- 认证服务定义 -->
-	<dubbo:reference id="RegistrationBizService" interface="com.eenet.authen.RegistrationBizService" />
 	<dubbo:reference id="IdentityAuthenticationBizService" interface="com.eenet.authen.IdentityAuthenticationBizService" />
-	<!-- 安全框架集成配置 -->
+	<!-- 服务消费者身份认证过滤器配置 -->
 	<bean id="ConsumerConfirmFilter" class="com.eenet.extension.dubbo.ConsumerConfirmFilter">
+		<property name="AuthenServiceID" value="IdentityAuthenticationBizService" />
+	</bean>
+	<!-- 最终用户身份认证过滤器配置 -->
+	<bean id="EndUserConfirmFilter" class="com.eenet.extension.dubbo.EndUserConfirmFilter">
 		<property name="AuthenServiceID" value="IdentityAuthenticationBizService" />
 	</bean>
 	
 	<!-- 业务服务提供者定义 -->
 	<bean id="MockBizImpl" class="com.eenet.test.bizmock.MockBizImpl"/>
+	<bean id="MockBizWithUserImpl" class="com.eenet.test.bizmock.MockBizWithUserImpl"/>
+	
+	<!-- 暴露dubbo服务 -->
 	<dubbo:service interface="com.eenet.test.bizmock.MockBizService" ref="MockBizImpl" filter="consumerConfirm" />
+	<dubbo:service interface="com.eenet.test.bizmock.MockBizWithUserService" ref="MockBizWithUserImpl" filter="consumerConfirm,endUserConfirm" />
 </beans>

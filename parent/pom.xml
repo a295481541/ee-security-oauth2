@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eenet.security.oauth2</groupId>
 	<artifactId>parent</artifactId>
-	<version>1.00</version>
+	<version>1.50</version>
 	<packaging>pom</packaging>
 
 	<profiles>
@@ -11,9 +11,9 @@
 			<id>DEV-ENV</id>
 			<properties>
 				<!-- mysql配置 -->
-				<connection.url><![CDATA[jdbc:mysql://172.16.165.159:3306/orion?useUnicode=true&amp;characterEncoding=UTF-8]]></connection.url>
-				<connection.user>ORION</connection.user>
-				<connection.password>orion</connection.password>
+				<connection.url><![CDATA[jdbc:mysql://172.16.165.223:3306/passport?useUnicode=true&amp;characterEncoding=UTF-8]]></connection.url>
+				<connection.user>passport</connection.user>
+				<connection.password>passport$W3</connection.password>
 				<!-- Redis配置 --><!-- redis://:[PASSWORD]@[IP]:[PORT]/[DB] -->
 				<redis.server.1><![CDATA[redis://:REDIS@172.16.165.222:6379]]></redis.server.1>
 				<!-- zookeeper配置 -->
@@ -30,7 +30,7 @@
 	</profiles>
 
 	<properties>
-		<dev-framework.version>1.01</dev-framework.version>
+		<dev-framework.version>1.03</dev-framework.version>
 		<db.driverClassName>com.mysql.jdbc.Driver</db.driverClassName>
 		<db.type>mysql</db.type>
 		<spring.version>4.2.2.RELEASE</spring.version>
@@ -40,6 +40,7 @@
 		<jsp-api.version>2.0</jsp-api.version>
 		<aspectj.version>1.8.7</aspectj.version>
 		<dubbo.version>2.5.3</dubbo.version>
+		<sitemesh.version>3.0.1</sitemesh.version>
 	</properties>
 
 	<build>

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>eenet.security.oauth2.plugins</groupId>
 		<artifactId>plugins</artifactId>
-		<version>1.00</version>
+		<version>1.50</version>
 	</parent>
 	<artifactId>dubbo-consumer</artifactId>
 	<packaging>bundle</packaging>
@@ -14,6 +14,11 @@
 		<dependency>
 			<groupId>eenet.security.oauth2</groupId>
 			<artifactId>pojo</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>eenet.security.oauth2</groupId>
+			<artifactId>service</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<!-- dubbo -->

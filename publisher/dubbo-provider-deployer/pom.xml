@@ -4,11 +4,11 @@
 	<parent>
 		<groupId>eenet.security.oauth2</groupId>
 		<artifactId>publisher</artifactId>
-		<version>1.00</version>
+		<version>1.50</version>
 	</parent>
 	<artifactId>dubbo-provider-deployer</artifactId>
 	<packaging>war</packaging>
-	<name>deployer of dubbo provider @ eenet oauth2 security</name>
+	<name>deployer of dubbo provider</name>
 
 	<build>
 		<finalName>root</finalName>

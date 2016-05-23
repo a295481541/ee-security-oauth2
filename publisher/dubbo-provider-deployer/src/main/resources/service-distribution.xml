@@ -12,6 +12,17 @@
 						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 						http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
 	
-	<dubbo:service interface="com.eenet.authen.RegistrationBizService" ref="RegistrationBizImpl" />
+	<!-- 服务消费者服务 -->
+	<dubbo:service interface="com.eenet.authen.ServiceConsumerBizService" ref="ServiceConsumerBizImpl" />
+	<!-- 最终用户登录秘钥服务 -->
+	<dubbo:service interface="com.eenet.authen.EENetEndUserCredentialBizService" ref="EENetEndUserCredentialBizImpl" />
+	<!-- 最终用户登录账号服务 -->
+	<dubbo:service interface="com.eenet.authen.EndUserLoginAccountBizService" ref="EndUserLoginAccountBizImpl" />
+	<!-- 第三方单点登录系统服务 -->
+	<dubbo:service interface="com.eenet.authen.ThirdPartySSOAppBizService" ref="ThirdPartySSOAppBizImpl" />
+	
+	<!-- 身份认证服务 -->
 	<dubbo:service interface="com.eenet.authen.IdentityAuthenticationBizService" ref="IdentityAuthenticationBizImpl" />
+	<!-- 单点登录服务 -->
+	<dubbo:service interface="com.eenet.authen.SingleSignOnBizService" ref="SingleSignOnBizImpl" />
 </beans>

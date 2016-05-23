@@ -28,5 +28,5 @@ public class MockBizImpl implements MockBizService {
 	public String withoutIBaseResponse(String anything) {
 		return "hello"+anything;
 	}
-
+	
 }

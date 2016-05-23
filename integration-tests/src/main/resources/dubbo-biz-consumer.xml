@@ -9,6 +9,13 @@
 						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
 						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 						http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+	
+	<!--
+	|
+	| 模拟业务服务消费者、接入dubbo的web应用
+	| 
+	 -->
+	
 	<!-- 服务消费者(consumer)信息，用于计算依赖关系 -->
 	<dubbo:application name="eenet.security.bizProviderMock" />
 	<!-- 使用zookeeper注册中心进行注册 -->
@@ -16,15 +23,41 @@
 	<!-- 启动时检查所有服务的可用性 -->
 	<dubbo:consumer check="false" /><!-- 任何服务不可以均会导致系统无法启动 -->
 	
-	<!-- 安全框架集成配置 -->
+	<!-- 服务消费者身份配置 -->
 	<bean id="ConsumerIdentity" class="com.eenet.authen.ServiceConsumer"><!-- 当前服务消费者身份 -->
-		<property name="code" value="b90680abcf854943b0a12ca23830ea00" />
+		<property name="code" value="5C164336AD3446F9AAE9F306ACE3E1A9" />
 		<property name="secretKey" value="ABB76B8CA8F54D4388513024DCB8A340" />
 	</bean>
 	<bean id="ConsumerInjectFilter" class="com.eenet.extension.dubbo.ConsumerInjectFilter">
 		<property name="IdentityBeanId" value="ConsumerIdentity" />
 	</bean>
+	<!-- 第三方系统身份配置 -->
+	<bean id="ThirdPartySSOAPPIdentity" class="com.eenet.authen.ThirdPartySSOAPP">
+		<property name="appId" value="74821455C9A9484FB57FAB8642440F70" />
+		<property name="secretKey" value="web#APp99" />
+	</bean>
+	<bean id="EndUserInjectFilter" class="com.eenet.extension.dubbo.EndUserInjectFilter">
+		<property name="thirdPartyIdentityBeanId" value="ThirdPartySSOAPPIdentity" />
+	</bean>
+	
+	<!-- 数据解密私钥：为了取回已存在的秘钥 -->
+	<bean id="RSADecrypt" class="com.eenet.util.cryptography.RSADecrypt">
+		<property name="modulus" value="106712420423343952170664978944926079393579997057563195783133824550978845577607200365836363103675051075681355661561521905638127714585171548814200428974018569289446040295164277425200303883220785353079858223685449216711620468446418526635344201040310751955657353841399373391132369275713530371098532522210318693391"/>
+		<property name="privateExponent" value="13293257249129194585063534920829096726569527075971526471664930400143297607391018566408106388427958511708845196163819900783216727373443101217924718893813989450255494508586120612385457587163407439216130490624784751068149620563261685465962863852754385264818293473416655855476293992965132603183467129868835841473"/>
+	</bean>
+	
+	<!-- 服务消费者服务 -->
+	<dubbo:reference id="ServiceConsumerBizService" interface="com.eenet.authen.ServiceConsumerBizService"/>
+	<!-- 最终用户登录秘钥服务 -->
+	<dubbo:reference id="EENetEndUserCredentialBizService" interface="com.eenet.authen.EENetEndUserCredentialBizService" filter="consumerInject"/>
+	<!-- 最终用户登录账号服务 -->
+	<dubbo:reference id="EndUserLoginAccountBizService" interface="com.eenet.authen.EndUserLoginAccountBizService" filter="consumerInject"/>
+	<!-- 第三方单点登录系统服务 -->
+	<dubbo:reference id="ThirdPartySSOAppBizService" interface="com.eenet.authen.ThirdPartySSOAppBizService" filter="consumerInject"/>
+	<!-- 单点登录服务 -->
+	<dubbo:reference id="SingleSignOnBizService" interface="com.eenet.authen.SingleSignOnBizService" filter="consumerInject"/>
 	
 	<!-- 业务服务定义 -->
 	<dubbo:reference id="MockBizService" interface="com.eenet.test.bizmock.MockBizService" filter="consumerInject" />
+	<dubbo:reference id="MockBizWithUserService" interface="com.eenet.test.bizmock.MockBizWithUserService" filter="consumerInject,endUserInjectFilter" />
 </beans>

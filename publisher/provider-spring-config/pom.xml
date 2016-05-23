@@ -4,10 +4,10 @@
 	<parent>
 		<groupId>eenet.security.oauth2</groupId>
 		<artifactId>publisher</artifactId>
-		<version>1.00</version>
+		<version>1.50</version>
 	</parent>
 	<artifactId>provider-spring-config</artifactId>
-	<name>service provider spring config for eenet oauth2 security</name>
+	<name>service provider spring config</name>
 
 	<packaging>bundle</packaging>
 	<dependencies>
