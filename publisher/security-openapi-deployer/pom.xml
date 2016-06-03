@@ -1,17 +1,19 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>eenet.security.oauth2</groupId>
 		<artifactId>publisher</artifactId>
 		<version>1.50</version>
 	</parent>
-	<artifactId>dubbo-ssosys-deployer</artifactId>
+	<artifactId>security-openapi-deployer</artifactId>
 	<packaging>war</packaging>
-	<name>deployer of sso web system</name>
+	<name>security-openapi-deployer</name>
 
 	<build>
-		<finalName>root</finalName>
+		<finalName>security-api</finalName>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<testSourceDirectory>src/test/java</testSourceDirectory>
 		<resources>
@@ -30,7 +32,7 @@
 					<stopKey>stop</stopKey>
 					<stopPort>5599</stopPort>
 					<webAppConfig>
-						<contextPath>/demows</contextPath>
+						<contextPath>/security-api</contextPath>
 						<defaultsDescriptor>src/main/resources/webdefault.xml</defaultsDescriptor>
 					</webAppConfig>
 					<scanIntervalSeconds>0</scanIntervalSeconds>
@@ -62,7 +64,7 @@
 			<artifactId>base-FrontEnd</artifactId>
 			<version>${dev-framework.version}</version>
 		</dependency>
-		
+
 		<!-- servlet -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -106,11 +108,11 @@
 			<version>1.3.3</version>
 		</dependency>
 
-		<!-- 布局框架 -->
+		<!-- log4j -->
 		<dependency>
-			<groupId>org.sitemesh</groupId>
-			<artifactId>sitemesh</artifactId>
-			<version>${sitemesh.version}</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j-log4j12.version}</version>
 		</dependency>
 	</dependencies>
 </project>

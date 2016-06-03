@@ -30,7 +30,7 @@
 	</profiles>
 
 	<properties>
-		<dev-framework.version>1.03</dev-framework.version>
+		<dev-framework.version>1.04</dev-framework.version>
 		<db.driverClassName>com.mysql.jdbc.Driver</db.driverClassName>
 		<db.type>mysql</db.type>
 		<spring.version>4.2.2.RELEASE</spring.version>
@@ -41,6 +41,7 @@
 		<aspectj.version>1.8.7</aspectj.version>
 		<dubbo.version>2.5.3</dubbo.version>
 		<sitemesh.version>3.0.1</sitemesh.version>
+		<zkclient.version>0.7</zkclient.version>
 	</properties>
 
 	<build>
