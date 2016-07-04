@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-4.2.xsd   
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+	<!-- dubbo连接配置 -->
+	<import resource="dubbo.xml"/>
+	
+	<!-- 业务模块配置 -->
+	<import resource="reference-user-service.xml"/><!-- 人员管理服务 -->
+	<import resource="reference-authen-service.xml"/><!-- 认证服务 -->
+	
+	<!-- 数据传输加密公钥 -->
+	<bean id="transferRSAEncrypt" class="com.eenet.util.cryptography.RSAEncrypt">
+		<property name="modulus" value="128951193183221034225822737570948469888666421590885614987162582380797352756426542467671046441297008343889791818897096336951333883547706106993937530910572634357960447078042872959529127054187264213720849616059022547779162032875109639419560326484813446402232709792095857078282196324645931652527727698345505904311" />
+		<property name="publicExponent" value="65537" />
+	</bean>
+	<!-- 数据传输解密私钥 -->
+	<bean id="transferRSADecrypt" class="com.eenet.util.cryptography.RSADecrypt">
+		<property name="modulus" value="128951193183221034225822737570948469888666421590885614987162582380797352756426542467671046441297008343889791818897096336951333883547706106993937530910572634357960447078042872959529127054187264213720849616059022547779162032875109639419560326484813446402232709792095857078282196324645931652527727698345505904311"/>
+		<property name="privateExponent" value="48680615080734113672903556010235990257648289311077727091526762755135378557864245955607509651099825799718896797096801203480674300209863081818469085436600347654092900731013287492447809614177142343657378726428624926826367213906108211401987013204453583738303518396232916505418659503433359185572266611943701333889"/>
+	</bean>
+</beans>

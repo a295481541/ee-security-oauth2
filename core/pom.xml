@@ -1,0 +1,28 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>eenet.security.oauth2</groupId>
+		<artifactId>parent</artifactId>
+		<version>2.00</version>
+		<relativePath>../parent/pom.xml</relativePath>
+	</parent>
+	<artifactId>core</artifactId>
+	<name>core process for eenet oauth2 security</name>
+
+	<packaging>bundle</packaging>
+	<dependencies>
+		<dependency>
+			<groupId>eenet.security.oauth2</groupId>
+			<artifactId>service</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+		<!-- framework -->
+		<dependency>
+			<groupId>com.eenet.framework</groupId>
+			<artifactId>base-biz</artifactId>
+			<version>${dev-framework.version}</version>
+		</dependency>
+	</dependencies>
+</project>

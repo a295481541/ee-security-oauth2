@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-4.2.xsd   
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+	<!-- 事务配置，dataSource和batisSessionFactory的dataSource一致，否则不起作用 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	    <property name="dataSource" ref="dataSource" />
+	</bean>
+	<!-- 指定事务切入点 -->
+	<aop:config>
+		<aop:pointcut id="serviceOP" expression="execution(* com.eenet..*BizService.*(..))" /><!-- 针对暴露服务接口 -->
+		<aop:pointcut id="bizShadow" expression="execution(* com.eenet..BizShadow*.*(..))" /><!-- 针对已抽象的表操作 -->
+		
+		<aop:advisor pointcut-ref="serviceOP" advice-ref="serviceTxAdvice" />
+		<aop:advisor pointcut-ref="bizShadow" advice-ref="bizShadowTXAdvice" />
+	</aop:config>
+	<!-- 配置事务的传播特性 -->
+	<tx:advice id="serviceTxAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="*" propagation="REQUIRED" read-only="false"/>
+		</tx:attributes>
+	</tx:advice>
+	<tx:advice id="bizShadowTXAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="executeSave" propagation="REQUIRED" />
+			<tx:method name="executeDelete" propagation="REQUIRED" />
+			<tx:method name="executeBackup" propagation="REQUIRED" />
+		</tx:attributes>
+	</tx:advice>
+</beans>

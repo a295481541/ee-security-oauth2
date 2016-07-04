@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:noNamespaceSchemaLocation="classpath:xsd/dubbo.xsd"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-4.2.xsd   
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+						http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+	<!-- 服务提供者(consumer)信息，用于计算依赖关系 -->
+	<dubbo:application name="eenet.openapi.security" />
+	
+	<!-- 使用zookeeper注册中心进行注册 -->
+	<dubbo:registry protocol="zookeeper" address="${zookeeper.address}" client="curator"/>
+	
+	<!-- 启动时检查所有服务的可用性 -->
+	<dubbo:consumer check="false" timeout="60000" retries="5" loadbalance="leastactive" actives="2000"/><!-- 任何服务不可以均会导致系统无法启动 -->
+</beans>

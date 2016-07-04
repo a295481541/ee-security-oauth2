@@ -1,0 +1,206 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>eenet.security.oauth2</groupId>
+	<artifactId>parent</artifactId>
+	<version>2.00</version>
+	<packaging>pom</packaging>
+
+	<profiles>
+		<!-- 开发环境 -->
+		<profile>
+			<id>DEV-ENV-ORACLE</id>
+			<properties>
+				<!-- oracle配置 -->
+				<db.driverClassName>oracle.jdbc.driver.OracleDriver</db.driverClassName>
+				<db.type>oracle</db.type>
+				<connection.url><![CDATA[jdbc:oracle:thin:@172.16.146.66:1521:gzdec]]></connection.url>
+				<connection.user>cm_user_manager</connection.user>
+				<connection.password>password</connection.password>
+				<!-- Redis配置 --><!-- redis://:[PASSWORD]@[IP]:[PORT]/[DB] -->
+				<redis.server.1><![CDATA[redis://:REDIS@172.16.165.222:6379/1]]></redis.server.1>
+				<redis.server.2><![CDATA[redis://:REDIS@172.16.165.222:6379/2]]></redis.server.2>
+				<redis.server.3><![CDATA[redis://:REDIS@172.16.165.222:6379/3]]></redis.server.3>
+				<redis.server.4><![CDATA[redis://:REDIS@172.16.165.222:6379/4]]></redis.server.4>
+				<redis.server.5><![CDATA[redis://:REDIS@172.16.165.222:6379/5]]></redis.server.5>
+				<redis.server.6><![CDATA[redis://:REDIS@172.16.165.222:6379/6]]></redis.server.6>
+				<!-- zookeeper配置 -->
+				<zookeeper.address>172.16.165.222:2181</zookeeper.address>
+				<dubbo.port>20880</dubbo.port>
+				<!-- 打war包名称 -->
+				<provider.finalName>provider</provider.finalName>
+				<openapi.finalName>security-api</openapi.finalName>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+		<profile>
+			<id>DEV-ENV-MYSQL</id>
+			<properties>
+				<!-- mysql配置 -->
+				<db.driverClassName>com.mysql.jdbc.Driver</db.driverClassName>
+				<db.type>mysql</db.type>
+				<connection.url><![CDATA[jdbc:mysql://172.16.165.223:3306/passport?useUnicode=true&amp;characterEncoding=UTF-8]]></connection.url>
+				<connection.user>passport</connection.user>
+				<connection.password>passport$W3</connection.password>
+				<!-- Redis配置 --><!-- redis://:[PASSWORD]@[IP]:[PORT]/[DB] -->
+				<redis.server.1><![CDATA[redis://:REDIS@172.16.165.222:6379]]></redis.server.1>
+				<!-- zookeeper配置 -->
+				<zookeeper.address>172.16.165.222:2181</zookeeper.address>
+				<dubbo.port>20880</dubbo.port>
+				<!-- 打war包名称 -->
+				<provider.finalName>provider</provider.finalName>
+				<openapi.finalName>security-api</openapi.finalName>
+			</properties>
+		</profile>
+		
+		<!-- 测试环境 -->
+		<profile>
+			<id>TEST-ENV-ORACLE</id>
+			<properties>
+				<!-- oracle配置 -->
+				<db.driverClassName>oracle.jdbc.driver.OracleDriver</db.driverClassName>
+				<db.type>oracle</db.type>
+				<connection.url><![CDATA[jdbc:oracle:thin:@172.16.146.66:1521:gzdec]]></connection.url>
+				<connection.user>cm_user_manager</connection.user>
+				<connection.password>password</connection.password>
+				<!-- Redis配置 --><!-- redis://:[PASSWORD]@[IP]:[PORT]/[DB] -->
+				<redis.server.1><![CDATA[redis://:REDIS@172.16.165.222:6379/1]]></redis.server.1>
+				<redis.server.2><![CDATA[redis://:REDIS@172.16.165.222:6379/2]]></redis.server.2>
+				<redis.server.3><![CDATA[redis://:REDIS@172.16.165.222:6379/3]]></redis.server.3>
+				<redis.server.4><![CDATA[redis://:REDIS@172.16.165.222:6379/4]]></redis.server.4>
+				<redis.server.5><![CDATA[redis://:REDIS@172.16.165.222:6379/5]]></redis.server.5>
+				<redis.server.6><![CDATA[redis://:REDIS@172.16.165.222:6379/6]]></redis.server.6>
+				<!-- zookeeper配置 -->
+				<zookeeper.address>172.16.165.223:2181</zookeeper.address>
+				<dubbo.port>20881</dubbo.port>
+				<!-- 打war包名称 -->
+				<provider.finalName>provider</provider.finalName>
+				<openapi.finalName>security-api</openapi.finalName>
+			</properties>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+		</profile>
+		
+		<!-- 生成环境 -->
+		<profile>
+			<id>RUNTIME-ORACLE</id>
+			<properties>
+				<!-- oracle配置 -->
+				<db.driverClassName>oracle.jdbc.driver.OracleDriver</db.driverClassName>
+				<db.type>oracle</db.type>
+				<connection.url><![CDATA[jdbc:oracle:thin:@172.16.129.65:1521:yunyingc]]></connection.url>
+				<connection.user>pub_odsuser</connection.user>
+				<connection.password>odsuser20160612</connection.password>
+				<!-- Redis配置 --><!-- redis://:[PASSWORD]@[IP]:[PORT]/[DB] -->
+				<redis.server.1><![CDATA[redis://:eecn.cn@172.16.129.197:6379]]></redis.server.1>
+				<redis.server.2><![CDATA[redis://:eecn.cn@172.16.129.197:6379]]></redis.server.2>
+				<redis.server.3><![CDATA[redis://:eecn.cn@172.16.129.197:6379]]></redis.server.3>
+				<redis.server.4><![CDATA[redis://:eecn.cn@172.16.129.197:6379]]></redis.server.4>
+				<redis.server.5><![CDATA[redis://:eecn.cn@172.16.129.197:6379]]></redis.server.5>
+				<redis.server.6><![CDATA[redis://:eecn.cn@172.16.129.197:6379]]></redis.server.6>
+				<!-- zookeeper配置 -->
+				<zookeeper.address>172.16.129.197:2181,172.16.134.204:2181</zookeeper.address>
+				<dubbo.port>20880</dubbo.port>
+				<!-- 打war包名称，实际访问域名： security-api.open.gzedu.com -->
+				<provider.finalName>provider.security-api.open.gzedu.cn</provider.finalName>
+				<openapi.finalName>security-api.open.gzedu.cn</openapi.finalName>
+			</properties>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+		</profile>
+	</profiles>
+
+	<properties>
+		<dev-framework.version>1.04</dev-framework.version>
+		<spring.version>4.2.2.RELEASE</spring.version>
+		<spring-data-redis.version>1.6.2.RELEASE</spring-data-redis.version>
+		<slf4j-log4j12.version>1.7.9</slf4j-log4j12.version>
+		<servlet.version>3.1.0</servlet.version>
+		<jsp-api.version>2.0</jsp-api.version>
+		<aspectj.version>1.8.7</aspectj.version>
+		<dubbo.version>2.5.3</dubbo.version>
+		<sitemesh.version>3.0.1</sitemesh.version>
+		<zkclient.version>0.7</zkclient.version>
+	</properties>
+
+	<build>
+		<sourceDirectory>src/main/java</sourceDirectory>
+		<testSourceDirectory>src/test/java</testSourceDirectory>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+			<resource>
+				<directory>src/test/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.3</version>
+				<configuration>
+					<aggregate>true</aggregate>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Export-Package>eenet.security.oauth2</Export-Package>
+					</instructions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>Academic Release</id>
+			<name>Academic Release Repository</name>
+			<url>http://172.16.146.130:8081/nexus/content/repositories/academic-release/</url>
+		</repository>
+		<snapshotRepository>
+			<id>Academic Snapshots</id>
+			<name>Academic Snapshots Repository</name>
+			<url>http://172.16.146.130:8081/nexus/content/repositories/academic-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<id>public</id>
+			<url>http://172.16.146.130:8081/nexus/content/groups/public/</url>
+		</repository>
+	</repositories>
+</project>

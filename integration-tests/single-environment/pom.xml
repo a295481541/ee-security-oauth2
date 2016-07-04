@@ -1,0 +1,105 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>eenet.security.oauth2</groupId>
+		<artifactId>integration-tests</artifactId>
+		<version>2.00</version>
+	</parent>
+	<artifactId>single-environment</artifactId>
+
+	<build>
+		<sourceDirectory>src/main/java</sourceDirectory>
+		<testSourceDirectory>src/test/java</testSourceDirectory>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+			<resource>
+				<directory>src/test/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.19.1</version>
+				<configuration>
+					<includes>
+						<include> **/NewAppNUser.java</include>
+						<!-- <include> **/NewAppNUser.java</include> -->
+						<!-- <include> **/*Tester.java</include>
+						<include> **/Test*.java</include> -->
+					</includes>
+					<forkMode>once</forkMode>
+					<argLine>-Xms1050m -Xmx1050m -XX:PermSize=512m -XX:MaxPermSize=512m</argLine>
+					<argLine>-Dfile.encoding=UTF-8</argLine>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+<!-- 	<profiles>
+		<profile>
+			<id>DEV-ENV-ORACLE</id>
+			<properties>
+				oracle配置
+				<connection.url><![CDATA[jdbc:oracle:thin:@172.16.146.66:1521:gzdec]]></connection.url>
+				<connection.user>cm_user_manager</connection.user>
+				<connection.password>password</connection.password>
+				Redis配置redis://:[PASSWORD]@[IP]:[PORT]/[DB]
+				<redis.server.1><![CDATA[redis://:REDIS@172.16.165.222:6379]]></redis.server.1>
+				zookeeper配置
+				<zookeeper.address>172.16.165.222:2181</zookeeper.address>
+				<dubbo.port>20880</dubbo.port>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+		<profile>
+			<id>DEV-ENV-MYSQL</id>
+			<properties>
+				mysql配置
+				<connection.url><![CDATA[jdbc:mysql://172.16.165.223:3306/passport?useUnicode=true&amp;characterEncoding=UTF-8]]></connection.url>
+				<connection.user>passport</connection.user>
+				<connection.password>passport$W3</connection.password>
+				Redis配置redis://:[PASSWORD]@[IP]:[PORT]/[DB]
+				<redis.server.1><![CDATA[redis://:REDIS@172.16.165.222:6379]]></redis.server.1>
+				zookeeper配置
+				<zookeeper.address>172.16.165.222:2181</zookeeper.address>
+				<dubbo.port>20880</dubbo.port>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+		<profile>
+			<id>TEST-ENV</id>
+		</profile>
+	</profiles> -->
+
+	<dependencies>
+		<dependency>
+			<groupId>eenet.security.oauth2</groupId>
+			<artifactId>core</artifactId>
+			<version>${eenet.security.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>eenet.security.oauth2</groupId>
+			<artifactId>provider-spring-config</artifactId>
+			<version>${eenet.security.version}</version>
+		</dependency>
+	</dependencies>
+</project>

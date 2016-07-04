@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:noNamespaceSchemaLocation="classpath:xsd/dubbo.xsd"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-4.2.xsd   
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+						http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+	<!-- 业务系统服务 -->
+	<dubbo:service interface="com.eenet.authen.BusinessAppBizService" ref="BusinessAppBizImpl" />
+	<!-- 身份认证服务 -->
+	<dubbo:service interface="com.eenet.authen.IdentityAuthenticationBizService" ref="IdentityAuthenticationBizImpl" />
+	
+	<!-- 服务人员登录秘钥服务 -->
+	<dubbo:service interface="com.eenet.authen.AdminUserCredentialBizService" ref="AdminUserCredentialBizImpl" />
+	<!-- 服务人员登录账号服务 -->
+	<dubbo:service interface="com.eenet.authen.AdminUserLoginAccountBizService" ref="AdminUserLoginAccountBizImpl" />
+	<!-- 服务人员登录服务 -->
+	<dubbo:service interface="com.eenet.authen.AdminUserSignOnBizService" ref="AdminUserSignOnBizImpl" />
+	
+	<!-- 最终用户登录秘钥服务 -->
+	<dubbo:service interface="com.eenet.authen.EndUserCredentialBizService" ref="EndUserCredentialBizImpl" />
+	<!-- 最终用户登录账号服务 -->
+	<dubbo:service interface="com.eenet.authen.EndUserLoginAccountBizService" ref="EndUserLoginAccountBizImpl" />
+	<!-- 最终用户登录服务 -->
+	<dubbo:service interface="com.eenet.authen.EndUserSignOnBizService" ref="EndUserSignOnBizImpl" />
+</beans>

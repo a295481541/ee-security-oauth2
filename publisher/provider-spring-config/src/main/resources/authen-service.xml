@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-4.2.xsd   
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+	<!-- 业务系统服务 -->
+	<bean id="BusinessAppBizImpl" class="com.eenet.authen.bizimpl.BusinessAppBizImpl">
+		<property name="baseDAOService" ref="GenericDAO" />
+		<property name="RedisClient" ref="RedisClient"/>
+		<property name="StorageRSAEncrypt" ref="StorageRSAEncrypt"/>
+	</bean>
+	<!-- 服务人员登录账号服务 -->
+	<bean id="AdminUserLoginAccountBizImpl" class="com.eenet.authen.bizimpl.AdminUserLoginAccountBizImpl">
+		<property name="baseDAOService" ref="GenericDAO" />
+		<property name="RedisClient" ref="RedisClient"/>
+	</bean>
+	<!-- 最终用户登录账号服务 -->
+	<bean id="EndUserLoginAccountBizImpl" class="com.eenet.authen.bizimpl.EndUserLoginAccountBizImpl">
+		<property name="baseDAOService" ref="GenericDAO" />
+		<property name="RedisClient" ref="RedisClient"/>
+	</bean>
+	<!-- 服务人员登录秘钥服务 -->
+	<bean id="AdminUserCredentialBizImpl" class="com.eenet.authen.bizimpl.AdminUserCredentialBizImpl">
+		<property name="baseDAOService" ref="GenericDAO" />
+		<property name="RedisClient" ref="RedisClient"/>
+		<property name="StorageRSAEncrypt" ref="StorageRSAEncrypt"/>
+		<property name="StorageRSADecrypt" ref="StorageRSADecrypt"/>
+		<property name="TransferRSADecrypt" ref="TransferRSADecrypt"/>
+		<property name="adminUserInfoBizService" ref="AdminUserInfoBizImpl"/>
+	</bean>
+	<!-- 最终用户登录秘钥服务 -->
+	<bean id="EndUserCredentialBizImpl" class="com.eenet.authen.bizimpl.EndUserCredentialBizImpl">
+		<property name="baseDAOService" ref="GenericDAO" />
+		<property name="RedisClient" ref="RedisClient"/>
+		<property name="StorageRSAEncrypt" ref="StorageRSAEncrypt"/>
+		<property name="StorageRSADecrypt" ref="StorageRSADecrypt"/>
+		<property name="TransferRSADecrypt" ref="TransferRSADecrypt"/>
+		<property name="endUserInfoBizService" ref="EndUserInfoBizImpl"/>
+	</bean>
+	
+	<!-- 服务人员登录服务 -->
+	<bean id="AdminUserSignOnBizImpl" class="com.eenet.authen.bizimpl.AdminUserSignOnBizImpl">
+		<property name="RedisClient" ref="RedisClient"/>
+		<property name="StorageRSADecrypt" ref="StorageRSADecrypt"/>
+		<property name="TransferRSADecrypt" ref="TransferRSADecrypt"/>
+		<property name="businessAppBizService" ref="BusinessAppBizImpl"/>
+		<property name="adminUserCredentialBizService" ref="AdminUserCredentialBizImpl"/>
+		<property name="adminUserLoginAccountBizService" ref="AdminUserLoginAccountBizImpl"/>
+		<property name="adminUserInfoBizService" ref="AdminUserInfoBizImpl"/>
+		<property name="signOnUtil" ref="SignOnUtil"/>
+		<property name="identityUtil" ref="IdentityUtil"/>
+	</bean>
+	<!-- 最终用户登录服务 -->
+	<bean id="EndUserSignOnBizImpl" class="com.eenet.authen.bizimpl.EndUserSignOnBizImpl">
+		<property name="RedisClient" ref="RedisClient"/>
+		<property name="StorageRSADecrypt" ref="StorageRSADecrypt"/>
+		<property name="TransferRSADecrypt" ref="TransferRSADecrypt"/>
+		<property name="businessAppBizService" ref="BusinessAppBizImpl"/>
+		<property name="endUserCredentialBizService" ref="EndUserCredentialBizImpl"/>
+		<property name="endUserLoginAccountBizService" ref="EndUserLoginAccountBizImpl"/>
+		<property name="endUserInfoBizService" ref="EndUserInfoBizImpl"/>
+		<property name="signOnUtil" ref="SignOnUtil"/>
+		<property name="identityUtil" ref="IdentityUtil"/>
+	</bean>
+	
+	<!-- 身份认证服务 -->
+	<bean id="IdentityAuthenticationBizImpl" class="com.eenet.authen.bizimpl.IdentityAuthenticationBizImpl">
+		<property name="TransferRSADecrypt" ref="TransferRSADecrypt"/>
+		<property name="StorageRSADecrypt" ref="StorageRSADecrypt"/>
+		<property name="identityUtil" ref="IdentityUtil"/>
+		<property name="businessAppBizService" ref="BusinessAppBizImpl"/>
+	</bean>
+</beans>

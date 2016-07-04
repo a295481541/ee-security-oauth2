@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.eenet.user.AdminUserInfo" >
+	<resultMap type="com.eenet.user.AdminUserInfo" id="default">
+		<id column="ADMIN_ID" property="atid" jdbcType="VARCHAR" />
+		<result column="CREATED_DT" property="crdt" jdbcType="TIMESTAMP" />
+	    <result column="CREATED_BY" property="crps" jdbcType="VARCHAR" />
+	    <result column="CREATED_SID" property="crss" jdbcType="VARCHAR" />
+	    <result column="UPDATED_DT" property="mddt" jdbcType="TIMESTAMP" />
+	    <result column="UPDATED_BY" property="mdps" jdbcType="VARCHAR" />
+	    <result column="UPDATED_SID" property="mdss" jdbcType="VARCHAR" />
+	    <result column="REMARK" property="dataDescription" jdbcType="VARCHAR" />
+	    
+	    <result column="ADMIN_CODE" property="adminCode" jdbcType="VARCHAR" />
+		<result column="ADMIN_NAME" property="name" jdbcType="VARCHAR" />
+		<result column="NAME_PING" property="namePing" jdbcType="VARCHAR" />
+		<result column="SEX" property="sex" jdbcType="VARCHAR" />
+		<result column="FOLK" property="folk" jdbcType="VARCHAR" />
+		<result column="BIRTHDAY" property="birthday" jdbcType="DATE" />
+		<result column="ID_CARD" property="idCard" jdbcType="VARCHAR" />
+		<result column="CARD_PHOTO" property="cardPhoto" jdbcType="VARCHAR" />
+		<result column="UNIT_CODE" property="unitCode" jdbcType="VARCHAR" />
+		<result column="NATIVE_PLACE" property="nativePlace" jdbcType="VARCHAR" />
+		<result column="BLOOD_TYPE" property="bloodType" jdbcType="VARCHAR" />
+		<result column="WORK_TIME" property="workTime" jdbcType="NUMERIC" />
+		<result column="DEGREE" property="degree" jdbcType="VARCHAR" />
+		<result column="GRADUATE" property="graduate" jdbcType="VARCHAR" />
+		<result column="ZIP_CODE" property="zipCode" jdbcType="NUMERIC" />
+		<result column="HOUSE_HODE_TYPE" property="houseHodeType" jdbcType="VARCHAR" />
+		<result column="REALNAME_CHECKED" property="realnameChecked" jdbcType="CHAR" />
+		<result column="MOBILE_CHECKED" property="mobileChecked" jdbcType="CHAR" />
+		<result column="EMAIL_CHECKED" property="emailChecked" jdbcType="CHAR" />
+		<result column="FAITH" property="faith" jdbcType="VARCHAR" />
+		<result column="PROVINCE" property="province" jdbcType="VARCHAR" />
+		<result column="CITY" property="city" jdbcType="VARCHAR" />
+		<result column="DISTRICT" property="district" jdbcType="VARCHAR" />
+		<result column="STREET" property="street" jdbcType="VARCHAR" />
+		<result column="ADDRESS" property="address" jdbcType="VARCHAR" />
+		<result column="HOMEPAGE" property="homepage" jdbcType="VARCHAR" />
+		<result column="MOBILE" property="mobile" jdbcType="NUMERIC" />
+		<result column="COMPANY_TELE" property="companyTele" jdbcType="VARCHAR" />
+		<result column="HOME_TELE" property="homeTele" jdbcType="VARCHAR" />
+		<result column="WECHAT" property="wechat" jdbcType="VARCHAR" />
+		<result column="QQ" property="qq" jdbcType="VARCHAR" />
+		<result column="EMAIL" property="email" jdbcType="VARCHAR" />
+		<result column="EE" property="ee" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="biz_columns" >
+		ADMIN_CODE, ADMIN_NAME, NAME_PING, SEX, FOLK, BIRTHDAY, ID_CARD, CARD_PHOTO, UNIT_CODE, NATIVE_PLACE, BLOOD_TYPE, WORK_TIME, DEGREE, GRADUATE, ZIP_CODE, HOUSE_HODE_TYPE, REALNAME_CHECKED, MOBILE_CHECKED, EMAIL_CHECKED, FAITH, PROVINCE, CITY, DISTRICT, STREET, ADDRESS, HOMEPAGE, MOBILE, COMPANY_TELE, HOME_TELE, WECHAT, QQ, EMAIL, EE
+	</sql>
+	
+	<select id="query_count" resultType="java.lang.Integer" parameterType="com.eenet.base.dao.SQLCondition">
+		<![CDATA[
+		SELECT count(*) FROM (
+			SELECT * FROM CM_ADMIN_INFO
+		) TB WHERE 1=1 
+		]]>
+		<include refid="com.eenet.base.${db.type}.query_quote" />
+	</select>
+	
+	<select id="query" resultMap="default" parameterType="com.eenet.base.dao.SQLCondition">
+		<include refid="com.eenet.base.${db.type}.rowNum_query_prefix" />
+		<![CDATA[
+		SELECT * FROM (
+			SELECT * FROM CM_ADMIN_INFO
+		) TB WHERE 1=1 
+		]]>
+		<include refid="com.eenet.base.${db.type}.query_quote" />
+		<include refid="com.eenet.base.${db.type}.orderBy_quote" />
+		<include refid="com.eenet.base.${db.type}.rowNum_quote_suffix" />
+	</select>
+	
+	<insert id="insert" parameterType="com.eenet.user.AdminUserInfo">
+		<![CDATA[
+		INSERT INTO CM_ADMIN_INFO(
+			ADMIN_ID, CREATED_BY, CREATED_SID, REMARK,
+			]]><include refid="biz_columns" /><![CDATA[
+		) VALUES (
+			#{atid,jdbcType=VARCHAR}, #{crps,jdbcType=VARCHAR}, #{crss,jdbcType=VARCHAR}, #{dataDescription,jdbcType=VARCHAR},
+			
+			#{adminCode,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{namePing,jdbcType=VARCHAR}, #{sex,jdbcType=VARCHAR}, 
+			#{folk,jdbcType=VARCHAR}, #{birthday,jdbcType=DATE}, #{idCard,jdbcType=VARCHAR}, #{cardPhoto,jdbcType=VARCHAR}, 
+			#{unitCode,jdbcType=VARCHAR}, #{nativePlace,jdbcType=VARCHAR}, #{bloodType,jdbcType=VARCHAR}, 
+			#{workTime,jdbcType=NUMERIC}, #{degree,jdbcType=VARCHAR}, #{graduate,jdbcType=VARCHAR}, 
+			#{zipCode,jdbcType=NUMERIC}, #{houseHodeType,jdbcType=VARCHAR}, #{realnameChecked,jdbcType=CHAR}, 
+			#{mobileChecked,jdbcType=CHAR}, #{emailChecked,jdbcType=CHAR}, #{faith,jdbcType=VARCHAR}, 
+			#{province,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, #{district,jdbcType=VARCHAR}, #{street,jdbcType=VARCHAR}, 
+			#{address,jdbcType=VARCHAR}, #{homepage,jdbcType=VARCHAR}, #{mobile,jdbcType=NUMERIC}, 
+			#{companyTele,jdbcType=VARCHAR}, #{homeTele,jdbcType=VARCHAR}, #{wechat,jdbcType=VARCHAR}, #{qq,jdbcType=VARCHAR}, 
+			#{email,jdbcType=VARCHAR}, #{ee,jdbcType=VARCHAR}
+		)
+		]]>
+	</insert>
+	<update id="update" parameterType="com.eenet.user.AdminUserInfo" >
+		<![CDATA[
+		UPDATE CM_ADMIN_INFO SET
+			UPDATED_DT = ]]><include refid="com.eenet.base.${db.type}.current_function" /><![CDATA[,
+			UPDATED_BY = #{mdps,jdbcType=VARCHAR},
+			UPDATED_SID = #{mdss,jdbcType=VARCHAR},
+			REMARK = #{dataDescription,jdbcType=VARCHAR},
+			
+			ADMIN_CODE = #{adminCode,jdbcType=VARCHAR},
+			ADMIN_NAME = #{name,jdbcType=VARCHAR},
+			NAME_PING = #{namePing,jdbcType=VARCHAR},
+			SEX = #{sex,jdbcType=VARCHAR},
+			FOLK = #{folk,jdbcType=VARCHAR},
+			BIRTHDAY = #{birthday,jdbcType=DATE},
+			ID_CARD = #{idCard,jdbcType=VARCHAR},
+			CARD_PHOTO = #{cardPhoto,jdbcType=VARCHAR},
+			UNIT_CODE = #{unitCode,jdbcType=VARCHAR},
+			NATIVE_PLACE = #{nativePlace,jdbcType=VARCHAR},
+			BLOOD_TYPE = #{bloodType,jdbcType=VARCHAR},
+			WORK_TIME = #{workTime,jdbcType=NUMERIC},
+			DEGREE = #{degree,jdbcType=VARCHAR},
+			GRADUATE = #{graduate,jdbcType=VARCHAR},
+			ZIP_CODE = #{zipCode,jdbcType=NUMERIC},
+			HOUSE_HODE_TYPE = #{houseHodeType,jdbcType=VARCHAR},
+			REALNAME_CHECKED = #{realnameChecked,jdbcType=CHAR},
+			MOBILE_CHECKED = #{mobileChecked,jdbcType=CHAR},
+			EMAIL_CHECKED = #{emailChecked,jdbcType=CHAR},
+			FAITH = #{faith,jdbcType=VARCHAR},
+			PROVINCE = #{province,jdbcType=VARCHAR},
+			CITY = #{city,jdbcType=VARCHAR},
+			DISTRICT = #{district,jdbcType=VARCHAR},
+			STREET = #{street,jdbcType=VARCHAR},
+			ADDRESS = #{address,jdbcType=VARCHAR},
+			HOMEPAGE = #{homepage,jdbcType=VARCHAR},
+			MOBILE = #{mobile,jdbcType=NUMERIC},
+			COMPANY_TELE = #{companyTele,jdbcType=VARCHAR},
+			HOME_TELE = #{homeTele,jdbcType=VARCHAR},
+			WECHAT = #{wechat,jdbcType=VARCHAR},
+			QQ = #{qq,jdbcType=VARCHAR},
+			EMAIL = #{email,jdbcType=VARCHAR},
+			EE = #{ee,jdbcType=VARCHAR}
+		WHERE ADMIN_ID = #{atid,jdbcType=VARCHAR}
+		]]>
+	</update>
+	<select id="selectByPrimaryKey" resultMap="default" parameterType="java.lang.String" >
+		<![CDATA[
+  		select 
+		    ADMIN_ID, CREATED_DT, CREATED_BY, CREATED_SID, UPDATED_DT, UPDATED_BY, UPDATED_SID, REMARK,
+		    ]]><include refid="biz_columns" /><![CDATA[
+		    from CM_ADMIN_INFO
+	    where ADMIN_ID = #{atid,jdbcType=VARCHAR}
+	  	]]>
+	</select>
+	<delete id="delete">
+		<![CDATA[
+		delete from CM_ADMIN_INFO WHERE ADMIN_ID IN
+  		]]>
+  		<foreach item="atid" index="index" collection="array" open="(" separator="," close=")">
+  			<![CDATA[#{atid,jdbcType=VARCHAR}]]>
+  		</foreach>
+	</delete>
+	<insert id="backup" parameterType="com.eenet.base.biz.BackupData">
+		<![CDATA[
+		INSERT INTO LOG_CM_ADMIN_INFO (
+			ADMIN_ID, CREATED_DT, CREATED_BY, CREATED_SID, UPDATED_DT, UPDATED_BY, UPDATED_SID, REMARK,]]><include refid="biz_columns" /><![CDATA[, BACKUP4
+		) SELECT
+			ADMIN_ID, CREATED_DT, CREATED_BY, CREATED_SID, UPDATED_DT, UPDATED_BY, UPDATED_SID, REMARK,]]><include refid="biz_columns" /><![CDATA[, #{backup4,jdbcType=VARCHAR}
+		FROM CM_ADMIN_INFO WHERE ADMIN_ID IN
+		]]>
+		<foreach item="atid" index="index" collection="atids" open="(" separator="," close=")">
+			<![CDATA[#{atid,jdbcType=VARCHAR}]]>
+		</foreach>
+	</insert>
+</mapper>

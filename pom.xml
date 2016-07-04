@@ -1,0 +1,49 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>eenet.security.oauth2</groupId>
+	<artifactId>products</artifactId>
+	<version>2.00</version>
+	<packaging>pom</packaging>
+	<modules>
+		<module>parent</module>
+		<module>pojo</module>
+		<module>service</module>
+		<module>core</module>
+		<module>publisher</module>
+		<module>plugins</module>
+	</modules>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.3</version>
+				<configuration>
+					<aggregate>true</aggregate>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>Academic Release</id>
+			<name>Academic Release Repository</name>
+			<url>http://172.16.146.130:8081/nexus/content/repositories/academic-release/</url>
+		</repository>
+		<snapshotRepository>
+			<id>Academic Snapshots</id>
+			<name>Academic Snapshots Repository</name>
+			<url>http://172.16.146.130:8081/nexus/content/repositories/academic-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<repositories>
+		<repository>
+			<id>public</id>
+			<url>http://172.16.146.130:8081/nexus/content/groups/public/</url>
+		</repository>
+	</repositories>
+</project>
