@@ -78,13 +78,9 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		}
 		EndUserInfo endUser = loginAccountInfo.getUserInfo();
 		EndUserCredential credential = getEndUserCredentialBizService().retrieveEndUserSecretKey(endUser.getAtid(), getStorageRSADecrypt());
-		//用户可能使用账号私有密码登录，所以取统一密码失败也应该继续
-//		if (!credential.isSuccessful()) {
-//			grant.addMessage(credential.getStrMessage());
-//			return grant;
-//		}
 		
 		/*
+		 * 用户可能使用账号私有密码登录，所以取统一密码失败也应该继续
 		 * 最终用户身份认证（提供的密码能匹配统一密码或私有密码任意一个即可）
 		 * 判断密码是否能匹配，不对则返回错误信息
 		 * 根据加密方式进行不同的密码匹配
@@ -180,6 +176,11 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 			return token;
 		}
 		
+		/* 删除访问令牌（防止一个用户可以通过两个令牌登录） */
+		getSignOnUtil().removeUserTokenInApp(AuthenCacheKey.ENDUSER_CACHED_TOKEN,
+				AuthenCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, AuthenCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appId,
+				getUserIdResult.getResult());
+		
 		/* 生成并记录访问令牌 */
 		StringResponse mkAccessTokenResult = 
 				getSignOnUtil().makeAccessToken(AuthenCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, appId, getUserIdResult.getResult(), getBusinessAppBizService());
@@ -202,6 +203,10 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 			token.addMessage(getEndUserResult.getStrMessage());
 			return token;
 		}
+		
+		/* 标记最终用户已缓存令牌 */
+		getSignOnUtil().markUserTokenInApp(AuthenCacheKey.ENDUSER_CACHED_TOKEN, appId, getUserIdResult.getResult(),
+				mkAccessTokenResult.getResult(), mkFreshTokenResult.getResult());
 		
 		/* 所有参数已缓存，拼返回对象 */
 		token.setUserInfo(getEndUserResult);
@@ -265,14 +270,9 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		}
 		
 		/* 删除访问令牌（防止一个用户可以通过两个令牌登录） */
-		/* ★★★★★★★★★★★★★★★★★★★此处有缺陷★★★★★★★★★★★★★★★★★★★★★★★★★ */
-//		SimpleResponse rmAccessTokenResult = 
-//				getSignOnUtil().removeCodeOrToken(AuthenCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, accessToken, appId);
-//		if (!rmAccessTokenResult.isSuccessful()) {
-//			token.addMessage(rmAccessTokenResult.getStrMessage());
-//			return token;
-//		}
-		/* ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★ */
+		getSignOnUtil().removeUserTokenInApp(AuthenCacheKey.ENDUSER_CACHED_TOKEN,
+				AuthenCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, AuthenCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appId,
+				getUserIdResult.getResult());
 		
 		/* 删除刷新令牌（一个刷新令牌只能置换一次访问令牌） */
 		SimpleResponse rmFreshTokenResult = 
@@ -298,11 +298,28 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 			return token;
 		}
 		
+		/* 更新最终用户已缓存令牌 */
+		getSignOnUtil().markUserTokenInApp(AuthenCacheKey.ENDUSER_CACHED_TOKEN, appId, getUserIdResult.getResult(),
+				mkAccessTokenResult.getResult(), mkFreshTokenResult.getResult());
+		
 		/* 所有参数已缓存，拼返回对象 */
 		token.setAccessToken(mkAccessTokenResult.getResult());
 		token.setRefreshToken(mkFreshTokenResult.getResult());
 		token.setSuccessful(true);
 		return token;
+	}
+	
+	@Override
+	public void signOut(String appId, String userId) {
+		/* 参数检查 */
+		if (EEBeanUtils.isNULL(appId) || EEBeanUtils.isNULL(userId)) {
+			return;
+		}
+		
+		/* 删除所有令牌 */
+		getSignOnUtil().removeUserTokenInApp(AuthenCacheKey.ENDUSER_CACHED_TOKEN,
+				AuthenCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, AuthenCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appId,
+				userId);
 	}
 	
 	/****************************************************************************

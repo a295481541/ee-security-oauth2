@@ -44,16 +44,60 @@ public class AdminUserSignOnTester extends SpringEnvironment {
 	private String appPassword = "999Aa$";
 	
 	@Test
-	public void justLogin() throws Exception {
+	public void loginUsingExistAppAndUser() throws Exception {
 		System.out.println("==========================="+this.getClass().getName()+".justLogin()===========================");
+		String appId = "432B31FB2F7C4BB19ED06374FB0C1850";
+		String appRedirectURIPrefix = "http://www.zhigongjiaoyu.com";
+		String appSecretKey = "pASS12#";
+		String adminAccount = "xlims.admin";
+		String adminPassword = "oucnet888";
+		
+		/* ●●●●●●●●●●●●●●●●●●●●●●●●●●登录●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●● */
 		/* 获得登录授权码 */
 		SignOnGrant getSignOnGrant = 
-				signService.getSignOnGrant("432B31FB2F7C4BB19ED06374FB0C1850", "http://www.zhigongjiaoyu.com", "md5Account", RSAUtil.encryptWithTimeMillis(encrypt, "md5Password"));
+				signService.getSignOnGrant(appId, appRedirectURIPrefix, adminAccount, RSAUtil.encryptWithTimeMillis(encrypt, adminPassword));
 		if (!getSignOnGrant.isSuccessful()){
 			System.out.println("getSignOnGrant : \n"+getSignOnGrant.getStrMessage());
 			return;
 		}
 		System.out.println("getSignOnGrant: "+getSignOnGrant.getGrantCode());
+		
+		/* 获得访问令牌 */
+		AccessToken getAccessToken = 
+				signService.getAccessToken(appId, RSAUtil.encryptWithTimeMillis(encrypt, appSecretKey), getSignOnGrant.getGrantCode());
+		if (!getAccessToken.isSuccessful()){
+			System.out.println("getAccessToken : \n"+getAccessToken.getStrMessage());
+			return;
+		}
+		System.out.println("getAccessToken AccessToken: "+getAccessToken.getAccessToken());
+		System.out.println("getAccessToken RefreshToken: "+getAccessToken.getRefreshToken());
+		System.out.println("getAccessToken UserInfo.Name: "+getAccessToken.getUserInfo().getName());
+		
+		/* 刷新访问令牌 */
+		AccessToken refreshAccessToken = 
+				signService.refreshAccessToken(appId, RSAUtil.encryptWithTimeMillis(encrypt, appSecretKey), getAccessToken.getRefreshToken(), getAccessToken.getUserInfo().getAtid());
+		if (!refreshAccessToken.isSuccessful()){
+			System.out.println("refreshAccessToken : \n"+refreshAccessToken.getStrMessage());
+			return;
+		}
+		System.out.println("refreshAccessToken AccessToken: "+refreshAccessToken.getAccessToken());
+		System.out.println("refreshAccessToken RefreshToken: "+refreshAccessToken.getRefreshToken());
+		
+		/* ●●●●●●●●●●●●●●●●●●●●●●●●●●认证（使用刷新后的新令牌）●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●● */
+		/* 服务人员令牌认证 */
+		UserAccessTokenAuthenRequest tokenAuthenRequest = new UserAccessTokenAuthenRequest();
+		tokenAuthenRequest.setAppId(appId);
+		tokenAuthenRequest.setAppSecretKey(RSAUtil.encryptWithTimeMillis(encrypt, appSecretKey));
+		tokenAuthenRequest.setUserId(getAccessToken.getUserInfo().getAtid());
+		tokenAuthenRequest.setUserAccessToken(refreshAccessToken.getAccessToken());
+		UserAccessTokenAuthenResponse adminUserAuthenResult = 
+				identityService.adminUserAuthen(tokenAuthenRequest);
+		System.out.println("adminUserAuthenResult successful: " + adminUserAuthenResult.isSuccessful());
+		System.out.println("adminUserAuthenResult isAppIdentityConfirm: " + adminUserAuthenResult.isAppIdentityConfirm());
+		System.out.println("adminUserAuthenResult isUserIdentityConfirm: " + adminUserAuthenResult.isUserIdentityConfirm());
+		
+		/* 服务人员登出 */
+		signService.signOut(appId, getAccessToken.getUserInfo().getAtid());
 	}
 	
 //	@Test

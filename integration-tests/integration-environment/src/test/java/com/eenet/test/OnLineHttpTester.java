@@ -1,17 +1,16 @@
 package com.eenet.test;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.util.EncodingUtil;
 import org.json.JSONObject;
 
 public class OnLineHttpTester {
-	private String baseURL = "http://security-api.open.gzedu.com";
+//	private String baseURL = "http://security-api.open.gzedu.com";
+	private String baseURL = "http://172.16.165.223:8080/security-api";
 	/* 定义调用地址和调用参数 */
 	private String getAdminSignOnGrantURL = baseURL+"/getAdminSignOnGrant";
 	private String getAdminAccessTokenURL = baseURL+"/getAdminAccessToken";
@@ -31,12 +30,12 @@ public class OnLineHttpTester {
 	
 	public static void main(String[] args) throws Exception {
 		OnLineHttpTester me = new OnLineHttpTester();
-//		me.createAdminUser();
+		me.createAdminUser("国家开放大学门户管理员","oucnet.cn","gkOucnet)32");
 //		me.adminUserLogin("xlims.admin","oucnet888");
-		me.getEndUserInfoByAdmin("xlims.admin","oucnet888", "9fee01daac1082a32cd90727c975a688");
+//		me.getEndUserInfoByAdmin("xlims.admin","oucnet888", "9fee01daac1082a32cd90727c975a688");
 	}
 	
-	public void createAdminUser() throws Exception {
+	public void createAdminUser(String adminUserName, String adminAccount, String adminPassword) throws Exception {
 		/* 获得登录授权码 */
 		method = new PostMethod(getAdminSignOnGrantURL);
 		method.addParameter("appId", appId);
@@ -77,7 +76,7 @@ public class OnLineHttpTester {
 		method.addParameter("userAccessToken", accessToken);
 		method.addParameter("appId", appId);
 		method.addParameter("appSecretKey", MockHttpRequest.encrypt(appSecretKey+"##"+System.currentTimeMillis()) );
-		method.addParameter("name", "国开学历教学教务管理平台超级管理员");
+		method.addParameter("name", adminUserName);
 		client.executeMethod(method);
 		
 		returnMessage = EncodingUtil.getString(method.getResponseBody(), "UTF-8");
@@ -94,7 +93,7 @@ public class OnLineHttpTester {
 		method.addParameter("appId", appId);
 		method.addParameter("appSecretKey", MockHttpRequest.encrypt(appSecretKey+"##"+System.currentTimeMillis()) );
 		method.addParameter("userInfo.atid",savedAdminId);
-		method.addParameter("loginAccount","xlims.admin");
+		method.addParameter("loginAccount",adminAccount);
 		method.addParameter("accountType","USERNAME");
 		client.executeMethod(method);
 		
@@ -109,7 +108,7 @@ public class OnLineHttpTester {
 		method.addParameter("appId", appId);
 		method.addParameter("appSecretKey", MockHttpRequest.encrypt(appSecretKey+"##"+System.currentTimeMillis()) );
 		method.addParameter("adminUser.atid",savedAdminId);
-		method.addParameter("password",MockHttpRequest.encrypt("oucnet888##"+System.currentTimeMillis()));
+		method.addParameter("password",MockHttpRequest.encrypt(adminPassword+"##"+System.currentTimeMillis()));
 		client.executeMethod(method);
 		
 		returnMessage = EncodingUtil.getString(method.getResponseBody(), "UTF-8");

@@ -38,36 +38,46 @@ public final class AuthenCacheKey {
 	
 	/**
 	 * 服务人员登录授权码前缀
-	 * key: ADMINUSER_GRANTCODE:[grant code]:[appid], value: 服务人员标识(String)
+	 * key: ADMINUSER_GRANTCODE:[appid]:[grant code], value: 服务人员标识(String)
 	 */
 	public final static String ADMINUSER_GRANTCODE_PREFIX = "ADMINUSER_GRANTCODE";
 	/**
 	 * 服务人员访问令牌前缀
-	 * key: ADMINUSER_ACCESSTOKEN:[access token]:[appid], value: 服务人员标识(String)
+	 * key: ADMINUSER_ACCESSTOKEN:[appid]:[access token], value: 服务人员标识(String)
 	 */
 	public final static String ADMINUSER_ACCESSTOKEN_PREFIX = "ADMINUSER_ACCESSTOKEN";
 	/**
 	 * 服务人员刷新令牌前缀
-	 * key: ADMINUSER_REFRESHTOKEN:[refresh token]:[appid], value: 服务人员标识(String)
+	 * key: ADMINUSER_REFRESHTOKEN:[appid]:[refresh token], value: 服务人员标识(String)
 	 */
 	public final static String ADMINUSER_REFRESHTOKEN_PREFIX = "ADMINUSER_REFRESHTOKEN";
+	/**
+	 * 服务人员已缓存令牌
+	 * key: ADMINUSER_CACHED_TOKEN:[appid]:[adminUserId], value: [access token]:[refresh token]
+	 */
+	public final static String ADMINUSER_CACHED_TOKEN = "ADMINUSER_CACHED_TOKEN";
 	
 	
 	/**
 	 * 最终用户登录授权码前缀
-	 * key: ENDUSER_GRANTCODE:[grant code]:[appid], value: 最终用户标识(String)
+	 * key: ENDUSER_GRANTCODE:[appid]:[grant code], value: 最终用户标识(String)
 	 */
 	public final static String ENDUSER_GRANTCODE_PREFIX = "ENDUSER_GRANTCODE";
 	/**
 	 * 最终用户访问令牌前缀
-	 * key: ENDUSER_ACCESSTOKEN:[access token]:[appid], value: 服务人员标识(String)
+	 * key: ENDUSER_ACCESSTOKEN:[appid]:[access token], value: 服务人员标识(String)
 	 */
 	public final static String ENDUSER_ACCESSTOKEN_PREFIX = "ENDUSER_ACCESSTOKEN";
 	/**
 	 * 最终用户刷新令牌前缀
-	 * key: ENDUSER_REFRESHTOKEN:[refresh token]:[appid], value: 服务人员标识(String)
+	 * key: ENDUSER_REFRESHTOKEN:[appid]:[refresh token], value: 服务人员标识(String)
 	 */
 	public final static String ENDUSER_REFRESHTOKEN_PREFIX = "ENDUSER_REFRESHTOKEN";
+	/**
+	 * 最终用户已缓存令牌
+	 * key: ENDUSER_CACHED_TOKEN:[appid]:[endUserId], value: [access token]:[refresh token]
+	 */
+	public final static String ENDUSER_CACHED_TOKEN = "ENDUSER_CACHED_TOKEN";
 	
 	private AuthenCacheKey() {}
 }

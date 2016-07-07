@@ -84,7 +84,7 @@ public class IdentityUtil {
 		}
 		
 		try {
-			String userId = getRedisClient().getObject(prefix + ":" + codeOrToken + ":" + appId, String.class);
+			String userId = getRedisClient().getObject(prefix + ":" + appId + ":" + codeOrToken, String.class);
 			if (EEBeanUtils.isNULL(userId))
 				result.addMessage("无效登录授权码/访问授权码/刷新授权码("+this.getClass().getName()+")");
 			else {

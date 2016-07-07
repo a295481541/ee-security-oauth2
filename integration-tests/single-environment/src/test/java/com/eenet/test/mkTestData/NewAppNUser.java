@@ -38,7 +38,7 @@ public class NewAppNUser extends SpringEnvironment{
 //	@Test
 	public void createAdmin() {
 		AdminUserInfo admin = new AdminUserInfo();
-		admin.setName("国开学历教学教务管理平台超级管理员");
+		admin.setName("超级管理员");
 //		admin.setDataDescription("勿删！！！重要测试数据");
 		admin = adminService.save(admin);
 		System.out.println(admin.getAtid() + "," + admin.getName());
@@ -95,11 +95,11 @@ public class NewAppNUser extends SpringEnvironment{
 	
 //	@Test
 	public void batchCreateAPP() {
-		String[] appName = {"国开学历接口平台","国开职业接口平台","国家开放大学门户"};
-		String[] appDomain = {"http://api.ouchgzee.com","http://api.peixun.oucnet.cn","http://www.oucnet.cn"};
+		String[] appName = {"广东工会补贴申请平台","广东工会补贴管理系统"};
+		String[] appDomain = {"http://www.gdzgjy.com","http://lms.gdzgjy.com"};
 		for (int i=0;i<appName.length;i++) {
 			BusinessApp app = new BusinessApp();
-			String appSecretKey = "AcYo"+(new Random().nextInt(100))+")";
+			String appSecretKey = "rCw&"+(new Random().nextInt(100))+")";
 			app.setAppName(appName[i]);
 			app.setAppType(BusinessAppType.WEBAPP);
 			app.setRedirectURIPrefix(appDomain[i]);
@@ -111,9 +111,9 @@ public class NewAppNUser extends SpringEnvironment{
 	
 //	@Test
 	public void batchAdminLoginAccountNCredential() throws Exception{
-		String[] adminUserName = {"广州职工教育网管理员","广东职工教育网管理员","杭州职工教育网管理员","超级管理员"};
-		String[] loginAccount = {"gzjywEEAdmin","gdjywEEAdmin","hzjywEEAdmin","superman"};
-		String[] password = {"sePa$841","SeiA$690","sBPf$881","sEPp$341"};
+		String[] adminUserName = {"招生管理平台管理员","广东工会补贴申请管理员","广东工会补贴管理员"};
+		String[] loginAccount = {"espSYSAdmin","gdghbtsqAdmin","gdghbtglAdmin"};
+		String[] password = {"eSp!1357","gdGhbt#578","tglAdm$209"};
 		for (int i=0;i<adminUserName.length;i++) {
 			AdminUserInfo admin = new AdminUserInfo();
 			admin.setName(adminUserName[i]);
@@ -152,9 +152,9 @@ public class NewAppNUser extends SpringEnvironment{
 	
 	@Test
 	public void createAdminLoginAccountNCredential() throws Exception {
-		String loginAccount = "xlims.admin";
-		String password = "oucnet888";
-		String adminUserId = "D9BF20BB36F34178986D0C051DEE29BD";
+		String loginAccount = "superman";
+		String password = "sEPp$341";
+		String adminUserId = "620368E56754424585A0FD296FBADC55";
 		AdminUserLoginAccount account = new AdminUserLoginAccount();
 		AdminUserInfo admin = new AdminUserInfo();admin.setAtid(adminUserId);
 		account.setUserInfo(admin);

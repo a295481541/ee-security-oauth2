@@ -59,5 +59,13 @@ public interface EndUserSignOnBizService {
 	 * @author Orion
 	 */
 	public AccessToken refreshAccessToken(String appId, String secretKey, String refreshToken, String endUserId);
-
+	
+	/**
+	 * 最终用户登出
+	 * @param appId 业务应用标识
+	 * @param userId 登出用户标识
+	 * 2016年7月7日
+	 * @author Orion
+	 */
+	public void signOut(String appId, String userId);
 }

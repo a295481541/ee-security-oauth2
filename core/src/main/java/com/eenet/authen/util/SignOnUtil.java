@@ -57,7 +57,7 @@ public class SignOnUtil {
 	
 	/**
 	 * 生成并缓存登录授权码
-	 * 授权码存储格式：[prefix]:[grant code]:[appid]
+	 * 授权码存储格式：[prefix]:[appid]:[grant code]
 	 * @param prefix 授权码前缀
 	 * @param appId 应用标识
 	 * @param userId 用户标识（服务人员或最终用户）
@@ -75,7 +75,7 @@ public class SignOnUtil {
 		
 		try {
 			String code = EEBeanUtils.getUUID();
-			boolean cached = getRedisClient().setObject(prefix+":"+code+":"+appId, userId, 60 * 15);
+			boolean cached = getRedisClient().setObject(prefix+":"+appId+":"+code, userId, 60 * 15);
 			result.setSuccessful(cached);
 			if (cached)
 				result.setResult(code);
@@ -90,7 +90,7 @@ public class SignOnUtil {
 	
 	/**
 	 * 生成并记录访问令牌
-	 * 访问令牌存储格式：[prefix]:[access token]:[appid]
+	 * 访问令牌存储格式：[prefix]:[appid]:[access token]
 	 * 令牌有效期：web应用30分钟，其他类型应用1天
 	 * @param prefix
 	 * @param appId
@@ -115,7 +115,7 @@ public class SignOnUtil {
 			//访问令牌有效期
 			int expire = BusinessAppType.WEBAPP.equals(appType) ? 60 * 30 : 60 * 60 * 24;
 			//记录令牌
-			boolean cached = getRedisClient().setObject(prefix + ":" + accessToken + ":" + appId, userId, expire);
+			boolean cached = getRedisClient().setObject(prefix + ":" + appId + ":" + accessToken , userId, expire);
 			result.setSuccessful(cached);
 			if (cached)
 				result.setResult(accessToken);
@@ -130,7 +130,7 @@ public class SignOnUtil {
 	
 	/**
 	 * 生成并记录刷新令牌
-	 * 刷新令牌存储格式：[prefix]:[refresh token]:[appid]
+	 * 刷新令牌存储格式：[prefix]:[appid]:[refresh token]
 	 * 令牌有效期：30天
 	 * @param prefix
 	 * @param appId
@@ -152,7 +152,7 @@ public class SignOnUtil {
 			//访问令牌有效期
 			int expire = 60 * 60 * 24 * 30;
 			//记录令牌
-			boolean cached = getRedisClient().setObject(prefix + ":" + refreshToken + ":" + appId, userId, expire);
+			boolean cached = getRedisClient().setObject(prefix + ":" + appId + ":" + refreshToken, userId, expire);
 			result.setSuccessful(cached);
 			if (cached)
 				result.setResult(refreshToken);
@@ -166,8 +166,73 @@ public class SignOnUtil {
 	}
 	
 	/**
+	 * 标记（或更新）人员（最终用户/服务人员）已缓存令牌
+	 * @param prefix 缓存标识前缀
+	 * @param appId 应用标识
+	 * @param userId 用户标识
+	 * @param accessToken
+	 * @param refreshToken
+	 * @return
+	 * 2016年7月6日
+	 * @author Orion
+	 */
+	public SimpleResponse markUserTokenInApp(String prefix, String appId, String userId, String accessToken, String refreshToken) {
+		SimpleResponse result = new SimpleResponse();
+		result.setSuccessful(false);
+		
+		/* 参数检查 */
+		if (EEBeanUtils.isNULL(prefix) || EEBeanUtils.isNULL(appId) || EEBeanUtils.isNULL(userId)){
+			result.addMessage("授权码前缀、应用标识、用户标识均不可为空("+this.getClass().getName()+")");
+			return result;
+		}
+		if (EEBeanUtils.isNULL(accessToken) && EEBeanUtils.isNULL(refreshToken)) {
+			result.addMessage("访问令牌和刷新令牌不可同时为空("+this.getClass().getName()+")");
+			return result;
+		}
+		
+		String tokens = new String();
+		try {
+			tokens = getRedisClient().getObject(prefix + ":" + appId + ":" + userId, String.class);
+		} catch (RedisOPException e) {}
+		
+		try {
+			if (EEBeanUtils.isNULL(tokens)) {
+				if (!EEBeanUtils.isNULL(accessToken))
+					tokens = accessToken;
+				tokens = tokens+":";
+				if (!EEBeanUtils.isNULL(refreshToken))
+					tokens = tokens+refreshToken;
+			} else if (!EEBeanUtils.isNULL(tokens) && tokens.indexOf(":")!=-1) {
+				if (!EEBeanUtils.isNULL(accessToken))
+					tokens = accessToken + tokens.substring(tokens.indexOf(":"));
+				if (!EEBeanUtils.isNULL(refreshToken))
+					tokens = tokens.substring(0,tokens.indexOf(":")+1) + refreshToken;
+			} else {
+				result.addMessage("不是预期的数据格式，预期的格式是:[access token]:[refresh token]("+this.getClass().getName()+")");
+				return result;
+			}
+			
+			//缓存令牌标识有效期
+			int expire = 60 * 60 * 24 * 30;
+			//记录缓存令牌标识
+			boolean cached = getRedisClient().setObject(prefix + ":" + appId + ":" + userId, tokens, expire);
+			
+			result.setSuccessful(cached);
+			if (!cached)
+				result.addMessage("记录缓存令牌失败("+this.getClass().getName()+")");
+			return result;
+		} catch (RedisOPException e) {
+			result.addMessage(e.toString());
+			return result;
+		} catch (Exception e) {
+			result.addMessage(e.getMessage());
+			return result;
+		}
+	}
+	
+	/**
 	 * 删除人员（最终用户/服务人员）标识码（登录授权码/访问授权码/刷新授权码）
-	 * @param prefix 授权码前缀
+	 * @param prefix 缓存标识前缀
 	 * @param codeOrToken 登录授权码/访问授权码/刷新授权码
 	 * @param appId 应用标识
 	 * @return
@@ -184,11 +249,60 @@ public class SignOnUtil {
 		}
 		
 		try {
-			Boolean rmResult = getRedisClient().remove(prefix + ":" + codeOrToken + ":" + appId);
+			Boolean rmResult = getRedisClient().remove(prefix + ":" + appId + ":" + codeOrToken);
 			if (rmResult)
 				result.setSuccessful(rmResult);
 			else
 				result.addMessage("销毁登录授权码/访问授权码/刷新授权码失败：("+this.getClass().getName()+")");
+			return result;
+		} catch (RedisOPException e) {
+			result.addMessage(e.toString());
+			return result;
+		}
+	}
+	
+	/**
+	 * 删除人员（最终用户/服务人员）刷新令牌、访问令牌和已缓存令牌标识
+	 * @param cachedPrefix 已缓存令牌前缀
+	 * @param accessTokenPrefix 访问令牌前缀
+	 * @param refreshTokenPrefix 刷新令牌前缀
+	 * @param appId 应用标识
+	 * @param userId 用户标识
+	 * @return 只要不发生异常或格式错误均返回true，无论是否删除成功
+	 * 2016年7月7日
+	 * @author Orion
+	 */
+	public SimpleResponse removeUserTokenInApp(String cachedPrefix, String accessTokenPrefix, String refreshTokenPrefix, String appId, String userId) {
+		SimpleResponse result = new SimpleResponse();
+		result.setSuccessful(false);
+		
+		/* 参数检查 */
+		if (EEBeanUtils.isNULL(appId) || EEBeanUtils.isNULL(userId)){
+			result.addMessage("应用标识、用户标识均不可为空("+this.getClass().getName()+")");
+			return result;
+		}
+		if (EEBeanUtils.isNULL(cachedPrefix) || EEBeanUtils.isNULL(accessTokenPrefix) || EEBeanUtils.isNULL(refreshTokenPrefix)){
+			result.addMessage("已缓存令牌前缀、访问令牌前缀、刷新令牌前缀均不可为空("+this.getClass().getName()+")");
+			return result;
+		}
+		
+		try {
+			String tokenStr = getRedisClient().getObject(cachedPrefix + ":" + appId + ":" + userId, String.class);
+			if (EEBeanUtils.isNULL(tokenStr)) {
+				result.setSuccessful(true);
+				return result;
+			}
+			
+			String[] tokens = tokenStr.split(":");
+			if (tokens==null || tokens.length!=2) {
+				result.addMessage("不是预期的数据格式，预期的格式是:[access token]:[refresh token]("+this.getClass().getName()+")");
+				return result;
+			}
+			getRedisClient().remove(accessTokenPrefix + ":" + appId + ":" + tokens[0]);
+			getRedisClient().remove(refreshTokenPrefix + ":" + appId + ":" + tokens[1]);
+			getRedisClient().remove(cachedPrefix + ":" + appId + ":" + userId);
+			
+			result.setSuccessful(true);//无论删除是否成功都返回true
 			return result;
 		} catch (RedisOPException e) {
 			result.addMessage(e.toString());
