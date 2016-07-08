@@ -11,6 +11,7 @@ public class AppAuthenRequest implements Serializable {
 	private static final long serialVersionUID = -8522386568621829527L;
 	private String appId;//应用标识
 	private String appSecretKey;//应用接入秘钥（密文）
+	private String redirectURI;//跳转地址（非web系统可空）
 	/**
 	 * @return the 应用标识
 	 */
@@ -36,4 +37,20 @@ public class AppAuthenRequest implements Serializable {
 		this.appSecretKey = appSecretKey;
 	}
 	
+	/**
+	 * @return 跳转地址（非web系统可空）
+	 * 2016年7月8日
+	 * @author Orion
+	 */
+	public String getRedirectURI() {
+		return redirectURI;
+	}
+	/**
+	 * @param redirectURI 跳转地址（非web系统可空）
+	 * 2016年7月8日
+	 * @author Orion
+	 */
+	public void setRedirectURI(String redirectURI) {
+		this.redirectURI = redirectURI;
+	}
 }
