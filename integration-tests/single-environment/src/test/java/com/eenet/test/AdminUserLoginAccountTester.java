@@ -33,6 +33,18 @@ public class AdminUserLoginAccountTester extends SpringEnvironment {
 		}
 		System.out.println("atid: "+account.getAtid());
 		
+		/* 再注册一个相同 */
+		AdminUserLoginAccount account2 = new AdminUserLoginAccount();
+		account2.setUserInfo(user);
+		account2.setAccountType(LoginAccountType.MOBILE);
+		account2.setLoginAccount("13800138000");
+		account2 = accountService.registeAdminUserLoginAccount(account);
+		if (!account2.isSuccessful()) {
+			System.out.println(account2.getStrMessage());
+			return;
+		}
+		System.out.println("atid: "+account2.getAtid() + "bizCode: ["+account2.getRSBizCode().toString()+"]");
+		
 		AdminUserInfo retrieveAdminUserInfo = accountService.retrieveAdminUserInfo(account.getLoginAccount());
 		if (!retrieveAdminUserInfo.isSuccessful()) {
 			System.out.println(retrieveAdminUserInfo.getStrMessage());

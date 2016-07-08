@@ -6,6 +6,7 @@ import java.util.List;
 import com.eenet.authen.EndUserLoginAccount;
 import com.eenet.authen.EndUserLoginAccountBizService;
 import com.eenet.authen.cacheSyn.SynEndUserLoginAccount2Redis;
+import com.eenet.authen.util.ABBizCode;
 import com.eenet.base.SimpleResponse;
 import com.eenet.base.SimpleResultSet;
 import com.eenet.base.StringResponse;
@@ -44,6 +45,17 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 		}
 		if (!result.isSuccessful())
 			return result;
+		
+		/* 检查要注册的账号是否存在 */
+		EndUserLoginAccount existAccount = this.retrieveEndUserLoginAccountInfo(account.getLoginAccount());
+		if ( existAccount.isSuccessful() && account.getUserInfo().getAtid().equals(existAccount.getUserInfo().getAtid()) ) {//账号存在并且指向同一个用户
+			existAccount.setRSBizCode(ABBizCode.AB0001);
+			return existAccount;
+		} else if ( existAccount.isSuccessful() && !account.getUserInfo().getAtid().equals(existAccount.getUserInfo().getAtid()) ) {//账号已被其他用户使用
+			result.setSuccessful(false);
+			existAccount.setRSBizCode(ABBizCode.AB0002);
+			return existAccount;
+		}
 		
 		/* 保存到数据库 */
 		result = super.save(account);
