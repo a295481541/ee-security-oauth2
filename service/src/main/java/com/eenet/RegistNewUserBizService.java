@@ -17,10 +17,10 @@ import com.eenet.user.EndUserInfo;
  */
 public interface RegistNewUserBizService {
 	/**
-	 * 注册最终用户（含账号和密码）并登陆
+	 * 注册最终用户（含账号和密码）并登陆，该方法对接入系统进行验证
 	 * @param endUser 最终用户对象
-	 * @param account 登陆账号对象
-	 * @param credential 登录密码对象，登录密码属性必须是：带时间戳加密的形式
+	 * @param account 登陆账号对象，该对象的userInfo属性应置空
+	 * @param credential 登录密码对象，该对象的userInfo属性应置空，登录密码属性必须是：带时间戳加密的形式
 	 * @param appID 应用身份对象
 	 * @return 访问令牌
 	 * 2016年7月8日
@@ -31,8 +31,8 @@ public interface RegistNewUserBizService {
 	/**
 	 * 注册服务人员（含账号和密码）
 	 * @param adminUser 服务人员对象
-	 * @param account 登陆账号对象
-	 * @param credential 登录密码对象，登录密码属性必须是：带时间戳加密的形式
+	 * @param account 登陆账号对象，该对象的userInfo属性应置空
+	 * @param credential 登录密码对象，该对象的userInfo属性应置空，登录密码属性必须是：带时间戳加密的形式
 	 * @return
 	 * 2016年7月8日
 	 * @author Orion

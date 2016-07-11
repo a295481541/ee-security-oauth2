@@ -63,7 +63,8 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		}
 		
 		/* 初始化登陆密码 */
-		account.setUserInfo(savedEndUser);
+		String userCipherPassword = credential.getPassword();
+		credential.setEndUser(savedEndUser);
 		SimpleResponse savedCredential = getEndUserCredentialBizService().initEndUserLoginPassword(credential);
 		if (!savedCredential.isSuccessful()) {
 			result.addMessage(savedCredential.getStrMessage());
@@ -72,7 +73,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		
 		/* 获得认证授权码 */
 		SignOnGrant grant = getEndUserSignOnBizService().getSignOnGrant(appID.getAppId(), appID.getRedirectURI(), account.getLoginAccount(),
-				credential.getPassword());
+				userCipherPassword);
 		if (!grant.isSuccessful()) {
 			result.addMessage(grant.getStrMessage());
 			return result;

@@ -17,21 +17,33 @@
 			<list>
 				<bean class="redis.clients.jedis.JedisShardInfo">
 					<constructor-arg index="0" value="${redis.server.1}"/>
+					<property name="connectionTimeout" value="2000"/>
+					<property name="soTimeout" value="2000"/>
 				</bean>
 				<bean class="redis.clients.jedis.JedisShardInfo">
 					<constructor-arg index="0" value="${redis.server.2}"/>
+					<property name="connectionTimeout" value="2000"/>
+					<property name="soTimeout" value="2000"/>
 				</bean>
 				<bean class="redis.clients.jedis.JedisShardInfo">
 					<constructor-arg index="0" value="${redis.server.3}"/>
+					<property name="connectionTimeout" value="2000"/>
+					<property name="soTimeout" value="2000"/>
 				</bean>
 				<bean class="redis.clients.jedis.JedisShardInfo">
 					<constructor-arg index="0" value="${redis.server.4}"/>
+					<property name="connectionTimeout" value="2000"/>
+					<property name="soTimeout" value="2000"/>
 				</bean>
 				<bean class="redis.clients.jedis.JedisShardInfo">
 					<constructor-arg index="0" value="${redis.server.5}"/>
+					<property name="connectionTimeout" value="2000"/>
+					<property name="soTimeout" value="2000"/>
 				</bean>
 				<bean class="redis.clients.jedis.JedisShardInfo">
 					<constructor-arg index="0" value="${redis.server.6}"/>
+					<property name="connectionTimeout" value="2000"/>
+					<property name="soTimeout" value="2000"/>
 				</bean>
 			</list>
 		</constructor-arg>

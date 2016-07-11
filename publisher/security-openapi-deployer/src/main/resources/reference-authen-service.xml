@@ -29,4 +29,7 @@
 	<dubbo:reference id="EndUserLoginAccountBizService" interface="com.eenet.authen.EndUserLoginAccountBizService"/>
 	<!-- 最终用户登录服务 -->
 	<dubbo:reference id="EndUserSignOnBizService" interface="com.eenet.authen.EndUserSignOnBizService"/>
+	
+	<!-- 注册新用户服务 -->
+	<dubbo:reference id="RegistNewUserBizService" interface="com.eenet.RegistNewUserBizService"/>
 </beans>
