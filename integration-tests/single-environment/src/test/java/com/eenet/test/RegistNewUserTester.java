@@ -24,7 +24,7 @@ public class RegistNewUserTester extends SpringEnvironment {
 	private final RegistNewUserBizService regService = (RegistNewUserBizService)super.getContext().getBean("RegistNewUserBizImpl");
 	private final RSAEncrypt encrypt = (RSAEncrypt)super.getContext().getBean("TransferRSAEncrypt");
 	
-//	@Test
+	@Test
 	public void registEndUserWithLogin() throws Exception {
 		EndUserInfo endUser = new EndUserInfo();
 		endUser.setName("Orion");
@@ -44,7 +44,7 @@ public class RegistNewUserTester extends SpringEnvironment {
 		System.out.println(EEBeanUtils.object2Json(accessToken));
 	}
 	
-	@Test
+//	@Test
 	public void registAdminUserWithoutLogin() throws Exception {
 		AdminUserInfo adminUser = new AdminUserInfo();
 		adminUser.setName("Orion");

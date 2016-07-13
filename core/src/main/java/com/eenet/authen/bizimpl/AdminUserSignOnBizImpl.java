@@ -254,7 +254,7 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 			return token;
 		}
 		
-		/* 删除访问令牌（防止一个用户可以通过两个令牌登录） */
+		/* 删除当前服务人员在当前应用的所有令牌（包括：刷新令牌、访问令牌和已缓存令牌标识），防止一个服务人员可以通过两个令牌登录 */
 		getSignOnUtil().removeUserTokenInApp(AuthenCacheKey.ADMINUSER_CACHED_TOKEN,
 				AuthenCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX, AuthenCacheKey.ADMINUSER_REFRESHTOKEN_PREFIX, appId,
 				getUserIdResult.getResult());

@@ -269,19 +269,11 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 			return token;
 		}
 		
-		/* 删除访问令牌（防止一个用户可以通过两个令牌登录） */
+		/* 删除当前用户在当前应用的所有令牌（包括：刷新令牌、访问令牌和已缓存令牌标识），防止一个用户可以通过两个令牌登录 */
 		getSignOnUtil().removeUserTokenInApp(AuthenCacheKey.ENDUSER_CACHED_TOKEN,
 				AuthenCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, AuthenCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appId,
 				getUserIdResult.getResult());
-		
-		/* 删除刷新令牌（一个刷新令牌只能置换一次访问令牌） */
-		SimpleResponse rmFreshTokenResult = 
-				getSignOnUtil().removeCodeOrToken(AuthenCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, refreshToken, appId);
-		if (!rmFreshTokenResult.isSuccessful()) {
-			token.addMessage(rmFreshTokenResult.getStrMessage());
-			return token;
-		}
-		
+				
 		/* 生成并记录访问令牌（超过有效期后令牌会从Redis中自动消失） */
 		StringResponse mkAccessTokenResult = 
 				getSignOnUtil().makeAccessToken(AuthenCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, appId, getUserIdResult.getResult(), getBusinessAppBizService());
