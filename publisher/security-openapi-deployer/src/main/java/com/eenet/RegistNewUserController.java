@@ -32,7 +32,7 @@ public class RegistNewUserController {
 	
 	@RequestMapping(value = "/registEndUserWithLogin", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
-	public String registEndUserWithLogin(APIRequestIdentity identity, @ModelAttribute("user")EndUserInfo user, @ModelAttribute("account")EndUserLoginAccount account, @ModelAttribute("credential")EndUserCredential credential) {
+	public String registEndUserWithLogin(APIRequestIdentity identity,String redirectURI, @ModelAttribute("user")EndUserInfo user, @ModelAttribute("account")EndUserLoginAccount account, @ModelAttribute("credential")EndUserCredential credential) {
 		SimpleResponse response = new SimpleResponse();
 		response.setSuccessful(false);
 		
@@ -44,6 +44,7 @@ public class RegistNewUserController {
 		AppAuthenRequest appAttribute = new AppAuthenRequest();
 		appAttribute.setAppId(identity.getAppId());
 		appAttribute.setAppSecretKey(identity.getAppSecretKey());
+		appAttribute.setRedirectURI(redirectURI);
 		
 		user.setCrss(identity.getAppId());
 		account.setCrss(identity.getAppId());

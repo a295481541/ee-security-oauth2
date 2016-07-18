@@ -1,5 +1,6 @@
 package com.eenet.test;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,8 +10,8 @@ import org.apache.commons.httpclient.util.EncodingUtil;
 import org.json.JSONObject;
 
 public class OnLineHttpTester {
-	private String baseURL = "http://security-api.open.gzedu.com";
-//	private String baseURL = "http://172.16.165.223:8080/security-api";
+//	private String baseURL = "http://security-api.open.gzedu.com";
+	private String baseURL = "http://172.16.146.152:8080/security-api";
 	/* 定义调用地址和调用参数 */
 	private String getAdminSignOnGrantURL = baseURL+"/getAdminSignOnGrant";
 	private String getAdminAccessTokenURL = baseURL+"/getAdminAccessToken";
@@ -30,9 +31,11 @@ public class OnLineHttpTester {
 	
 	public static void main(String[] args) throws Exception {
 		OnLineHttpTester me = new OnLineHttpTester();
+		Date start = new Date();
 //		me.createAdminUser("国家开放大学门户管理员","oucnet.cn","gkOucnet)32");
-//		me.adminUserLogin("xlims.admin","oucnet888");
-		me.getEndUserInfoByAdmin("xlims.admin","oucnet888", "ae72877caa204b02b1bc0651769efaba");
+		me.adminUserLogin("xlims.admin","oucnet888");
+//		me.getEndUserInfoByAdmin("xlims.admin","oucnet888", "ae72877caa204b02b1bc0651769efaba");
+		System.out.println("用时："+((new Date()).getTime() - start.getTime()));
 	}
 	
 	public void createAdminUser(String adminUserName, String adminAccount, String adminPassword) throws Exception {

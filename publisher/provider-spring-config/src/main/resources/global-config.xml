@@ -43,4 +43,11 @@
 	<bean id="IdentityUtil" class="com.eenet.authen.util.IdentityUtil">
 		<property name="RedisClient" ref="RedisClient"/>
 	</bean>
+	
+	<!-- EENET短信对接服务 -->
+	<bean id="EeSendSMSBizImpl" class="com.eenet.sms.eesms.EeSendSMSBizImpl">
+		<property name="sendSMSUsingTemplateURL" value="http://eesms.gzedu.com/sms/sendYunSms.do"/>
+		<property name="callSMSAppId" value="e7800319ac1082a6237aaeec6260a117"/>
+		<property name="baseDAOService" ref="GenericDAO" />
+	</bean>
 </beans>

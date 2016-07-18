@@ -115,7 +115,7 @@
 	</profiles>
 
 	<properties>
-		<dev-framework.version>1.05</dev-framework.version>
+		<dev-framework.version>1.06</dev-framework.version>
 		<spring.version>4.2.2.RELEASE</spring.version>
 		<spring-data-redis.version>1.6.2.RELEASE</spring-data-redis.version>
 		<slf4j-log4j12.version>1.7.9</slf4j-log4j12.version>

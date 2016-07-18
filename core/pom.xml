@@ -17,12 +17,19 @@
 			<artifactId>service</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+
 		<!-- framework -->
 		<dependency>
 			<groupId>com.eenet.framework</groupId>
 			<artifactId>base-biz</artifactId>
 			<version>${dev-framework.version}</version>
+		</dependency>
+		
+		<!-- apache http client -->
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpmime</artifactId>
+			<version>4.5.2</version>
 		</dependency>
 	</dependencies>
 </project>
