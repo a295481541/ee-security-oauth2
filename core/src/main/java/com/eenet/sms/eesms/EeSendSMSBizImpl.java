@@ -42,6 +42,10 @@ public class EeSendSMSBizImpl extends SimpleBizImpl implements SendSMSBizService
 		condition.addCondition(new ConditionItem("appId",RangeType.EQUAL,smsBody.getAppId(),null));
 		condition.addCondition(new ConditionItem("bizType",RangeType.EQUAL,smsBody.getSendSMSBizType().toString(),null));
 		EeSmsTemplate template = super.get(condition, EeSmsTemplate.class);
+		if (!template.isSuccessful()) {
+			result.addMessage(template.getStrMessage());
+			return result;
+		}
 		
 		/* 解析要传入短信接口的参数 */
 		StringBuffer param = new StringBuffer("");

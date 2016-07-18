@@ -12,7 +12,7 @@
 	    <result column="REMARK" property="dataDescription" jdbcType="VARCHAR" />
 	    
 	    <result column="BIZ_APP_ID" property="appId" jdbcType="VARCHAR" />
-	    <result column="BIZ_TYPE" property="bizType" jdbcType="VARCHAR" />
+	    <result column="BIZ_TYPE" property="bizType" jdbcType="VARCHAR" typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
 	    <result column="TEMPLATE_ID" property="templateId" jdbcType="VARCHAR" />
 	</resultMap>
 	<sql id="biz_columns" >
