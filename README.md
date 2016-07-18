@@ -2,7 +2,6 @@
 eenet security framework beyond oauth2.0
 
 # example
-
 service provider integrate configuration:
 /integration-tests/src/main/resources/dubbo-biz-provider.xml
 
