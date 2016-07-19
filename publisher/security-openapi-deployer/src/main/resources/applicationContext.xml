@@ -14,6 +14,7 @@
 	<!-- 业务模块配置 -->
 	<import resource="reference-user-service.xml"/><!-- 人员管理服务 -->
 	<import resource="reference-authen-service.xml"/><!-- 认证服务 -->
+	<import resource="reference-security-service.xml"/><!-- 认证、授权等扩展业务服务 -->
 	
 	<!-- 数据传输加密公钥 -->
 	<bean id="transferRSAEncrypt" class="com.eenet.util.cryptography.RSAEncrypt">

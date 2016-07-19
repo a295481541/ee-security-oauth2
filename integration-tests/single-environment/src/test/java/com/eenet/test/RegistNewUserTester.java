@@ -4,7 +4,6 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import com.eenet.RegistNewUserBizService;
 import com.eenet.authen.AccessToken;
 import com.eenet.authen.AdminUserCredential;
 import com.eenet.authen.AdminUserLoginAccount;
@@ -13,6 +12,7 @@ import com.eenet.authen.EndUserLoginAccount;
 import com.eenet.authen.LoginAccountType;
 import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.base.SimpleResponse;
+import com.eenet.security.RegistNewUserBizService;
 import com.eenet.test.env.SpringEnvironment;
 import com.eenet.user.AdminUserInfo;
 import com.eenet.user.EndUserInfo;

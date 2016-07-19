@@ -1,4 +1,4 @@
-package com.eenet;
+package com.eenet.security;
 
 import com.eenet.authen.AccessToken;
 import com.eenet.authen.AdminUserCredential;
@@ -15,6 +15,7 @@ import com.eenet.authen.SignOnGrant;
 import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.base.SimpleResponse;
 import com.eenet.common.code.SystemCode;
+import com.eenet.security.RegistNewUserBizService;
 import com.eenet.user.AdminUserInfo;
 import com.eenet.user.AdminUserInfoBizService;
 import com.eenet.user.EndUserInfo;

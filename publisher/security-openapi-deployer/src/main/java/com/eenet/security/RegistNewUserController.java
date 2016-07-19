@@ -1,4 +1,4 @@
-package com.eenet;
+package com.eenet.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,6 +19,7 @@ import com.eenet.authen.IdentityAuthenticationBizService;
 import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.base.SimpleResponse;
 import com.eenet.common.code.SystemCode;
+import com.eenet.security.RegistNewUserBizService;
 import com.eenet.user.AdminUserInfo;
 import com.eenet.user.EndUserInfo;
 import com.eenet.util.EEBeanUtils;

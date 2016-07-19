@@ -1,4 +1,4 @@
-package com.eenet;
+package com.eenet.security;
 
 import com.eenet.authen.AccessToken;
 import com.eenet.authen.AdminUserCredential;

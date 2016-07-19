@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-4.2.xsd   
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+	<!-- 注册新用户服务 -->
+	<bean id="RegistNewUserBizImpl" class="com.eenet.security.RegistNewUserBizImpl">
+		<property name="identityAuthenticationBizService" ref="IdentityAuthenticationBizImpl"/>
+		<property name="adminUserInfoBizService" ref="AdminUserInfoBizImpl"/>
+		<property name="adminUserLoginAccountBizService" ref="AdminUserLoginAccountBizImpl"/>
+		<property name="adminUserCredentialBizService" ref="AdminUserCredentialBizImpl"/>
+		<property name="endUserInfoBizService" ref="EndUserInfoBizImpl"/>
+		<property name="endUserLoginAccountBizService" ref="EndUserLoginAccountBizImpl"/>
+		<property name="endUserCredentialBizService" ref="EndUserCredentialBizImpl"/>
+		<property name="endUserSignOnBizService" ref="EndUserSignOnBizImpl"/>
+	</bean>
+</beans>

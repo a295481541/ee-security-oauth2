@@ -1,5 +1,7 @@
-package com.eenet.authen;
+package com.eenet.security;
 
+import com.eenet.authen.AccessToken;
+import com.eenet.authen.EndUserCredential;
 import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.base.SimpleResponse;
 import com.eenet.base.StringResponse;
