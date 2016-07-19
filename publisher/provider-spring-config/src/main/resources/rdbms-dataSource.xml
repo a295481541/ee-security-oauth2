@@ -9,7 +9,7 @@
 						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
 						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 	<!-- 数据库连接（主库） -->
-	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
 		<property name="driverClassName" value="${db.driverClassName}" />
 		<property name="url" value="${connection.url}" />
 		<property name="username" value="${connection.user}" />
@@ -19,7 +19,18 @@
         <property name="maxWait" value="60000"/>
         <property name="initialSize" value="20"/>
         <property name="removeAbandoned" value="true"/>
+        
+        <property name="testWhileIdle" value="true"/><!-- 起了一个Evict的TimerTask定时线程进行控制,定时对线程池中的链接进行校验 -->
+	    <property name="timeBetweenEvictionRunsMillis" value="30000"/><!-- 设置的线程的时间，单位ms，大于0才会开启evict检查线程 -->
+        <property name="validationQuery" value="SELECT 1 FROM DUAL"/><!-- 检查sql -->
+        <property name="validationQueryTimeout" value='1'/><!-- 检查超时 1ms -->
+	    <property name="numTestsPerEvictionRun" value="1000"/><!-- 每次检查链接的数量 -->
+        <property name="testOnBorrow" value="false"/>
+    	<property name="testOnReturn" value="false"/> 
 	</bean>
+	
+	
+	
 	<!-- 主数据库session -->
 	<bean id="batisSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="configLocation" value="classpath:mybatis-config.xml" />

@@ -53,6 +53,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		String passwordPlaintext = null;
 		try {
 			passwordPlaintext = RSAUtil.decryptWithTimeMillis(getTransferRSADecrypt(), password, 30);
+			
 			if (EEBeanUtils.isNULL(passwordPlaintext)) {
 				grant.addMessage("无法解密提供的最终用户登录密码("+this.getClass().getName()+")");
 				return grant;
@@ -72,6 +73,8 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		/* 获得最终用户当前登录账号信息、统一登录秘钥信息 */
 		EndUserLoginAccount loginAccountInfo = 
 				getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(loginAccount);
+		
+			
 		if (!loginAccountInfo.isSuccessful()) {
 			grant.addMessage(loginAccountInfo.getStrMessage());
 			return grant;

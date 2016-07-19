@@ -2,6 +2,7 @@ package com.eenet.authen.bizimpl;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 
 import com.eenet.authen.EndUserCredential;
 import com.eenet.authen.EndUserCredentialBizService;
@@ -252,7 +253,6 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 			result.addMessage("最终用户标识未知");
 			return result;
 		}
-		
 		/* 从数据库取秘钥对象 */
 		QueryCondition query = new QueryCondition();
 		query.addCondition(new ConditionItem("endUser.atid",RangeType.EQUAL,endUserId,null));
@@ -286,6 +286,8 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 		/* 从缓存取数据 */
 		String ciphertext = SynEndUserCredential2Redis.get(getRedisClient(), endUserId);
 		
+		
+		
 		/* 从数据库取数据 */
 		if (EEBeanUtils.isNULL(ciphertext)) {
 			result = this.retrieveEndUserCredentialInfo(endUserId);
@@ -304,6 +306,7 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 			result.setEncryptionType("MD5");
 		}
 		
+		
 		result.setPassword(ciphertext.substring(ciphertext.lastIndexOf("##")+2));
 		result.setSuccessful(true);
 		return result;
@@ -311,8 +314,12 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 
 	@Override
 	public EndUserCredential retrieveEndUserSecretKey(String endUserId, RSADecrypt decrypt) {
+		
 		/* 取秘钥密文（未取到或不是RSA密文都直接返回结果） */
-		EndUserCredential result = this.retrieveEndUserCredentialInfo(endUserId);
+		
+//		EndUserCredential result = this.retrieveEndUserCredentialInfo(endUserId);
+		EndUserCredential result = this.retrieveEndUserSecretKey(endUserId);
+		
 		if (!result.isSuccessful() || !"RSA".equals(result.getEncryptionType()))
 			return result;
 		
@@ -325,7 +332,9 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 		
 		/* 密文解密 */
 		try {
-			String plaintext = RSAUtil.decrypt(decrypt, result.getPassword());
+			
+			String  plaintext = RSAUtil.decrypt(decrypt, result.getPassword());
+			
 			if (EEBeanUtils.isNULL(plaintext))
 				throw new EncryptException("解密密码失败（空字符）");
 			result.setPassword(plaintext);

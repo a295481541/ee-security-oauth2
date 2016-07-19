@@ -12,27 +12,28 @@
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 	    <property name="dataSource" ref="dataSource" />
 	</bean>
+	
+	
 	<!-- 指定事务切入点 -->
 	<aop:config>
-		<aop:pointcut id="serviceOP" expression="execution(* com.eenet..*BizService.*(..))" /><!-- 针对暴露服务接口 -->
+		<aop:pointcut id="serviceOP" expression="execution(* com.eenet..*BizService.*(..))  " /><!-- 针对暴露服务接口 -->
+												
 		<aop:pointcut id="bizShadow" expression="execution(* com.eenet..BizShadow*.*(..))" /><!-- 针对已抽象的表操作 -->
-		<aop:pointcut id="signOnService" expression="execution(* com.eenet.authen.*SignOnBizService.*(..))" /><!-- 登录操作（获得令牌等） -->
-		<aop:pointcut id="authenService" expression="execution(* com.eenet.authen.IdentityAuthenticationBizService.*(..))" /><!-- 认证操作 -->
 		
 		<aop:advisor pointcut-ref="serviceOP" advice-ref="serviceTxAdvice" />
 		<aop:advisor pointcut-ref="bizShadow" advice-ref="bizShadowTXAdvice" />
-		<aop:advisor pointcut-ref="signOnService" advice-ref="readonlyTxAdvice" />
-		<aop:advisor pointcut-ref="authenService" advice-ref="readonlyTxAdvice" />
 	</aop:config>
 	<!-- 配置事务的传播特性 -->
-	<tx:advice id="readonlyTxAdvice" transaction-manager="transactionManager">
-		<tx:attributes>
-			<tx:method name="*" propagation="SUPPORTS" read-only="true"/>
-		</tx:attributes>
-	</tx:advice>
 	<tx:advice id="serviceTxAdvice" transaction-manager="transactionManager">
 		<tx:attributes>
-			<tx:method name="*" propagation="REQUIRED" read-only="false"/>
+			<tx:method name="change*" propagation="REQUIRED" read-only="false"/>
+			<tx:method name="init*" propagation="REQUIRED" read-only="false"/>
+			<tx:method name="registe*" propagation="REQUIRED" read-only="false"/>
+			<tx:method name="remove*" propagation="REQUIRED" read-only="false"/>
+			<tx:method name="reset*" propagation="REQUIRED" read-only="false"/>
+			<tx:method name="delete*" propagation="REQUIRED" read-only="false"/>
+			<tx:method name="save*" propagation="REQUIRED" read-only="false"/>
+			<tx:method name="*" propagation="SUPPORTS" read-only="true"/>
 		</tx:attributes>
 	</tx:advice>
 	<tx:advice id="bizShadowTXAdvice" transaction-manager="transactionManager">
@@ -42,4 +43,6 @@
 			<tx:method name="executeBackup" propagation="REQUIRED" />
 		</tx:attributes>
 	</tx:advice>
+	
+
 </beans>
