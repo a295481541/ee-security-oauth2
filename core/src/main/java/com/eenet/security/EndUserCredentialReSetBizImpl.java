@@ -7,8 +7,13 @@ import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.base.BooleanResponse;
 import com.eenet.base.SimpleResponse;
 import com.eenet.base.StringResponse;
+import com.eenet.security.bizComponent.ReSetLoginPasswordCom;
 import com.eenet.user.EndUserInfoBizService;
 import com.eenet.util.EEBeanUtils;
+import com.eenet.util.cryptography.EncryptException;
+import com.eenet.util.cryptography.RSADecrypt;
+import com.eenet.util.cryptography.RSAEncrypt;
+import com.eenet.util.cryptography.RSAUtil;
 
 public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizService {
 
@@ -67,30 +72,28 @@ public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizS
 	}
 
 	@Override
-	public SimpleResponse resetPasswordBySMSCodeWithoutLogin(EndUserCredential curCredential, String smsCode) {
+	public SimpleResponse resetPasswordBySMSCodeWithoutLogin(EndUserCredential credential, String smsCode) {
 		/* 参数检查 */
 		
 		/* 校验并删除短信验证码 */
 		
 		/* 重置用户登录密码 */
-		return null;
-	}
-	
-	/**
-	 * 重置用户登录密码
-	 * ★无任何旧密码校验，不可对外暴露服务
-	 * @param endUserId 最终用户ID
-	 * @param newPasswordPlainText 新密码
-	 * @return
-	 * 2016年7月19日
-	 * @author Orion
-	 */
-	public SimpleResponse resetEndUserLoginPassword(String endUserId,String newPasswordPlainText) {
+		String newPasswordPlainText = null;
+		try {
+			newPasswordPlainText = RSAUtil.decrypt(getTransferRSADecrypt(), credential.getPassword());//用传输私钥解出新密码明文
+		} catch (EncryptException e) {
+			e.printStackTrace();
+		}
+		getResetLoginPasswordCom().resetEndUserLoginPassword(credential.getEndUser().getAtid(),
+				newPasswordPlainText, getStorageRSAEncrypt());
 		return null;
 	}
 	
 	private EndUserInfoBizService endUserInfoBizService;
 	private EndUserLoginAccountBizService endUserLoginAccountBizService;
+	private ReSetLoginPasswordCom resetLoginPasswordCom;//重置密码业务组件
+	private RSAEncrypt StorageRSAEncrypt;//数据存储加密公钥
+	private RSADecrypt TransferRSADecrypt;//数据传输解密私钥
 	public EndUserInfoBizService getEndUserInfoBizService() {
 		return endUserInfoBizService;
 	}
@@ -105,5 +108,47 @@ public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizS
 
 	public void setEndUserLoginAccountBizService(EndUserLoginAccountBizService endUserLoginAccountBizService) {
 		this.endUserLoginAccountBizService = endUserLoginAccountBizService;
+	}
+
+	/**
+	 * @return the 重置密码业务组件
+	 */
+	public ReSetLoginPasswordCom getResetLoginPasswordCom() {
+		return resetLoginPasswordCom;
+	}
+
+	/**
+	 * @param resetLoginPasswordCom the 重置密码业务组件 to set
+	 */
+	public void setResetLoginPasswordCom(ReSetLoginPasswordCom resetLoginPasswordCom) {
+		this.resetLoginPasswordCom = resetLoginPasswordCom;
+	}
+
+	/**
+	 * @return the 数据存储加密公钥
+	 */
+	public RSAEncrypt getStorageRSAEncrypt() {
+		return StorageRSAEncrypt;
+	}
+
+	/**
+	 * @param storageRSAEncrypt the 数据存储加密公钥 to set
+	 */
+	public void setStorageRSAEncrypt(RSAEncrypt storageRSAEncrypt) {
+		StorageRSAEncrypt = storageRSAEncrypt;
+	}
+	
+	/**
+	 * @return the 数据传输解密私钥
+	 */
+	public RSADecrypt getTransferRSADecrypt() {
+		return TransferRSADecrypt;
+	}
+
+	/**
+	 * @param transferRSADecrypt the 数据传输解密私钥 to set
+	 */
+	public void setTransferRSADecrypt(RSADecrypt transferRSADecrypt) {
+		TransferRSADecrypt = transferRSADecrypt;
 	}
 }

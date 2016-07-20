@@ -41,6 +41,7 @@
 		<property name="StorageRSADecrypt" ref="StorageRSADecrypt"/>
 		<property name="TransferRSADecrypt" ref="TransferRSADecrypt"/>
 		<property name="endUserInfoBizService" ref="EndUserInfoBizImpl"/>
+		<property name="reSetLoginPasswordCom" ref="ReSetLoginPasswordCom"/>
 	</bean>
 	
 	<!-- 服务人员登录服务 -->

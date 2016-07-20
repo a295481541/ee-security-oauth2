@@ -19,4 +19,20 @@
 		<property name="endUserCredentialBizService" ref="EndUserCredentialBizImpl"/>
 		<property name="endUserSignOnBizService" ref="EndUserSignOnBizImpl"/>
 	</bean>
+	
+	<!-- 最终用户密码重置服务 -->
+	<bean id="EndUserCredentialReSetBizImpl" class="com.eenet.security.EndUserCredentialReSetBizImpl">
+		<property name="endUserInfoBizService" ref="EndUserInfoBizImpl"/>
+		<property name="endUserLoginAccountBizService" ref="EndUserLoginAccountBizImpl"/>
+		<property name="resetLoginPasswordCom" ref="ReSetLoginPasswordCom"/>
+		<property name="StorageRSAEncrypt" ref="StorageRSAEncrypt"/>
+		<property name="TransferRSADecrypt" ref="TransferRSADecrypt"/>
+	</bean>
+	
+	<!-- 重置密码业务组件 -->
+	<bean id="ReSetLoginPasswordCom" class="com.eenet.security.bizComponent.ReSetLoginPasswordCom">
+		<property name="genericBiz" ref="GenericSimpleBizImpl"/>
+		<property name="endUserInfoBizService" ref="EndUserInfoBizImpl"/>
+		<property name="RedisClient" ref="RedisClient"/>
+	</bean>
 </beans>
