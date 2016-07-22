@@ -52,7 +52,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		/* 计算传入的最终用户登录密码明文 */
 		String passwordPlaintext = null;
 		try {
-			passwordPlaintext = RSAUtil.decryptWithTimeMillis(getTransferRSADecrypt(), password, 30);
+			passwordPlaintext = RSAUtil.decryptWithTimeMillis(getTransferRSADecrypt(), password, 5);
 			if (EEBeanUtils.isNULL(passwordPlaintext)) {
 				grant.addMessage("无法解密提供的最终用户登录密码("+this.getClass().getName()+")");
 				return grant;
@@ -143,7 +143,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		/* 计算传入的app密码明文 */
 		String secretKeyPlaintext = null;
 		try {
-			secretKeyPlaintext = RSAUtil.decryptWithTimeMillis(getTransferRSADecrypt(), secretKey, 30);
+			secretKeyPlaintext = RSAUtil.decryptWithTimeMillis(getTransferRSADecrypt(), secretKey, 5);
 			if (EEBeanUtils.isNULL(secretKeyPlaintext)) {
 				token.addMessage("无法解密提供的业务系统秘钥("+this.getClass().getName()+")");
 				return token;
@@ -238,7 +238,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		/* 计算传入的app密码明文 */
 		String secretKeyPlaintext = null;
 		try {
-			secretKeyPlaintext = RSAUtil.decryptWithTimeMillis(getTransferRSADecrypt(), secretKey, 30);
+			secretKeyPlaintext = RSAUtil.decryptWithTimeMillis(getTransferRSADecrypt(), secretKey, 5);
 			if (EEBeanUtils.isNULL(secretKeyPlaintext)) {
 				token.addMessage("无法解密提供的业务系统秘钥("+this.getClass().getName()+")");
 				return token;

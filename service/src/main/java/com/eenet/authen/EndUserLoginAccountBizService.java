@@ -28,7 +28,7 @@ public interface EndUserLoginAccountBizService {
 	/**
 	 * 根据登录账号获得人员基本信息（返回信息不包含登录账号的私有密码）
 	 * @param loginAccount 登录账号
-	 * @return 主账号
+	 * @return 该账号所属的用户信息，未找到则返回结果设置为false
 	 * 2016年4月7日
 	 * @author Orion
 	 */

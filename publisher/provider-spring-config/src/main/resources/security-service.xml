@@ -27,6 +27,11 @@
 		<property name="resetLoginPasswordCom" ref="ReSetLoginPasswordCom"/>
 		<property name="StorageRSAEncrypt" ref="StorageRSAEncrypt"/>
 		<property name="TransferRSADecrypt" ref="TransferRSADecrypt"/>
+		<property name="RedisClient" ref="RedisClient"/>
+		<property name="sendSMSBizService" ref="EeSendSMSBizImpl"/>
+		<property name="authenService" ref="IdentityAuthenticationBizImpl"/>
+		<property name="genericBiz" ref="GenericSimpleBizImpl"/>
+		<property name="endUserSignOnBizService" ref="EndUserCredentialBizImpl"/>
 	</bean>
 	
 	<!-- 重置密码业务组件 -->

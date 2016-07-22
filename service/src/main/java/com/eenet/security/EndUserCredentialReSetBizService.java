@@ -33,22 +33,22 @@ public interface EndUserCredentialReSetBizService {
 	 * 2016年7月18日
 	 * @author Orion
 	 */
-	public BooleanResponse validateSMSCode4ResetPassword(String endUserId, String smsCode, boolean rmSmsCode);
+	public SimpleResponse validateSMSCode4ResetPassword(String endUserId, String smsCode, boolean rmSmsCode);
 	
 	/**
 	 * 使用短信验证码重置密码，并模拟登陆获得访问令牌
 	 * @param 应用身份对象
-	 * @param curCredential
+	 * @param curCredential password属性进行带时间戳加密
 	 * @param resetCode
 	 * @return
 	 * 2016年7月18日
 	 * @author Orion
 	 */
-	public AccessToken resetPasswordBySMSCodeWithLogin(AppAuthenRequest appRequest, EndUserCredential curCredential, String smsCode);
+	public AccessToken resetPasswordBySMSCodeWithLogin(AppAuthenRequest appRequest, EndUserCredential credential, String smsCode);
 	
 	/**
 	 * 使用短信验证码重置密码
-	 * @param curCredential
+	 * @param curCredential password属性进行带时间戳加密
 	 * @param resetCode
 	 * @return
 	 * 2016年7月18日

@@ -29,7 +29,8 @@ public class SpringEnvironment {
 			"redis.xml",
 			"transaction.xml",
 			"user-service.xml",
-			"authen-service.xml"
+			"authen-service.xml",
+			"security-service.xml"
 		});
 		context.start();
 		SpringEnvironment.context = context;

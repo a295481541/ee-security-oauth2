@@ -22,6 +22,7 @@ import com.eenet.user.AdminUserInfo;
 import com.eenet.user.AdminUserInfoBizService;
 import com.eenet.user.EndUserInfo;
 import com.eenet.user.EndUserInfoBizService;
+import com.eenet.util.EEBeanUtils;
 import com.eenet.util.cryptography.RSAEncrypt;
 import com.eenet.util.cryptography.RSAUtil;
 
@@ -93,13 +94,13 @@ public class NewAppNUser extends SpringEnvironment{
 		System.out.println("APPID: " + app.getAtid() + ",系统中文名：" + app.getAppName() + ",接入密码: "+appSecretKey+",合法地址： "+app.getRedirectURIPrefix());
 	}
 	
-//	@Test
+	@Test
 	public void batchCreateAPP() {
-		String[] appName = {"广东工会补贴申请平台","广东工会补贴管理系统"};
-		String[] appDomain = {"http://www.gdzgjy.com","http://lms.gdzgjy.com"};
+		String[] appName = {"杭州职工教育网","湖州职工教育网","湖北职工教育网"};
+		String[] appDomain = {"http://hz.saas.workeredu.com","http://huzhou.saas.workeredu.com","http://hb.saas.workeredu.com"};
 		for (int i=0;i<appName.length;i++) {
 			BusinessApp app = new BusinessApp();
-			String appSecretKey = "rCw&"+(new Random().nextInt(100))+")";
+			String appSecretKey = "zgWe#"+EEBeanUtils.randomSixNum()+")";
 			app.setAppName(appName[i]);
 			app.setAppType(BusinessAppType.WEBAPP);
 			app.setRedirectURIPrefix(appDomain[i]);
@@ -150,7 +151,7 @@ public class NewAppNUser extends SpringEnvironment{
 		}
 	}
 	
-	@Test
+//	@Test
 	public void createAdminLoginAccountNCredential() throws Exception {
 		String loginAccount = "superman";
 		String password = "sEPp$341";
