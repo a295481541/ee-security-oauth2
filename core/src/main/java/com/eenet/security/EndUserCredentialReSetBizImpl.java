@@ -170,7 +170,7 @@ public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizS
 			result.addMessage(queryAccountRS.getStrMessage());
 			return result;
 		}
-		if ( queryAccountRS.getCount()!=1 || queryAccountRS.getResultSet().size()!=1 ) {
+		if ( queryAccountRS.getResultSet().size()!=1 ) {
 			result.addMessage("密码重置成功，但未设置登录账号无法直接登录("+this.getClass().getName()+")");
 			return result;
 		}

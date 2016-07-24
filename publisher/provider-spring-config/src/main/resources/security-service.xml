@@ -31,7 +31,7 @@
 		<property name="sendSMSBizService" ref="EeSendSMSBizImpl"/>
 		<property name="authenService" ref="IdentityAuthenticationBizImpl"/>
 		<property name="genericBiz" ref="GenericSimpleBizImpl"/>
-		<property name="endUserSignOnBizService" ref="EndUserCredentialBizImpl"/>
+		<property name="endUserSignOnBizService" ref="EndUserSignOnBizImpl"/>
 	</bean>
 	
 	<!-- 重置密码业务组件 -->

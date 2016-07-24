@@ -21,11 +21,18 @@
 	<sql id="biz_columns" >
 		USER_ID, LOGIN_ACCOUNT, ACCOUNT_TYPE, ENCRYPTION_TYPE
 	</sql>
+	<sql id="base_select" >
+		<![CDATA[
+			SELECT T.*,
+		]]><include refid="com.eenet.user.EndUserInfo.biz_columns" /><![CDATA[
+			FROM AUTHEN_ENDUSER_LOGIN_ACCOUNT T LEFT JOIN CM_USER_INFO V ON T.USER_ID=V.USER_ID
+		]]>
+	</sql>
 	
 	<select id="query_count" resultType="java.lang.Integer" parameterType="com.eenet.base.dao.SQLCondition">
 		<![CDATA[
 		SELECT count(*) FROM (
-			SELECT T.*,V.* FROM AUTHEN_ENDUSER_LOGIN_ACCOUNT T LEFT JOIN CM_USER_INFO V ON T.USER_ID=V.USER_ID
+			]]><include refid="base_select" /><![CDATA[
 		) TB WHERE 1=1 
 		]]>
 		<include refid="com.eenet.base.${db.type}.query_quote" />
@@ -35,9 +42,7 @@
 		<include refid="com.eenet.base.${db.type}.rowNum_query_prefix" />
 		<![CDATA[
 		SELECT * FROM (
-			SELECT T.*,
-		]]><include refid="com.eenet.user.EndUserInfo.biz_columns" /><![CDATA[
-			FROM AUTHEN_ENDUSER_LOGIN_ACCOUNT T LEFT JOIN CM_USER_INFO V ON T.USER_ID=V.USER_ID
+			]]><include refid="base_select" /><![CDATA[
 		) TB WHERE 1=1 
 		]]>
 		<include refid="com.eenet.base.${db.type}.query_quote" />
