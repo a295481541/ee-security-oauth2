@@ -26,7 +26,7 @@
 				<redis.server.6><![CDATA[redis://:REDIS@172.16.165.222:6379/6]]></redis.server.6>
 				<!-- zookeeper配置 -->
 				<zookeeper.address>172.16.165.222:2181</zookeeper.address>
-				<dubbo.port>20880</dubbo.port>
+				<dubbo.port>20881</dubbo.port>
 				<!-- 打war包名称 -->
 				<provider.finalName>provider</provider.finalName>
 				<openapi.finalName>security-api</openapi.finalName>
@@ -103,7 +103,7 @@
 				<redis.server.6><![CDATA[redis://:eecn.cn@172.16.129.197:6379]]></redis.server.6>
 				<!-- zookeeper配置 -->
 				<zookeeper.address>172.16.129.197:2181,172.16.134.204:2181</zookeeper.address>
-				<dubbo.port>20880</dubbo.port>
+				<dubbo.port>20881</dubbo.port>
 				<!-- 打war包名称，实际访问域名： security-api.open.gzedu.com -->
 				<provider.finalName>provider.security-api.open.gzedu.cn</provider.finalName>
 				<openapi.finalName>security-api.open.gzedu.cn</openapi.finalName>

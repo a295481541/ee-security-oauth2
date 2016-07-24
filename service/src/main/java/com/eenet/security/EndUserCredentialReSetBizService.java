@@ -3,7 +3,6 @@ package com.eenet.security;
 import com.eenet.authen.AccessToken;
 import com.eenet.authen.EndUserCredential;
 import com.eenet.authen.request.AppAuthenRequest;
-import com.eenet.base.BooleanResponse;
 import com.eenet.base.SimpleResponse;
 import com.eenet.base.StringResponse;
 
@@ -48,11 +47,11 @@ public interface EndUserCredentialReSetBizService {
 	
 	/**
 	 * 使用短信验证码重置密码
-	 * @param curCredential password属性进行带时间戳加密
+	 * @param credential password属性进行带时间戳加密
 	 * @param resetCode
 	 * @return
 	 * 2016年7月18日
 	 * @author Orion
 	 */
-	public SimpleResponse resetPasswordBySMSCodeWithoutLogin(EndUserCredential curCredential, String smsCode);
+	public SimpleResponse resetPasswordBySMSCodeWithoutLogin(EndUserCredential credential, String smsCode);
 }

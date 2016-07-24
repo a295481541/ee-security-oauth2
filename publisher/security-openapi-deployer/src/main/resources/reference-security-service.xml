@@ -14,4 +14,7 @@
 							
 	<!-- 注册新用户服务 -->
 	<dubbo:reference id="RegistNewUserBizService" interface="com.eenet.security.RegistNewUserBizService"/>
+	
+	<!-- 最终用户密码重置服务 -->
+	<dubbo:reference id="EndUserCredentialReSetBizService" interface="com.eenet.security.EndUserCredentialReSetBizService"/>
 </beans>
