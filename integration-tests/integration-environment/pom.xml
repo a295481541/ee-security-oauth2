@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>eenet.security.oauth2</groupId>
 		<artifactId>integration-tests</artifactId>
-		<version>2.00</version>
+		<version>2.01</version>
 	</parent>
 	<artifactId>integration-environment</artifactId>
 

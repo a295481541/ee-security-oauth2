@@ -85,7 +85,7 @@ public final class SynEndUserCredential2Redis {
 			try {
 				Map<String, String> map = new HashMap<String, String>();
 				for (EndUserCredential credential : this.credentials) {
-					map.put(credential.getEndUser().getAtid(), credential.getPassword());
+					map.put(credential.getEndUser().getAtid(), credential.getEncryptionType() +"##"+credential.getPassword());
 					this.redisClient.addMapItem(AuthenCacheKey.ENDUSER_CREDENTIAL, map, -1);
 				}
 			} catch (RedisOPException e) {

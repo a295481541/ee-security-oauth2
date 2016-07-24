@@ -72,6 +72,8 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		/* 获得最终用户当前登录账号信息、统一登录秘钥信息 */
 		EndUserLoginAccount loginAccountInfo = 
 				getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(loginAccount);
+		
+			
 		if (!loginAccountInfo.isSuccessful()) {
 			grant.addMessage(loginAccountInfo.getStrMessage());
 			return grant;

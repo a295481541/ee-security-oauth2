@@ -74,7 +74,7 @@ public class SignOnController {
 	@Autowired
 	private RSAEncrypt transferRSAEncrypt;
 	
-	@RequestMapping(value = "/endUserLoginTest")
+	@RequestMapping(value = "/endUserLoginTest", produces = {"application/json;charset=UTF-8"})
 	@ResponseBody
 	public String endUserLoginTest() throws Exception {
 		String appId = "9CFF0CA0D43D4B2DAC1EFC6A86FCB191";
