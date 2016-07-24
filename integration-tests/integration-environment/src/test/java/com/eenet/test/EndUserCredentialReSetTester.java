@@ -8,7 +8,9 @@ import org.apache.commons.httpclient.util.EncodingUtil;
 import org.json.JSONObject;
 
 public class EndUserCredentialReSetTester {
-	public static String baseURL = "http://172.16.165.223:8080/security-api";
+//	public static String baseURL = "http://172.16.165.223:8080/security-api";
+	public static String baseURL = "http://172.16.146.152:8080/security-api";
+	
 	private String sendSMSCode4ResetPasswordURL = baseURL+"/security/sendSMSCode4ResetPassword";
 	private String resetPasswordBySMSCodeWithLoginURL = baseURL+"/security/resetPasswordBySMSCodeWithLogin";
 	private HttpClient client;
@@ -26,10 +28,10 @@ public class EndUserCredentialReSetTester {
 //		tester.resetPasswordBySMS();
 		
 		String userId = "9BC7BA2AEF584220BBC2845BF61A04B9";//<==要重置密码用户的标识，从resetPasswordBySMS()方法获得
-		String smsCode = "965373";//<==收到短信后填于此处
+		String smsCode = "313799";//<==收到短信后填于此处
 		String newPassword = new Random().nextInt(1000000) +"^AAb";
 		System.out.println("设置新密码： "+newPassword);
-		tester.resetPasswordBySMSCodeWithLogin(userId, smsCode, newPassword);
+//		tester.resetPasswordBySMSCodeWithLogin(userId, smsCode, newPassword);
 	}
 	
 	public void resetPasswordBySMS() throws Exception {
