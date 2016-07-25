@@ -25,7 +25,7 @@ public class EndUserCredentialReSetController {
 	
 	@RequestMapping(value = "/security/sendSMSCode4ResetPassword", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
-	public String sendSMSCode4ResetPassword(APIRequestIdentity identity, String redirectURI, long mobile) {
+	public String sendSMSCode4ResetPassword(APIRequestIdentity identity, long mobile) {
 		StringResponse response = new StringResponse();
 		response.setSuccessful(false);
 		
@@ -39,7 +39,6 @@ public class EndUserCredentialReSetController {
 		AppAuthenRequest appAttribute = new AppAuthenRequest();
 		appAttribute.setAppId(identity.getAppId());
 		appAttribute.setAppSecretKey(identity.getAppSecretKey());
-		appAttribute.setRedirectURI(redirectURI);
 		
 		SimpleResponse appAuthen = identityAuthenticationBizService.appAuthen(appAttribute);
 		if (!appAuthen.isSuccessful()) {
@@ -53,7 +52,7 @@ public class EndUserCredentialReSetController {
 	
 	@RequestMapping(value = "/security/validateSMSCode4ResetPassword", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
-	public String validateSMSCode4ResetPassword(APIRequestIdentity identity, String redirectURI, String endUserId, String smsCode, boolean rmSmsCode) {
+	public String validateSMSCode4ResetPassword(APIRequestIdentity identity, String endUserId, String smsCode) {
 		SimpleResponse response = new SimpleResponse();
 		response.setSuccessful(false);
 		
@@ -67,7 +66,6 @@ public class EndUserCredentialReSetController {
 		AppAuthenRequest appAttribute = new AppAuthenRequest();
 		appAttribute.setAppId(identity.getAppId());
 		appAttribute.setAppSecretKey(identity.getAppSecretKey());
-		appAttribute.setRedirectURI(redirectURI);
 		
 		SimpleResponse appAuthen = identityAuthenticationBizService.appAuthen(appAttribute);
 		if (!appAuthen.isSuccessful()) {
@@ -75,7 +73,7 @@ public class EndUserCredentialReSetController {
 			return EEBeanUtils.object2Json(response);
 		}
 		
-		response = endUserCredentialReSetBizService.validateSMSCode4ResetPassword(endUserId, smsCode, rmSmsCode);
+		response = endUserCredentialReSetBizService.validateSMSCode4ResetPassword(endUserId, smsCode, false);
 		return EEBeanUtils.object2Json(response);
 	}
 	
@@ -103,12 +101,12 @@ public class EndUserCredentialReSetController {
 	
 	@RequestMapping(value = "/security/resetPasswordBySMSCodeWithoutLogin", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
-	public String resetPasswordBySMSCodeWithoutLogin(APIRequestIdentity identity, String redirectURI, EndUserCredential credential, String smsCode) {
+	public String resetPasswordBySMSCodeWithoutLogin(APIRequestIdentity identity, EndUserCredential credential, String smsCode) {
 		SimpleResponse response = new SimpleResponse();
 		response.setSuccessful(false);
 		
 		/* 参数检查 */
-		if ( identity==null || credential==null || EEBeanUtils.isNULL(smsCode) || EEBeanUtils.isNULL(redirectURI) ) {
+		if ( identity==null || credential==null || EEBeanUtils.isNULL(smsCode)) {
 			response.setRSBizCode(SystemCode.AA0002);
 			return EEBeanUtils.object2Json(response);
 		}
@@ -117,7 +115,12 @@ public class EndUserCredentialReSetController {
 		AppAuthenRequest appAttribute = new AppAuthenRequest();
 		appAttribute.setAppId(identity.getAppId());
 		appAttribute.setAppSecretKey(identity.getAppSecretKey());
-		appAttribute.setRedirectURI(redirectURI);
+		
+		SimpleResponse appAuthen = identityAuthenticationBizService.appAuthen(appAttribute);
+		if (!appAuthen.isSuccessful()) {
+			response.addMessage(appAuthen.getStrMessage());
+			return EEBeanUtils.object2Json(response);
+		}
 		
 		response = endUserCredentialReSetBizService.resetPasswordBySMSCodeWithoutLogin(credential, smsCode);
 		return EEBeanUtils.object2Json(response);

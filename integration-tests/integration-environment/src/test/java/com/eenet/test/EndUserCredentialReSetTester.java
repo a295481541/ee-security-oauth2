@@ -28,17 +28,16 @@ public class EndUserCredentialReSetTester {
 //		tester.resetPasswordBySMS();
 		
 		String userId = "9BC7BA2AEF584220BBC2845BF61A04B9";//<==要重置密码用户的标识，从resetPasswordBySMS()方法获得
-		String smsCode = "313799";//<==收到短信后填于此处
+		String smsCode = "109911";//<==收到短信后填于此处
 		String newPassword = new Random().nextInt(1000000) +"^AAb";
 		System.out.println("设置新密码： "+newPassword);
-//		tester.resetPasswordBySMSCodeWithLogin(userId, smsCode, newPassword);
+		tester.resetPasswordBySMSCodeWithLogin(userId, smsCode, newPassword);
 	}
 	
 	public void resetPasswordBySMS() throws Exception {
 		/* 发送短信验证码 */
 		method = new PostMethod(sendSMSCode4ResetPasswordURL);
 		method.addParameter("appId", appId);
-		method.addParameter("redirectURI", appDomain);
 		method.addParameter("appSecretKey", MockHttpRequest.encrypt(appSecretKey+"##"+System.currentTimeMillis()));
 		method.addParameter("mobile", String.valueOf(mobile));
 		client.executeMethod(method);
