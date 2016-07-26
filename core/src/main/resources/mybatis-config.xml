@@ -2,8 +2,8 @@
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
 	<typeAliases>
-		<!-- <typeAlias alias="com.eenet.user.AdminUserInfo" type="com.eenet.user.AdminUserInfo" />
-		<typeAlias alias="com.eenet.user.EndUserInfo" type="com.eenet.user.EndUserInfo" /> -->
+		<typeAlias alias="com.eenet.baseinfo.user.AdminUserInfo" type="com.eenet.baseinfo.user.AdminUserInfo" />
+		<typeAlias alias="com.eenet.baseinfo.user.EndUserInfo" type="com.eenet.baseinfo.user.EndUserInfo" />
 		<typeAlias alias="com.eenet.authen.BusinessApp" type="com.eenet.authen.BusinessApp" />
 		<typeAlias alias="com.eenet.authen.AdminUserLoginAccount" type="com.eenet.authen.AdminUserLoginAccount" />
 		<typeAlias alias="com.eenet.authen.EndUserLoginAccount" type="com.eenet.authen.EndUserLoginAccount" />
@@ -17,8 +17,8 @@
         <mapper resource="conf/base.PostgreSQL.mbt.xml" />
         <mapper resource="conf/base.MySQL.mbt.xml" />
         <!-- 业务模块 -->
-        <!-- <mapper resource="DBMapping/AdminUserInfo.xml" />
-		<mapper resource="DBMapping/EndUserInfo.xml"/> -->
+        <mapper resource="baseinfo/DBMapping/AdminUserInfo.xml" />
+		<mapper resource="baseinfo/DBMapping/EndUserInfo.xml"/>
  		<mapper resource="DBMapping/BusinessApp.xml" />
 		<mapper resource="DBMapping/AdminUserLoginAccount.xml"/>
 		<mapper resource="DBMapping/EndUserLoginAccount.xml"/>

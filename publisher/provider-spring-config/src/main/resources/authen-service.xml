@@ -31,7 +31,7 @@
 		<property name="StorageRSAEncrypt" ref="StorageRSAEncrypt"/>
 		<property name="StorageRSADecrypt" ref="StorageRSADecrypt"/>
 		<property name="TransferRSADecrypt" ref="TransferRSADecrypt"/>
-		<property name="adminUserInfoBizService" ref="AdminUserInfoBizImpl"/>
+		<property name="adminUserInfoBizService" ref="AdminUserInfoBizService"/>
 	</bean>
 	<!-- 最终用户登录秘钥服务 -->
 	<bean id="EndUserCredentialBizImpl" class="com.eenet.authen.bizimpl.EndUserCredentialBizImpl">
@@ -40,7 +40,7 @@
 		<property name="StorageRSAEncrypt" ref="StorageRSAEncrypt"/>
 		<property name="StorageRSADecrypt" ref="StorageRSADecrypt"/>
 		<property name="TransferRSADecrypt" ref="TransferRSADecrypt"/>
-		<property name="endUserInfoBizService" ref="EndUserInfoBizImpl"/>
+		<property name="endUserInfoBizService" ref="EndUserInfoBizService"/>
 		<property name="reSetLoginPasswordCom" ref="ReSetLoginPasswordCom"/>
 	</bean>
 	
@@ -52,7 +52,7 @@
 		<property name="businessAppBizService" ref="BusinessAppBizImpl"/>
 		<property name="adminUserCredentialBizService" ref="AdminUserCredentialBizImpl"/>
 		<property name="adminUserLoginAccountBizService" ref="AdminUserLoginAccountBizImpl"/>
-		<property name="adminUserInfoBizService" ref="AdminUserInfoBizImpl"/>
+		<property name="adminUserInfoBizService" ref="AdminUserInfoBizService"/>
 		<property name="signOnUtil" ref="SignOnUtil"/>
 		<property name="identityUtil" ref="IdentityUtil"/>
 	</bean>
@@ -64,7 +64,7 @@
 		<property name="businessAppBizService" ref="BusinessAppBizImpl"/>
 		<property name="endUserCredentialBizService" ref="EndUserCredentialBizImpl"/>
 		<property name="endUserLoginAccountBizService" ref="EndUserLoginAccountBizImpl"/>
-		<property name="endUserInfoBizService" ref="EndUserInfoBizImpl"/>
+		<property name="endUserInfoBizService" ref="EndUserInfoBizService"/>
 		<property name="signOnUtil" ref="SignOnUtil"/>
 		<property name="identityUtil" ref="IdentityUtil"/>
 	</bean>

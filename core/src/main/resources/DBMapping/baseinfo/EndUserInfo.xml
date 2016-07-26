@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.eenet.baseinfo.user.EndUserInfo" >
+	<resultMap type="com.eenet.baseinfo.user.EndUserInfo" id="default">
+		<id column="USER_ID" property="atid" jdbcType="VARCHAR" />
+		<result column="CREATED_DT" property="crdt" jdbcType="TIMESTAMP" />
+	    <result column="CREATED_BY" property="crps" jdbcType="VARCHAR" />
+	    <result column="CREATED_SID" property="crss" jdbcType="VARCHAR" />
+	    <result column="UPDATED_DT" property="mddt" jdbcType="TIMESTAMP" />
+	    <result column="UPDATED_BY" property="mdps" jdbcType="VARCHAR" />
+	    <result column="UPDATED_SID" property="mdss" jdbcType="VARCHAR" />
+	    <result column="REMARK" property="dataDescription" jdbcType="VARCHAR" />
+	    
+	    <result column="USER_CODE" property="userCode" jdbcType="VARCHAR" />
+		<result column="USER_NAME" property="name" jdbcType="VARCHAR" />
+		<result column="NAME_PING" property="namePing" jdbcType="VARCHAR" />
+		<result column="SEX" property="sex" jdbcType="VARCHAR" />
+		<result column="FOLK" property="folk" jdbcType="VARCHAR" />
+		<result column="BIRTHDAY" property="birthday" jdbcType="DATE" />
+		<result column="ID_CARD" property="idCard" jdbcType="VARCHAR" />
+		<result column="CARD_PHOTO" property="cardPhoto" jdbcType="VARCHAR" />
+		<result column="UNIT_CODE" property="unitCode" jdbcType="VARCHAR" />
+		<result column="NATIVE_PLACE" property="nativePlace" jdbcType="VARCHAR" />
+		<result column="BLOOD_TYPE" property="bloodType" jdbcType="VARCHAR" />
+		<result column="WORK_TIME" property="workTime" jdbcType="NUMERIC" />
+		<result column="DEGREE" property="degree" jdbcType="VARCHAR" />
+		<result column="GRADUATE" property="graduate" jdbcType="VARCHAR" />
+		<result column="ZIP_CODE" property="zipCode" jdbcType="NUMERIC" />
+		<result column="HOUSE_HODE_TYPE" property="houseHodeType" jdbcType="VARCHAR" />
+		<result column="REALNAME_CHECKED" property="realnameChecked" jdbcType="CHAR" />
+		<result column="MOBILE_CHECKED" property="mobileChecked" jdbcType="CHAR" />
+		<result column="EMAIL_CHECKED" property="emailChecked" jdbcType="CHAR" />
+		<result column="FAITH" property="faith" jdbcType="VARCHAR" />
+		<result column="PROVINCE" property="province" jdbcType="VARCHAR" />
+		<result column="CITY" property="city" jdbcType="VARCHAR" />
+		<result column="DISTRICT" property="district" jdbcType="VARCHAR" />
+		<result column="STREET" property="street" jdbcType="VARCHAR" />
+		<result column="ADDRESS" property="address" jdbcType="VARCHAR" />
+		<result column="HOMEPAGE" property="homepage" jdbcType="VARCHAR" />
+		<result column="MOBILE" property="mobile" jdbcType="NUMERIC" />
+		<result column="COMPANY_TELE" property="companyTele" jdbcType="VARCHAR" />
+		<result column="HOME_TELE" property="homeTele" jdbcType="VARCHAR" />
+		<result column="WECHAT" property="wechat" jdbcType="VARCHAR" />
+		<result column="QQ" property="qq" jdbcType="VARCHAR" />
+		<result column="EMAIL" property="email" jdbcType="VARCHAR" />
+		<result column="EE" property="ee" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="biz_columns" >
+		USER_CODE, USER_NAME, NAME_PING, SEX, FOLK, BIRTHDAY, ID_CARD, CARD_PHOTO, UNIT_CODE, NATIVE_PLACE, BLOOD_TYPE, WORK_TIME, DEGREE, GRADUATE, ZIP_CODE, HOUSE_HODE_TYPE, REALNAME_CHECKED, MOBILE_CHECKED, EMAIL_CHECKED, FAITH, PROVINCE, CITY, DISTRICT, STREET, ADDRESS, HOMEPAGE, MOBILE, COMPANY_TELE, HOME_TELE, WECHAT, QQ, EMAIL, EE
+	</sql>
+</mapper>

@@ -13,8 +13,8 @@
 	    
 	    <result column="LOGIN_ACCOUNT" property="loginAccount" jdbcType="VARCHAR" />
 	    <result column="ACCOUNT_TYPE" property="accountType" jdbcType="VARCHAR" />
-	    <association column="ADMIN_ID" property="userInfo" javaType="com.eenet.user.AdminUserInfo" 
-	    			resultMap="com.eenet.user.AdminUserInfo.default"/>
+	    <association column="ADMIN_ID" property="userInfo" javaType="com.eenet.baseinfo.user.AdminUserInfo" 
+	    			resultMap="com.eenet.baseinfo.user.AdminUserInfo.default"/>
 	</resultMap>
 	<sql id="biz_columns" >
 		ADMIN_ID, LOGIN_ACCOUNT, ACCOUNT_TYPE
@@ -34,7 +34,7 @@
 		<![CDATA[
 		SELECT * FROM (
 			SELECT T.*,
-		]]><include refid="com.eenet.user.AdminUserInfo.biz_columns" /><![CDATA[
+		]]><include refid="com.eenet.baseinfo.user.AdminUserInfo.biz_columns" /><![CDATA[
 			FROM AUTHEN_ADMIN_LOGIN_ACCOUNT T LEFT JOIN CM_ADMIN_INFO V ON T.ADMIN_ID=V.ADMIN_ID
 		) TB WHERE 1=1 
 		]]>

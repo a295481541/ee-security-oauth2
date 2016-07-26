@@ -11,10 +11,10 @@
 	<!-- 注册新用户服务 -->
 	<bean id="RegistNewUserBizImpl" class="com.eenet.security.RegistNewUserBizImpl">
 		<property name="identityAuthenticationBizService" ref="IdentityAuthenticationBizImpl"/>
-		<property name="adminUserInfoBizService" ref="AdminUserInfoBizImpl"/>
+		<property name="adminUserInfoBizService" ref="AdminUserInfoBizService"/>
 		<property name="adminUserLoginAccountBizService" ref="AdminUserLoginAccountBizImpl"/>
 		<property name="adminUserCredentialBizService" ref="AdminUserCredentialBizImpl"/>
-		<property name="endUserInfoBizService" ref="EndUserInfoBizImpl"/>
+		<property name="endUserInfoBizService" ref="EndUserInfoBizService"/>
 		<property name="endUserLoginAccountBizService" ref="EndUserLoginAccountBizImpl"/>
 		<property name="endUserCredentialBizService" ref="EndUserCredentialBizImpl"/>
 		<property name="endUserSignOnBizService" ref="EndUserSignOnBizImpl"/>
@@ -22,7 +22,7 @@
 	
 	<!-- 最终用户密码重置服务 -->
 	<bean id="EndUserCredentialReSetBizImpl" class="com.eenet.security.EndUserCredentialReSetBizImpl">
-		<property name="endUserInfoBizService" ref="EndUserInfoBizImpl"/>
+		<property name="endUserInfoBizService" ref="EndUserInfoBizService"/>
 		<property name="endUserLoginAccountBizService" ref="EndUserLoginAccountBizImpl"/>
 		<property name="resetLoginPasswordCom" ref="ReSetLoginPasswordCom"/>
 		<property name="StorageRSAEncrypt" ref="StorageRSAEncrypt"/>
@@ -37,7 +37,7 @@
 	<!-- 重置密码业务组件 -->
 	<bean id="ReSetLoginPasswordCom" class="com.eenet.security.bizComponent.ReSetLoginPasswordCom">
 		<property name="genericBiz" ref="GenericSimpleBizImpl"/>
-		<property name="endUserInfoBizService" ref="EndUserInfoBizImpl"/>
+		<property name="endUserInfoBizService" ref="EndUserInfoBizService"/>
 		<property name="RedisClient" ref="RedisClient"/>
 	</bean>
 </beans>

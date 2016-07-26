@@ -15,8 +15,8 @@
 	    <result column="ACCOUNT_TYPE" property="accountType" jdbcType="VARCHAR" />
 	    <result column="ENCRYPTION_TYPE" property="encryptionType" jdbcType="VARCHAR" />
 	    <result column="ACCOUNT_PASSWORD" property="accountLoginPassword" jdbcType="VARCHAR" />
-	    <association column="USER_ID" property="userInfo" javaType="com.eenet.user.EndUserInfo" 
-	    			resultMap="com.eenet.user.EndUserInfo.default"/>
+	    <association column="USER_ID" property="userInfo" javaType="com.eenet.baseinfo.user.EndUserInfo" 
+	    			resultMap="com.eenet.baseinfo.user.EndUserInfo.default"/>
 	</resultMap>
 	<sql id="biz_columns" >
 		USER_ID, LOGIN_ACCOUNT, ACCOUNT_TYPE, ENCRYPTION_TYPE
@@ -24,7 +24,7 @@
 	<sql id="base_select" >
 		<![CDATA[
 			SELECT T.*,
-		]]><include refid="com.eenet.user.EndUserInfo.biz_columns" /><![CDATA[
+		]]><include refid="com.eenet.baseinfo.user.EndUserInfo.biz_columns" /><![CDATA[
 			FROM AUTHEN_ENDUSER_LOGIN_ACCOUNT T LEFT JOIN CM_USER_INFO V ON T.USER_ID=V.USER_ID
 		]]>
 	</sql>
