@@ -13,6 +13,9 @@ public class EndUserCredentialReSetTester {
 	
 	private String sendSMSCode4ResetPasswordURL = baseURL+"/security/sendSMSCode4ResetPassword";
 	private String resetPasswordBySMSCodeWithLoginURL = baseURL+"/security/resetPasswordBySMSCodeWithLogin";
+	private String resetPasswordBySMSCodeWithoutLoginURL = baseURL+"/security/resetPasswordBySMSCodeWithoutLogin";
+	private String getEndUserSignOnGrantURL = baseURL+"/getEndUserSignOnGrant";
+	private String getEndUserAccessTokenURL = baseURL+"/getEndUserAccessToken";
 	private HttpClient client;
 	private PostMethod method;
 	private String returnMessage;
@@ -22,16 +25,18 @@ public class EndUserCredentialReSetTester {
 	private final String appDomain = "http://hz.saas.workeredu.com";
 	private final String appSecretKey = "pASS41#";
 	private final long mobile = 13922202252l;
+	private final String loginAccount = "gz2016001";//<==根据重置用户的不同修改
 	
 	public static void main(String[] args) throws Exception {
 		EndUserCredentialReSetTester tester = new EndUserCredentialReSetTester();
 //		tester.resetPasswordBySMS();
 		
 		String userId = "9BC7BA2AEF584220BBC2845BF61A04B9";//<==要重置密码用户的标识，从resetPasswordBySMS()方法获得
-		String smsCode = "109911";//<==收到短信后填于此处
+		String smsCode = "860039";//<==收到短信后填于此处
 		String newPassword = new Random().nextInt(1000000) +"^AAb";
 		System.out.println("设置新密码： "+newPassword);
-		tester.resetPasswordBySMSCodeWithLogin(userId, smsCode, newPassword);
+//		tester.resetPasswordBySMSCodeWithLogin(userId, smsCode, newPassword);
+		tester.resetPasswordBySMSCodeWithoutLogin(userId, smsCode, newPassword);
 	}
 	
 	public void resetPasswordBySMS() throws Exception {
@@ -57,6 +62,43 @@ public class EndUserCredentialReSetTester {
 		method.addParameter("endUser.atid", userId);
 		method.addParameter("password", MockHttpRequest.encrypt(newPassword+"##"+System.currentTimeMillis()));
 		method.addParameter("smsCode", smsCode);
+		client.executeMethod(method);
+		
+		returnMessage = EncodingUtil.getString(method.getResponseBody(), "UTF-8");
+		System.out.println("returnMessage : " + returnMessage);
+	}
+	
+	public void resetPasswordBySMSCodeWithoutLogin(String userId, String smsCode, String newPassword) throws Exception {
+		method = new PostMethod(resetPasswordBySMSCodeWithoutLoginURL);
+		method.addParameter("appId", appId);
+		method.addParameter("appSecretKey", MockHttpRequest.encrypt(appSecretKey+"##"+System.currentTimeMillis()));
+		method.addParameter("endUser.atid", userId);
+		method.addParameter("password", MockHttpRequest.encrypt(newPassword+"##"+System.currentTimeMillis()));
+		method.addParameter("smsCode", smsCode);
+		client.executeMethod(method);
+		
+		returnMessage = EncodingUtil.getString(method.getResponseBody(), "UTF-8");
+		System.out.println("returnMessage : " + returnMessage);
+		
+		/* 获得登录授权码 */
+		method = new PostMethod(getEndUserSignOnGrantURL);
+		method.addParameter("appId", appId);
+		method.addParameter("redirectURI", appDomain);
+		method.addParameter("loginAccount", loginAccount);
+		method.addParameter("password", MockHttpRequest.encrypt(newPassword+"##"+System.currentTimeMillis()));
+		client.executeMethod(method);
+		
+		returnMessage = EncodingUtil.getString(method.getResponseBody(), "UTF-8");
+		System.out.println("returnMessage : " + returnMessage);
+		jsonObject = new JSONObject(returnMessage);
+		String grantCode = jsonObject.get("grantCode").toString();
+		System.out.println("grantCode : " + grantCode);
+		
+		/* 获得访问令牌 */
+		method = new PostMethod(getEndUserAccessTokenURL);
+		method.addParameter("appId", appId);
+		method.addParameter("grantCode", grantCode);
+		method.addParameter("appSecretKey", MockHttpRequest.encrypt(appSecretKey+"##"+System.currentTimeMillis()));
 		client.executeMethod(method);
 		
 		returnMessage = EncodingUtil.getString(method.getResponseBody(), "UTF-8");

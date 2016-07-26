@@ -14,11 +14,12 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.json.JSONObject;
 
 public class MockHttpRequest {
-	public static String baseURL = "http://172.16.165.223:8080/security-api";
+//	public static String baseURL = "http://172.16.165.223:8080/security-api";
+	public static String baseURL = "http://172.16.146.152:8080/security-api";
 	
 	public static void main(String[] args) throws Exception {
-		MockHttpRequest.adminLoginAndGetEndUserInfo();
-//		MockHttpRequest.endUserLoginWithMD5Password();
+//		MockHttpRequest.adminLoginAndGetEndUserInfo();
+		MockHttpRequest.endUserLoginWithMD5Password();
 	}
 	
 	/**
@@ -38,8 +39,8 @@ public class MockHttpRequest {
 		String appId = "432B31FB2F7C4BB19ED06374FB0C1850";
 		String appSecretKey = "pASS12#";
 		String appDomain = "http://www.zhigongjiaoyu.com";
-		String loginAccount = "gjm2015";
-		String password = "gjm2015Password";
+		String loginAccount = "gz2016001";
+		String password = "578357^AAb";
 		
 		/* 定义调用地址和调用参数 */
 		String getEndUserSignOnGrantURL = baseURL+"/getEndUserSignOnGrant";
