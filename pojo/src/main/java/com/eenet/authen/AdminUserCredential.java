@@ -1,9 +1,9 @@
 package com.eenet.authen;
 
 import com.eenet.base.BaseEntity;
+import com.eenet.baseinfo.user.AdminUserInfo;
 import com.eenet.common.BackupDeletedData;
 import com.eenet.common.BackupUpdatedData;
-import com.eenet.user.AdminUserInfo;
 
 /**
  * 服务人员登录密码

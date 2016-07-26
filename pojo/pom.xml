@@ -18,5 +18,10 @@
 			<artifactId>base-pojo</artifactId>
 			<version>${dev-framework.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>eenet.public.baseinfo</groupId>
+			<artifactId>baseinfo-pojo</artifactId>
+			<version>${eenet.baseinfo.version}</version>
+		</dependency>
 	</dependencies>
 </project>

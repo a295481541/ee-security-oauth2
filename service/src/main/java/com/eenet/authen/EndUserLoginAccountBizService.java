@@ -1,8 +1,7 @@
 package com.eenet.authen;
 
 import com.eenet.base.SimpleResponse;
-import com.eenet.base.StringResponse;
-import com.eenet.user.EndUserInfo;
+import com.eenet.baseinfo.user.EndUserInfo;
 import com.eenet.util.cryptography.RSADecrypt;
 
 /**

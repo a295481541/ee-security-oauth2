@@ -14,12 +14,12 @@ import com.eenet.authen.IdentityAuthenticationBizService;
 import com.eenet.authen.SignOnGrant;
 import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.base.SimpleResponse;
+import com.eenet.baseinfo.user.AdminUserInfo;
+import com.eenet.baseinfo.user.AdminUserInfoBizService;
+import com.eenet.baseinfo.user.EndUserInfo;
+import com.eenet.baseinfo.user.EndUserInfoBizService;
 import com.eenet.common.code.SystemCode;
 import com.eenet.security.RegistNewUserBizService;
-import com.eenet.user.AdminUserInfo;
-import com.eenet.user.AdminUserInfoBizService;
-import com.eenet.user.EndUserInfo;
-import com.eenet.user.EndUserInfoBizService;
 import com.eenet.util.EEBeanUtils;
 
 public class RegistNewUserBizImpl implements RegistNewUserBizService {

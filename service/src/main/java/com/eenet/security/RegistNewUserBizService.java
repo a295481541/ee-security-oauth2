@@ -7,8 +7,8 @@ import com.eenet.authen.EndUserCredential;
 import com.eenet.authen.EndUserLoginAccount;
 import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.base.SimpleResponse;
-import com.eenet.user.AdminUserInfo;
-import com.eenet.user.EndUserInfo;
+import com.eenet.baseinfo.user.AdminUserInfo;
+import com.eenet.baseinfo.user.EndUserInfo;
 
 /**
  * 注册新用户服务

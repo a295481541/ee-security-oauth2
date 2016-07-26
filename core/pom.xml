@@ -25,6 +25,13 @@
 			<version>${dev-framework.version}</version>
 		</dependency>
 		
+		<!-- baseinfo -->
+		<dependency>
+			<groupId>eenet.public.baseinfo</groupId>
+			<artifactId>baseinfo-service</artifactId>
+			<version>${eenet.baseinfo.version}</version>
+		</dependency>
+		
 		<!-- apache http client -->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>

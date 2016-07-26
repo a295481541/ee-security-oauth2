@@ -1,7 +1,7 @@
 package com.eenet.authen;
 
 import com.eenet.base.SimpleResponse;
-import com.eenet.user.AdminUserInfo;
+import com.eenet.baseinfo.user.AdminUserInfo;
 
 /**
  * 服务人员登录账号服务

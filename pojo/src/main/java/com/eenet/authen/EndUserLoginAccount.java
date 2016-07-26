@@ -1,9 +1,9 @@
 package com.eenet.authen;
 
 import com.eenet.base.BaseEntity;
+import com.eenet.baseinfo.user.EndUserInfo;
 import com.eenet.common.BackupDeletedData;
 import com.eenet.common.BackupUpdatedData;
-import com.eenet.user.EndUserInfo;
 
 /**
  * 最终用户登录账号信息

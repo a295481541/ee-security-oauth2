@@ -1,7 +1,7 @@
 package com.eenet.authen;
 
 import com.eenet.base.SimpleResponse;
-import com.eenet.user.UserInfo;
+import com.eenet.baseinfo.user.UserInfo;
 /**
  * 访问授权码
  * 业务规则：

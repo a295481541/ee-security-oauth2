@@ -18,10 +18,10 @@ import com.eenet.authen.EndUserLoginAccount;
 import com.eenet.authen.IdentityAuthenticationBizService;
 import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.base.SimpleResponse;
+import com.eenet.baseinfo.user.AdminUserInfo;
+import com.eenet.baseinfo.user.EndUserInfo;
 import com.eenet.common.code.SystemCode;
 import com.eenet.security.RegistNewUserBizService;
-import com.eenet.user.AdminUserInfo;
-import com.eenet.user.EndUserInfo;
 import com.eenet.util.EEBeanUtils;
 
 @Controller

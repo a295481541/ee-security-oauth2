@@ -13,8 +13,8 @@ import com.eenet.base.biz.SimpleBizImpl;
 import com.eenet.base.query.ConditionItem;
 import com.eenet.base.query.QueryCondition;
 import com.eenet.base.query.RangeType;
+import com.eenet.baseinfo.user.AdminUserInfo;
 import com.eenet.common.cache.RedisClient;
-import com.eenet.user.AdminUserInfo;
 import com.eenet.util.EEBeanUtils;
 
 /**
