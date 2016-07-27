@@ -20,7 +20,7 @@
 	</profiles>
 	<properties>
 		<junit.version>4.12</junit.version>
-		<eenet.security.version>2.00</eenet.security.version>
+		<eenet.security.version>${project.version}</eenet.security.version>
 		<spring.version>4.2.2.RELEASE</spring.version>
 		<aspectj.version>1.8.7</aspectj.version>
 		<dubbo.version>2.5.3</dubbo.version>

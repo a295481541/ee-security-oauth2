@@ -19,21 +19,21 @@ import com.eenet.authen.SignOnGrant;
 import com.eenet.authen.request.UserAccessTokenAuthenRequest;
 import com.eenet.authen.response.UserAccessTokenAuthenResponse;
 import com.eenet.base.SimpleResponse;
+import com.eenet.baseinfo.user.EndUserInfo;
+import com.eenet.baseinfo.user.EndUserInfoBizService;
 import com.eenet.test.env.SpringEnvironment;
-import com.eenet.user.EndUserInfo;
-import com.eenet.user.EndUserInfoBizService;
 import com.eenet.util.EEBeanUtils;
 import com.eenet.util.cryptography.RSAEncrypt;
 import com.eenet.util.cryptography.RSAUtil;
 
 public class EndUserSignOnTester extends SpringEnvironment {
-	private BusinessAppBizService appService = (BusinessAppBizService)super.getContext().getBean("BusinessAppBizImpl");
-	private EndUserInfoBizService userService = (EndUserInfoBizService)super.getContext().getBean("EndUserInfoBizImpl");
-	private EndUserLoginAccountBizService accountService = (EndUserLoginAccountBizService)super.getContext().getBean("EndUserLoginAccountBizImpl");
-	private EndUserCredentialBizService credentialService = (EndUserCredentialBizService)super.getContext().getBean("EndUserCredentialBizImpl");
-	private EndUserSignOnBizService signService = (EndUserSignOnBizService)super.getContext().getBean("EndUserSignOnBizImpl");
-	private IdentityAuthenticationBizService identityService = (IdentityAuthenticationBizService)super.getContext().getBean("IdentityAuthenticationBizImpl");
-	private RSAEncrypt encrypt = (RSAEncrypt)super.getContext().getBean("TransferRSAEncrypt");
+	private final BusinessAppBizService appService = (BusinessAppBizService)super.getContext().getBean("BusinessAppBizImpl");
+	private final EndUserInfoBizService userService = (EndUserInfoBizService)super.getContext().getBean("EndUserInfoBizService");
+	private final EndUserLoginAccountBizService accountService = (EndUserLoginAccountBizService)super.getContext().getBean("EndUserLoginAccountBizImpl");
+	private final EndUserCredentialBizService credentialService = (EndUserCredentialBizService)super.getContext().getBean("EndUserCredentialBizImpl");
+	private final EndUserSignOnBizService signService = (EndUserSignOnBizService)super.getContext().getBean("EndUserSignOnBizImpl");
+	private final IdentityAuthenticationBizService identityService = (IdentityAuthenticationBizService)super.getContext().getBean("IdentityAuthenticationBizImpl");
+	private final RSAEncrypt encrypt = (RSAEncrypt)super.getContext().getBean("TransferRSAEncrypt");
 	
 	private BusinessApp app;
 	private EndUserInfo user;
@@ -51,8 +51,8 @@ public class EndUserSignOnTester extends SpringEnvironment {
 		System.out.println("==========================="+this.getClass().getName()+".loginByAccountPasswordAndMD5()===========================");
 		String appId = "432B31FB2F7C4BB19ED06374FB0C1850";
 		String appDomain = "http://www.zhigongjiaoyu.com";
-		String loginAccount = "gjm2015";
-		String password = "gjm2015Password";
+		String loginAccount = "ls001032@qq.com";
+		String password = "	aabb#3";
 		/* 获得登录授权码 */
 		SignOnGrant getSignOnGrant = 
 				signService.getSignOnGrant(appId, appDomain, loginAccount, RSAUtil.encryptWithTimeMillis(encrypt, password));

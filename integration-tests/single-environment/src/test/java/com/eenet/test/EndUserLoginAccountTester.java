@@ -6,17 +6,16 @@ import com.eenet.authen.EndUserLoginAccount;
 import com.eenet.authen.EndUserLoginAccountBizService;
 import com.eenet.authen.LoginAccountType;
 import com.eenet.base.SimpleResponse;
+import com.eenet.baseinfo.user.EndUserInfo;
+import com.eenet.baseinfo.user.EndUserInfoBizService;
 import com.eenet.test.env.SpringEnvironment;
-import com.eenet.user.EndUserInfo;
-import com.eenet.user.EndUserInfoBizService;
 
 public class EndUserLoginAccountTester extends SpringEnvironment {
+	private final EndUserLoginAccountBizService accountService = (EndUserLoginAccountBizService)super.getContext().getBean("EndUserLoginAccountBizImpl");
+	private final EndUserInfoBizService userService = (EndUserInfoBizService)super.getContext().getBean("EndUserInfoBizService");
 	@Test
 	public void crud(){
 		System.out.println("==========================="+this.getClass().getName()+".crud()===========================");
-		EndUserLoginAccountBizService accountService = (EndUserLoginAccountBizService)super.getContext().getBean("EndUserLoginAccountBizImpl");
-		EndUserInfoBizService userService = (EndUserInfoBizService)super.getContext().getBean("EndUserInfoBizImpl");
-		
 		EndUserInfo user = new EndUserInfo();
 		user.setName("Orion");
 		user.setMobileChecked(true);

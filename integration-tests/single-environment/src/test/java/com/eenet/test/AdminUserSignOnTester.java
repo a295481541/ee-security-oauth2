@@ -20,9 +20,9 @@ import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.authen.request.UserAccessTokenAuthenRequest;
 import com.eenet.authen.response.UserAccessTokenAuthenResponse;
 import com.eenet.base.SimpleResponse;
+import com.eenet.baseinfo.user.AdminUserInfo;
+import com.eenet.baseinfo.user.AdminUserInfoBizService;
 import com.eenet.test.env.SpringEnvironment;
-import com.eenet.user.AdminUserInfo;
-import com.eenet.user.AdminUserInfoBizService;
 import com.eenet.util.EEBeanUtils;
 import com.eenet.util.cryptography.EncryptException;
 import com.eenet.util.cryptography.RSAEncrypt;
@@ -30,7 +30,7 @@ import com.eenet.util.cryptography.RSAUtil;
 
 public class AdminUserSignOnTester extends SpringEnvironment {
 	private BusinessAppBizService appService = (BusinessAppBizService)super.getContext().getBean("BusinessAppBizImpl");
-	private AdminUserInfoBizService userService = (AdminUserInfoBizService)super.getContext().getBean("AdminUserInfoBizImpl");
+	private AdminUserInfoBizService userService = (AdminUserInfoBizService)super.getContext().getBean("AdminUserInfoBizService");
 	private AdminUserLoginAccountBizService accountService = (AdminUserLoginAccountBizService)super.getContext().getBean("AdminUserLoginAccountBizImpl");
 	private AdminUserCredentialBizService credentialService = (AdminUserCredentialBizService)super.getContext().getBean("AdminUserCredentialBizImpl");
 	private AdminUserSignOnBizService signService = (AdminUserSignOnBizService)super.getContext().getBean("AdminUserSignOnBizImpl");

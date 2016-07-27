@@ -5,10 +5,9 @@ import org.junit.Test;
 import com.eenet.authen.AdminUserCredential;
 import com.eenet.authen.AdminUserCredentialBizService;
 import com.eenet.base.SimpleResponse;
-import com.eenet.base.StringResponse;
+import com.eenet.baseinfo.user.AdminUserInfo;
+import com.eenet.baseinfo.user.AdminUserInfoBizService;
 import com.eenet.test.env.SpringEnvironment;
-import com.eenet.user.AdminUserInfo;
-import com.eenet.user.AdminUserInfoBizService;
 import com.eenet.util.cryptography.RSADecrypt;
 import com.eenet.util.cryptography.RSAEncrypt;
 import com.eenet.util.cryptography.RSAUtil;
@@ -18,7 +17,7 @@ public class AdminUserCredentialTester extends SpringEnvironment {
 	public void crud() throws Exception{
 		System.out.println("==========================="+this.getClass().getName()+".crud()===========================");
 		AdminUserCredentialBizService credentialService = (AdminUserCredentialBizService)super.getContext().getBean("AdminUserCredentialBizImpl");
-		AdminUserInfoBizService adminService = (AdminUserInfoBizService)super.getContext().getBean("AdminUserInfoBizImpl");
+		AdminUserInfoBizService adminService = (AdminUserInfoBizService)super.getContext().getBean("AdminUserInfoBizService");
 		RSAEncrypt encrypt = (RSAEncrypt)super.getContext().getBean("TransferRSAEncrypt");
 		RSADecrypt StorageRSADecrypt = (RSADecrypt)super.getContext().getBean("StorageRSADecrypt");
 		

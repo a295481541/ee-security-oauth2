@@ -6,16 +6,16 @@ import com.eenet.authen.AdminUserLoginAccount;
 import com.eenet.authen.AdminUserLoginAccountBizService;
 import com.eenet.authen.LoginAccountType;
 import com.eenet.base.SimpleResponse;
+import com.eenet.baseinfo.user.AdminUserInfo;
+import com.eenet.baseinfo.user.AdminUserInfoBizService;
 import com.eenet.test.env.SpringEnvironment;
-import com.eenet.user.AdminUserInfo;
-import com.eenet.user.AdminUserInfoBizService;
 
 public class AdminUserLoginAccountTester extends SpringEnvironment {
 	@Test
 	public void crud(){
 		System.out.println("==========================="+this.getClass().getName()+".crud()===========================");
 		AdminUserLoginAccountBizService accountService = (AdminUserLoginAccountBizService)super.getContext().getBean("AdminUserLoginAccountBizImpl");
-		AdminUserInfoBizService adminService = (AdminUserInfoBizService)super.getContext().getBean("AdminUserInfoBizImpl");
+		AdminUserInfoBizService adminService = (AdminUserInfoBizService)super.getContext().getBean("AdminUserInfoBizService");
 		
 		AdminUserInfo user = new AdminUserInfo();
 		user.setName("Orion");

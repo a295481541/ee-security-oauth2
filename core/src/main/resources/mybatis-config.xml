@@ -17,8 +17,8 @@
         <mapper resource="conf/base.PostgreSQL.mbt.xml" />
         <mapper resource="conf/base.MySQL.mbt.xml" />
         <!-- 业务模块 -->
-        <mapper resource="baseinfo/DBMapping/AdminUserInfo.xml" />
-		<mapper resource="baseinfo/DBMapping/EndUserInfo.xml"/>
+        <mapper resource="DBMapping/baseinfo/AdminUserInfo.xml" />
+		<mapper resource="DBMapping/baseinfo/EndUserInfo.xml"/>
  		<mapper resource="DBMapping/BusinessApp.xml" />
 		<mapper resource="DBMapping/AdminUserLoginAccount.xml"/>
 		<mapper resource="DBMapping/EndUserLoginAccount.xml"/>

@@ -12,10 +12,10 @@ import com.eenet.authen.EndUserLoginAccount;
 import com.eenet.authen.LoginAccountType;
 import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.base.SimpleResponse;
+import com.eenet.baseinfo.user.AdminUserInfo;
+import com.eenet.baseinfo.user.EndUserInfo;
 import com.eenet.security.RegistNewUserBizService;
 import com.eenet.test.env.SpringEnvironment;
-import com.eenet.user.AdminUserInfo;
-import com.eenet.user.EndUserInfo;
 import com.eenet.util.EEBeanUtils;
 import com.eenet.util.cryptography.RSAEncrypt;
 import com.eenet.util.cryptography.RSAUtil;
@@ -44,7 +44,7 @@ public class RegistNewUserTester extends SpringEnvironment {
 		System.out.println(EEBeanUtils.object2Json(accessToken));
 	}
 	
-//	@Test
+	@Test
 	public void registAdminUserWithoutLogin() throws Exception {
 		AdminUserInfo adminUser = new AdminUserInfo();
 		adminUser.setName("Orion");

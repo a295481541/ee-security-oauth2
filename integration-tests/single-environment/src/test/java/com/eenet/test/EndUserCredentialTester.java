@@ -10,21 +10,21 @@ import com.eenet.authen.EndUserCredentialBizService;
 import com.eenet.authen.EndUserSignOnBizService;
 import com.eenet.authen.SignOnGrant;
 import com.eenet.base.SimpleResponse;
+import com.eenet.baseinfo.user.EndUserInfo;
+import com.eenet.baseinfo.user.EndUserInfoBizService;
 import com.eenet.test.env.SpringEnvironment;
-import com.eenet.user.EndUserInfo;
-import com.eenet.user.EndUserInfoBizService;
 import com.eenet.util.cryptography.RSADecrypt;
 import com.eenet.util.cryptography.RSAEncrypt;
 import com.eenet.util.cryptography.RSAUtil;
 
 public class EndUserCredentialTester extends SpringEnvironment {
 	private final EndUserCredentialBizService credentialService = (EndUserCredentialBizService)super.getContext().getBean("EndUserCredentialBizImpl");
-	private final EndUserInfoBizService userService = (EndUserInfoBizService)super.getContext().getBean("EndUserInfoBizImpl");
+	private final EndUserInfoBizService userService = (EndUserInfoBizService)super.getContext().getBean("EndUserInfoBizService");
 	private final RSAEncrypt encrypt = (RSAEncrypt)super.getContext().getBean("TransferRSAEncrypt");
 	private final RSADecrypt StorageRSADecrypt = (RSADecrypt)super.getContext().getBean("StorageRSADecrypt");
 	private final EndUserSignOnBizService signService = (EndUserSignOnBizService)super.getContext().getBean("EndUserSignOnBizImpl");
 	
-//	@Test
+	@Test
 	public void crud() throws Exception{
 		System.out.println("==========================="+this.getClass().getName()+".crud()===========================");
 		

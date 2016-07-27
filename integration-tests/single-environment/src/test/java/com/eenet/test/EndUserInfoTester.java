@@ -6,16 +6,16 @@ import org.junit.Test;
 
 import com.eenet.base.BooleanResponse;
 import com.eenet.base.SimpleResponse;
+import com.eenet.baseinfo.user.EndUserInfo;
+import com.eenet.baseinfo.user.EndUserInfoBizService;
 import com.eenet.test.env.SpringEnvironment;
-import com.eenet.user.EndUserInfo;
-import com.eenet.user.EndUserInfoBizService;
 
 public class EndUserInfoTester extends SpringEnvironment {
 	
 	@Test
 	public void crud(){
 		EndUserInfo endUser = new EndUserInfo();
-		EndUserInfoBizService service = (EndUserInfoBizService)super.getContext().getBean("EndUserInfoBizImpl");
+		EndUserInfoBizService service = (EndUserInfoBizService)super.getContext().getBean("EndUserInfoBizService");
 		long mobile = new Random(1300000000).nextInt(1000);
 		endUser.setName("Orion");
 		endUser = service.save(endUser);

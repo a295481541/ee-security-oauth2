@@ -24,11 +24,12 @@ public class SpringEnvironment {
 	@BeforeClass
 	public static void initEnvironment() {
 		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[] {
+			"dubbo-debugEnv.xml",
 			"global-config.xml",
 			"rdbms-dataSource.xml",
 			"redis.xml",
 			"transaction.xml",
-			"user-service.xml",
+			"reference-user-service.xml",
 			"authen-service.xml",
 			"security-service.xml"
 		});
