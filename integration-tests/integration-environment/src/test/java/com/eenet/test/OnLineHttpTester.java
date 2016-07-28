@@ -181,7 +181,7 @@ public class OnLineHttpTester {
 		method.addParameter("appSecretKey", MockHttpRequest.encrypt(appSecretKey+"##"+System.currentTimeMillis()));
 		method.addParameter("userId", currentAdminUser.get("userId"));
 		method.addParameter("userAccessToken", currentAdminUser.get("accessToken"));
-		method.addParameter("getEndUserId", getEndUserId);
+		method.addParameter("endUserId", getEndUserId);
 		method.addParameter("userType", "adminUser");
 		client.executeMethod(method);
 		

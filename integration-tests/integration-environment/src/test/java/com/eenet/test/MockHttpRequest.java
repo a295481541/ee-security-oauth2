@@ -14,10 +14,18 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.json.JSONObject;
 
 public class MockHttpRequest {
-	public static String baseURL = "http://172.16.165.223:8080/security-api";
+	ApiURL baseURL = new ApiURL("dev");
+	/* 定义调用地址和调用参数 */
+	private final String getEndUserSignOnGrantURL = baseURL.getSecurityApiURL()+"/getEndUserSignOnGrant";
+	private final String getEndUserAccessTokenURL = baseURL.getSecurityApiURL()+"/getEndUserAccessToken";
+	private final String getAdminSignOnGrantURL = baseURL.getSecurityApiURL()+"/getAdminSignOnGrant";
+	private final String getAdminAccessTokenURL = baseURL.getSecurityApiURL()+"/getAdminAccessToken";
+	private final String getEndUserURL = baseURL.getBaseinfoApiURL()+"/getEndUser";
+	private final String refreshAdminAccessTokenURL = baseURL.getSecurityApiURL()+"/refreshAdminAccessToken";
 	
 	public static void main(String[] args) throws Exception {
-		MockHttpRequest.adminLoginAndGetEndUserInfo();
+		MockHttpRequest me = new MockHttpRequest();
+		me.adminLoginAndGetEndUserInfo();
 //		MockHttpRequest.endUserLoginWithMD5Password();
 	}
 	
@@ -27,7 +35,7 @@ public class MockHttpRequest {
 	 * 2016年6月16日
 	 * @author Orion
 	 */
-	public static void endUserLoginWithMD5Password() throws Exception{
+	public void endUserLoginWithMD5Password() throws Exception{
 		/* 公共参数 */
 		HttpClient client = new HttpClient();
 		client.getParams().setContentCharset("UTF-8");
@@ -40,10 +48,6 @@ public class MockHttpRequest {
 		String appDomain = "http://www.zhigongjiaoyu.com";
 		String loginAccount = "gjm2015";
 		String password = "gjm2015Password";
-		
-		/* 定义调用地址和调用参数 */
-		String getEndUserSignOnGrantURL = baseURL+"/getEndUserSignOnGrant";
-		String getEndUserAccessTokenURL = baseURL+"/getEndUserAccessToken";
 		
 		/* 获得登录授权码 */
 		method = new PostMethod(getEndUserSignOnGrantURL);
@@ -74,7 +78,7 @@ public class MockHttpRequest {
 //		System.out.println("accessToken : " + accessToken + ", refreshToken : " + refreshToken);
 	}
 	
-	public static void adminLoginAndGetEndUserInfo() throws Exception{
+	public void adminLoginAndGetEndUserInfo() throws Exception{
 		/* 公共参数 */
 		HttpClient client = new HttpClient();
 		client.getParams().setContentCharset("UTF-8");
@@ -87,14 +91,8 @@ public class MockHttpRequest {
 		String adminId = "38424AE288CF4C1CB22BF324C17AAB74";
 		String loginAccount = "md5Account";
 		String adminPassword = "md5Password";
-		String getEndUserId = "EE31F64139804467B42866053F1FA6C4";
+		String getEndUserId = "BD0C7C464D3448A4984ECA13661CA04B";
 		String appDomain = "http://www.zhigongjiaoyu.com";
-		
-		/* 定义调用地址和调用参数 */
-		String getAdminSignOnGrantURL = baseURL+"/getAdminSignOnGrant";
-		String getAdminAccessTokenURL = baseURL+"/getAdminAccessToken";
-		String getEndUserURL = baseURL+"/getEndUser";
-		String refreshAdminAccessTokenURL = baseURL+"/refreshAdminAccessToken";
 		
 		/* 获得登录授权码 */
 		method = new PostMethod(getAdminSignOnGrantURL);
@@ -126,7 +124,7 @@ public class MockHttpRequest {
 		
 		/* 使用访问令牌查询数据 */
 		method = new PostMethod(getEndUserURL);
-		method.addParameter("getEndUserId", getEndUserId);
+		method.addParameter("endUserId", getEndUserId);
 		method.addParameter("userType", "adminUser");
 		method.addParameter("userId", adminId);
 		method.addParameter("userAccessToken", accessToken);
@@ -154,7 +152,7 @@ public class MockHttpRequest {
 		
 		/* 使用新的访问令牌查询数据 */
 		method = new PostMethod(getEndUserURL);
-		method.addParameter("getEndUserId", getEndUserId);
+		method.addParameter("endUserId", getEndUserId);
 		method.addParameter("userType", "adminUser");
 		method.addParameter("userId", adminId);
 		method.addParameter("userAccessToken", newAccessToken);

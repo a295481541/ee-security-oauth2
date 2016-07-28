@@ -17,6 +17,8 @@ import com.eenet.authen.EndUserCredential;
 import com.eenet.authen.EndUserLoginAccount;
 import com.eenet.authen.IdentityAuthenticationBizService;
 import com.eenet.authen.request.AppAuthenRequest;
+import com.eenet.authen.response.UserAccessTokenAuthenResponse;
+import com.eenet.base.BooleanResponse;
 import com.eenet.base.SimpleResponse;
 import com.eenet.baseinfo.user.AdminUserInfo;
 import com.eenet.baseinfo.user.EndUserInfo;
@@ -30,6 +32,77 @@ public class RegistNewUserController {
 	private RegistNewUserBizService registNewUserBizService;
 	@Autowired
 	private IdentityAuthenticationBizService identityAuthenticationBizService;
+	@Autowired
+	private PreRegistEndUserBizService preRegistEndUserBizService;
+	
+	@RequestMapping(value = "/endUserExistMEID", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
+	@ResponseBody
+	public String existMobileEmailId(APIRequestIdentity identity,String mobile, String email, String idCard) {
+		SimpleResponse response = new SimpleResponse();
+		response.setSuccessful(false);
+		
+		/* 接入系统认证 */
+		AppAuthenRequest request = new AppAuthenRequest();
+		request.setAppId(identity.getAppId());
+		request.setAppSecretKey(identity.getAppSecretKey());
+		SimpleResponse appAuthen = identityAuthenticationBizService.appAuthen(request);
+		if (!appAuthen.isSuccessful()) {
+			response.addMessage(appAuthen.getStrMessage());
+			return EEBeanUtils.object2Json(response);
+		}
+		
+		/* 执行业务 */
+		BooleanResponse result = this.preRegistEndUserBizService.existMobileEmailId(mobile, email, idCard);
+		return EEBeanUtils.object2Json(result);
+	}
+	
+	@RequestMapping(value = "/getEndUserByMEID", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
+	@ResponseBody
+	public String getByMobileEmailId(APIRequestIdentity identity,String mobile, String email, String idCard) {
+		SimpleResponse response = new SimpleResponse();
+		response.setSuccessful(false);
+		
+		/* 用户类型检查 */
+		if (identity==null || EEBeanUtils.isNULL(identity.getUserType())) {
+			response.addMessage("用户类型未知");
+			return EEBeanUtils.object2Json(response);
+		} else if (!identity.getUserType().equals("endUser") && !identity.getUserType().equals("adminUser")) {
+			response.addMessage(identity.getUserType()+"类型的用户不可通过手机、邮箱或身份证获得最终用户个人信息");
+			return EEBeanUtils.object2Json(response);
+		}
+		
+		/* 接入系统认证 */
+		AppAuthenRequest request = new AppAuthenRequest();
+		request.setAppId(identity.getAppId());
+		request.setAppSecretKey(identity.getAppSecretKey());
+		SimpleResponse appAuthen = identityAuthenticationBizService.appAuthen(request);
+		if (!appAuthen.isSuccessful()) {
+			response.addMessage(appAuthen.getStrMessage());
+			return EEBeanUtils.object2Json(response);
+		}
+		
+		/* 根据用户类型验证身份 */
+		UserAccessTokenAuthenResponse tokenAuthen = null;
+		if (identity.getUserType().equals("endUser")) {
+			tokenAuthen = identityAuthenticationBizService.endUserAuthen(identity);
+		} else if (identity.getUserType().equals("adminUser")) {
+			tokenAuthen = identityAuthenticationBizService.adminUserAuthen(identity);
+		} else {
+			response.addMessage("未知的用户类型："+identity.getUserType());
+			return EEBeanUtils.object2Json(response);
+		}
+		if (tokenAuthen==null || !tokenAuthen.isSuccessful()) {
+			if (tokenAuthen==null)
+				response.addMessage("验证失败，无错误信息");
+			else
+				response.addMessage(tokenAuthen.getStrMessage());
+			return EEBeanUtils.object2Json(response);
+		}
+		
+		/* 执行业务 */
+		EndUserInfo result = preRegistEndUserBizService.getByMobileEmailId(mobile, email, idCard);
+		return EEBeanUtils.object2Json(result);
+	}
 	
 	@RequestMapping(value = "/registEndUserWithLogin", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody

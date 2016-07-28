@@ -40,4 +40,9 @@
 		<property name="endUserInfoBizService" ref="EndUserInfoBizService"/>
 		<property name="RedisClient" ref="RedisClient"/>
 	</bean>
+	
+	<!-- 注册新用户服务预先检查服务 -->
+	<bean id="PreRegistEndUserBizImpl" class="com.eenet.security.PreRegistEndUserBizImpl">
+		<property name="endUserInfoBizService" ref="EndUserInfoBizService"/>
+	</bean>
 </beans>

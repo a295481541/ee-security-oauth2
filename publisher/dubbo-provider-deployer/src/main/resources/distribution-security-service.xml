@@ -15,4 +15,6 @@
 	<dubbo:service interface="com.eenet.security.RegistNewUserBizService" ref="RegistNewUserBizImpl"/>
 	<!-- 最终用户管理服务 -->
 	<dubbo:service interface="com.eenet.security.EndUserCredentialReSetBizService" ref="EndUserCredentialReSetBizImpl" />
+	<!-- 注册新用户服务预先检查服务 -->
+	<dubbo:service interface="com.eenet.security.PreRegistEndUserBizService" ref="PreRegistEndUserBizImpl" />
 </beans>

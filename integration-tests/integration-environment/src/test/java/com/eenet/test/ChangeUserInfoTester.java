@@ -9,21 +9,21 @@ import org.apache.commons.httpclient.util.EncodingUtil;
 import org.json.JSONObject;
 
 public class ChangeUserInfoTester {
-	private String baseURL = "http://172.16.146.152:8080/security-api";
+	ApiURL baseURL = new ApiURL("dev");
 	/* 定义调用地址和调用参数 */
-	private String getEndUserSignOnGrantURL = baseURL+"/getEndUserSignOnGrant";
-	private String getEndUserAccessTokenURL = baseURL+"/getEndUserAccessToken";
-	private String refreshEndUserAccessTokenURL = baseURL+"/refreshEndUserAccessToken";
-	private String saveEndUserURL = baseURL+"/saveEndUser";
-	private String appId = "FAC6D2625780432A9C197EF3E2337F08";
-	private String appSecretKey = "pASS12#";
-	private String appDomain = "http://hz.zhigongjiaoyu.com";
+	private final String getEndUserSignOnGrantURL = baseURL.getSecurityApiURL()+"/getEndUserSignOnGrant";
+	private final String getEndUserAccessTokenURL = baseURL.getSecurityApiURL()+"/getEndUserAccessToken";
+	private final String refreshEndUserAccessTokenURL = baseURL.getSecurityApiURL()+"/refreshEndUserAccessToken";
+	private final String saveEndUserURL = baseURL.getBaseinfoApiURL()+"/saveEndUser";
+	private final String appId = "FAC6D2625780432A9C197EF3E2337F08";
+	private final String appSecretKey = "pASS12#";
+	private final String appDomain = "http://hz.zhigongjiaoyu.com";
 	
 	public static void main(String[] args) throws Exception {
 		ChangeUserInfoTester me = new ChangeUserInfoTester();
-		Map<String,String> loginRS = me.endUserLogin("13071220990","123456");
-		me.refreshEndUserToken(loginRS.get("refreshToken"), loginRS.get("userId"));
-//		me.changeUserInfo(loginRS.get("accessToken"), loginRS.get("refreshToken"), loginRS.get("userId"));
+		Map<String,String> loginRS = me.endUserLogin("gz2016001","250196^AAb");
+		loginRS = me.refreshEndUserToken(loginRS.get("refreshToken"), loginRS.get("userId"));
+		me.changeUserInfo(loginRS.get("accessToken"), loginRS.get("userId"));
 	}
 	
 	public Map<String,String> endUserLogin(String loginAccount, String password) throws Exception {
@@ -74,10 +74,20 @@ public class ChangeUserInfoTester {
 		
 		returnMessage = EncodingUtil.getString(method.getResponseBody(), "UTF-8");
 		System.out.println("刷新令牌 : " + returnMessage);
-		return null;
+		
+		jsonObject = new JSONObject(returnMessage);
+		String newAccessToken = jsonObject.get("accessToken").toString();
+		String newRefreshToken = jsonObject.get("refreshToken").toString();
+		
+		Map<String,String> result = new HashMap<String,String>();
+		result.put("accessToken", newAccessToken);
+		result.put("refreshToken", newRefreshToken);
+		result.put("userId", userId);
+		return result;
 	}
 	
-	public void changeUserInfo(String accessToken, String refreshToken, String userId) throws Exception {
+	public void changeUserInfo(String accessToken, String userId) throws Exception {
+		System.out.println("准备修改用户信息，accessToken: "+accessToken+",userId : "+userId);
 		method = new PostMethod(saveEndUserURL);
 		method.addParameter("appId", appId);
 		method.addParameter("appSecretKey", MockHttpRequest.encrypt(appSecretKey+"##"+System.currentTimeMillis()));
@@ -85,7 +95,7 @@ public class ChangeUserInfoTester {
 		method.addParameter("userAccessToken", accessToken);
 		method.addParameter("userType", "endUser");
 		method.addParameter("atid", userId);
-		method.addParameter("province", "440000000");
+		method.addParameter("province", "440000000");//<--此处为修改内容
 		client.executeMethod(method);
 		
 		returnMessage = EncodingUtil.getString(method.getResponseBody(), "UTF-8");
