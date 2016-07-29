@@ -14,7 +14,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.json.JSONObject;
 
 public class MockHttpRequest {
-	ApiURL baseURL = new ApiURL("dev");
+	ApiURL baseURL = new ApiURL("test");
 	/* 定义调用地址和调用参数 */
 	private final String getEndUserSignOnGrantURL = baseURL.getSecurityApiURL()+"/getEndUserSignOnGrant";
 	private final String getEndUserAccessTokenURL = baseURL.getSecurityApiURL()+"/getEndUserAccessToken";

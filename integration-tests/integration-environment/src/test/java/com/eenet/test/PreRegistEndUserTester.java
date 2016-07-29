@@ -6,7 +6,7 @@ import org.apache.commons.httpclient.util.EncodingUtil;
 import org.json.JSONObject;
 
 public class PreRegistEndUserTester {
-	ApiURL baseURL = new ApiURL("dev");
+	ApiURL baseURL = new ApiURL("test");
 	/* 定义调用地址和调用参数 */
 	private final String existMobileEmailIdURL = baseURL.getSecurityApiURL()+"/endUserExistMEID";
 	private final String getByMobileEmailIdURL = baseURL.getSecurityApiURL()+"/getEndUserByMEID";

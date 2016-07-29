@@ -9,7 +9,7 @@ import org.apache.commons.httpclient.util.EncodingUtil;
 import org.json.JSONObject;
 
 public class ChangeUserInfoTester {
-	ApiURL baseURL = new ApiURL("dev");
+	ApiURL baseURL = new ApiURL("test");
 	/* 定义调用地址和调用参数 */
 	private final String getEndUserSignOnGrantURL = baseURL.getSecurityApiURL()+"/getEndUserSignOnGrant";
 	private final String getEndUserAccessTokenURL = baseURL.getSecurityApiURL()+"/getEndUserAccessToken";
@@ -21,7 +21,7 @@ public class ChangeUserInfoTester {
 	
 	public static void main(String[] args) throws Exception {
 		ChangeUserInfoTester me = new ChangeUserInfoTester();
-		Map<String,String> loginRS = me.endUserLogin("gz2016001","250196^AAb");
+		Map<String,String> loginRS = me.endUserLogin("gz2016001","854733^AAb");
 		loginRS = me.refreshEndUserToken(loginRS.get("refreshToken"), loginRS.get("userId"));
 		me.changeUserInfo(loginRS.get("accessToken"), loginRS.get("userId"));
 	}
@@ -95,7 +95,7 @@ public class ChangeUserInfoTester {
 		method.addParameter("userAccessToken", accessToken);
 		method.addParameter("userType", "endUser");
 		method.addParameter("atid", userId);
-		method.addParameter("province", "440000000");//<--此处为修改内容
+		method.addParameter("province", "440000888");//<--此处为修改内容
 		client.executeMethod(method);
 		
 		returnMessage = EncodingUtil.getString(method.getResponseBody(), "UTF-8");
