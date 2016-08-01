@@ -79,5 +79,11 @@ public final class AuthenCacheKey {
 	 */
 	public final static String ENDUSER_CACHED_TOKEN = "ENDUSER_CACHED_TOKEN";
 	
+	/**
+	 * 最终用户重置密码短信验证码
+	 * redisKey:ENDUSER_FASTLOGIN_SMS_CODE, mapKey:[end user id]，value:[sms code]
+	 */
+	public final static String ENDUSER_FASTLOGIN_SMS_CODE = "ENDUSER_FASTLOGIN_SMS_CODE";
+	
 	private AuthenCacheKey() {}
 }

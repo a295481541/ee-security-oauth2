@@ -42,7 +42,7 @@ public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizS
 		StringResponse result = new StringResponse();
 		result.setSuccessful(false);
 		/* 参数检查 */
-		if (EEBeanUtils.isNULL(appId) || mobile<10000000000l) {
+		if (EEBeanUtils.isNULL(appId) || mobile<13000000000l) {
 			result.addMessage("接入应用标识或手机号不正确("+this.getClass().getName()+")");
 			return result;
 		}

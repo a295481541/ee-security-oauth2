@@ -9,7 +9,7 @@ public final class SecurityCacheKey {
 	
 	/**
 	 * 近期有发送短信的手机号（用于限制短信发送频率）
-	 * redisKey:BIZ_APP, mapKey:[手机号码]，value:[时间戳（与1970年1月1号0时0分0秒所差的毫秒数）]
+	 * redisKey:RECENT_SEND_SMS, mapKey:[手机号码]，value:[时间戳（与1970年1月1号0时0分0秒所差的毫秒数）]
 	 */
 	public final static String RECENT_SEND_SMS = "RECENT_SEND_SMS";
 	
