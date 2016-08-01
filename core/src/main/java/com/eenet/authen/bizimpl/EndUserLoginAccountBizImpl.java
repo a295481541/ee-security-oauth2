@@ -9,7 +9,6 @@ import com.eenet.authen.cacheSyn.SynEndUserLoginAccount2Redis;
 import com.eenet.authen.util.ABBizCode;
 import com.eenet.base.SimpleResponse;
 import com.eenet.base.SimpleResultSet;
-import com.eenet.base.StringResponse;
 import com.eenet.base.biz.SimpleBizImpl;
 import com.eenet.base.query.ConditionItem;
 import com.eenet.base.query.QueryCondition;
