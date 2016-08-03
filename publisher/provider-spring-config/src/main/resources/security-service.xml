@@ -44,5 +44,6 @@
 	<!-- 注册新用户服务预先检查服务 -->
 	<bean id="PreRegistEndUserBizImpl" class="com.eenet.security.PreRegistEndUserBizImpl">
 		<property name="endUserInfoBizService" ref="EndUserInfoBizService"/>
+		<property name="endUserLoginAccountBizService" ref="EndUserLoginAccountBizImpl"/>
 	</bean>
 </beans>

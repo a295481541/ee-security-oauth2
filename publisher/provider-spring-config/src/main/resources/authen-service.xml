@@ -76,4 +76,15 @@
 		<property name="identityUtil" ref="IdentityUtil"/>
 		<property name="businessAppBizService" ref="BusinessAppBizImpl"/>
 	</bean>
+	
+	<!-- 通过短信验证码快速登录服务 -->
+	<bean id="EndUserSMSSignOnBizImpl" class="com.eenet.authen.bizimpl.EndUserSMSSignOnBizImpl">
+		<property name="endUserInfoBizService" ref="EndUserInfoBizService"/>
+		<property name="RedisClient" ref="RedisClient"/>
+		<property name="sendSMSBizService" ref="EeSendSMSBizImpl"/>
+		<property name="preRegistEndUserBizService" ref="PreRegistEndUserBizImpl"/>
+		<property name="authenService" ref="IdentityAuthenticationBizImpl"/>
+		<property name="signOnUtil" ref="SignOnUtil"/>
+		<property name="businessAppBizService" ref="BusinessAppBizImpl"/>
+	</bean>
 </beans>

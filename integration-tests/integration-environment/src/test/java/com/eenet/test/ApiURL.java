@@ -2,10 +2,10 @@ package com.eenet.test;
 
 public class ApiURL {
 	private static final String devEnvSecurityApiURL = "http://172.16.165.223:8080/security-api";
-	private static final String devEnvbaseinfoApiURL = "http://172.16.165.223:8080/baseinfo-api";
+	private static final String devEnvbaseinfoApiURL = "http://172.16.165.223:8080/baseinfo-openapi";
 	
 	private static final String testEnvSecurityApiURL = "http://172.16.146.152:8080/security-api";
-	private static final String testEnvbaseinfoApiURL = "http://172.16.146.152:8080/baseinfo-api";
+	private static final String testEnvbaseinfoApiURL = "http://172.16.146.152:8080/baseinfo-openapi";
 	
 	private static final String rtEnvSecurityApiURL = "http://security-api.open.gzedu.com";
 	private static final String rtEnvbaseinfoApiURL = "http://baseinfo-api.open.gzedu.com";
