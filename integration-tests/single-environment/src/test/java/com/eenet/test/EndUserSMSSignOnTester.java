@@ -16,10 +16,10 @@ public class EndUserSMSSignOnTester extends SpringEnvironment {
 	private final String appId = "9CFF0CA0D43D4B2DAC1EFC6A86FCB191";
 	private final String redirectURI = "http://hz.saas.workeredu.com";
 	private final String appSecretKey = "pASS41#";
-	private final long mobile = 13922202252l;
+	private final long mobile = 13071220990l;
 	private final String smsCode = "525929";//<----要按收到的
 	
-//	@Test
+	@Test
 	public void sendSMSCode4Login() {
 		SimpleResponse sendRS = signOnService.sendSMSCode4Login(appId, mobile);
 		if (!sendRS.isSuccessful())
@@ -28,7 +28,7 @@ public class EndUserSMSSignOnTester extends SpringEnvironment {
 			System.out.println("发送成功");
 	}
 	
-	@Test
+//	@Test
 	public void getAccessToken() throws Exception{
 		SimpleResponse validateSMS = signOnService.validateSMSCode4Login(appId, mobile, smsCode, false);
 		if ( !validateSMS.isSuccessful() ) {

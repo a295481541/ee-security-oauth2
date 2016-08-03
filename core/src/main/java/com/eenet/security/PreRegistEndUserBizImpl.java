@@ -21,8 +21,12 @@ public class PreRegistEndUserBizImpl implements PreRegistEndUserBizService {
 		if ( !loginAccountExist )
 			loginAccountExist = getEndUserLoginAccountBizService().retrieveEndUserInfo(idCard).isSuccessful();
 		
-		if (loginAccountExist)
-			return new BooleanResponse();
+		if (loginAccountExist) {
+			BooleanResponse result = new BooleanResponse();
+			result.setResult(true);
+			return result;
+		}
+			
 		
 		/* 账号不存在，检查人员信息中的手机、邮箱、身份证是否存在 */
 		return getEndUserInfoBizService().existMobileEmailId(mobile, email, idCard);
