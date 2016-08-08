@@ -22,7 +22,7 @@ public class EndUserSMSSignOnTester {
 	private final String appId = "9CFF0CA0D43D4B2DAC1EFC6A86FCB191";
 	private final String appDomain = "http://hz.saas.workeredu.com";
 	private final String appSecretKey = "pASS41#";
-	private final long mobile = 13071220990l;
+	private final long mobile = 13922202252l;
 	
 	public static void main(String[] args) throws Exception {
 		EndUserSMSSignOnTester me = new EndUserSMSSignOnTester();
