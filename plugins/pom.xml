@@ -14,5 +14,6 @@
 		<module>web-plugin</module>
 		<module>dubbo-provider</module>
 		<module>dubbo-consumer</module>
+		<module>dubbo-authen-plugin</module>
 	</modules>
 </project>
