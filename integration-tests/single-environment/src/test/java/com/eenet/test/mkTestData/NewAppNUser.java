@@ -27,8 +27,8 @@ import com.eenet.util.cryptography.RSAEncrypt;
 import com.eenet.util.cryptography.RSAUtil;
 
 public class NewAppNUser extends SpringEnvironment{
-	private AdminUserInfoBizService adminService = (AdminUserInfoBizService)super.getContext().getBean("AdminUserInfoBizImpl");
-	private EndUserInfoBizService endUserService = (EndUserInfoBizService)super.getContext().getBean("EndUserInfoBizImpl");
+	private AdminUserInfoBizService adminService = (AdminUserInfoBizService)super.getContext().getBean("AdminUserInfoBizService");
+	private EndUserInfoBizService endUserService = (EndUserInfoBizService)super.getContext().getBean("EndUserInfoBizService");
 	private BusinessAppBizService appService = (BusinessAppBizService)super.getContext().getBean("BusinessAppBizImpl");
 	private AdminUserLoginAccountBizService adminAccountService = (AdminUserLoginAccountBizService)super.getContext().getBean("AdminUserLoginAccountBizImpl");
 	private AdminUserCredentialBizService adminCredentialService = (AdminUserCredentialBizService)super.getContext().getBean("AdminUserCredentialBizImpl");
@@ -81,20 +81,20 @@ public class NewAppNUser extends SpringEnvironment{
 		}
 	}
 	
-//	@Test
+	@Test
 	public void createAPP() {
 		BusinessApp app = new BusinessApp();
 		String appSecretKey = "pASS"+(new Random().nextInt(100))+"#";
-		app.setAppName("职工教育网（广州）");
+		app.setAppName("职工教育网（测试系统）");
 		app.setAppType(BusinessAppType.WEBAPP);
-		app.setRedirectURIPrefix("http://www.zhigongjiaoyu.com");
+		app.setRedirectURIPrefix("http://test.saas.workeredu.com");
 		app.setSecretKey(appSecretKey);
 		app.setDataDescription("勿删！！！重要测试数据");
 		app = appService.registeApp(app);
 		System.out.println("APPID: " + app.getAtid() + ",系统中文名：" + app.getAppName() + ",接入密码: "+appSecretKey+",合法地址： "+app.getRedirectURIPrefix());
 	}
 	
-	@Test
+//	@Test
 	public void batchCreateAPP() {
 		String[] appName = {"杭州职工教育网","湖州职工教育网","湖北职工教育网"};
 		String[] appDomain = {"http://hz.saas.workeredu.com","http://huzhou.saas.workeredu.com","http://hb.saas.workeredu.com"};

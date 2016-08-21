@@ -1,2 +1,0 @@
-consumerConfirm=com.eenet.extension.dubbo.ConsumerConfirmFilter
-endUserConfirm=com.eenet.extension.dubbo.EndUserConfirmFilter
