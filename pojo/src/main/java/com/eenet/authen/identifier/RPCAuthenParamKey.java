@@ -17,6 +17,11 @@ public class RPCAuthenParamKey {
 	public static final String BIZ_APP_SECRETKEY = "AUTHEN_BIZ_APP_SECRETKEY";
 	
 	/**
+	 * 业务系统合法地址
+	 */
+	public static final String BIZ_APP_DOMAIN = "AUTHEN_BIZ_APP_DOMAIN";
+	
+	/**
 	 * 用户类型
 	 */
 	public static final String USER_TYPE = "AUTHEN_USER_TYPE";

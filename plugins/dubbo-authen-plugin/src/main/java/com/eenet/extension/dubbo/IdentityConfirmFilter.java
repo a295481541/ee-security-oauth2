@@ -2,9 +2,6 @@ package com.eenet.extension.dubbo;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.springframework.beans.BeansException;
@@ -17,9 +14,21 @@ import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.Result;
 import com.alibaba.dubbo.rpc.RpcException;
 import com.alibaba.dubbo.rpc.RpcResult;
+import com.eenet.authen.IdentityAuthenticationBizService;
+import com.eenet.authen.identifier.CallerIdentityInfo;
 import com.eenet.authen.identifier.RPCAuthenParamKey;
+import com.eenet.authen.request.AppAuthenRequest;
+import com.eenet.authen.request.UserAccessTokenAuthenRequest;
+import com.eenet.authen.response.UserAccessTokenAuthenResponse;
+import com.eenet.base.SimpleResponse;
+import com.eenet.common.OPOwner;
 import com.eenet.util.EEBeanUtils;
 
+/**
+ * 
+ * 2016年8月22日
+ * @author Orion
+ */
 public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 	private static ApplicationContext applicationContext;
 	private static String IdentityBeanId;
@@ -33,6 +42,12 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 	@Override
 	public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
 		Result result = null;
+		if (applicationContext==null || !applicationContext.containsBean(IdentityBeanId)) {
+			result = new RpcResult();
+			result.getAttachments().put(RPCAuthenParamKey.AUTHEN_CONFIRM, String.valueOf(false));
+			result.getAttachments().put(RPCAuthenParamKey.AUTHEN_FAIL_REASON, "业务服务Provider配置文件有误");
+			return result;
+		}
 		
 		/* 判断当前用户类型能否访问该服务  */
 		String userType = invocation.getAttachment(RPCAuthenParamKey.USER_TYPE,"anonymous");
@@ -43,23 +58,84 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 			result.getAttachments().put(RPCAuthenParamKey.AUTHEN_FAIL_REASON, userType+"用户不可访问该服务");
 			return result;
 		}
+		
+		/* 根据参数组装认证请求对象  */
 		boolean appAuthenLimit = this.isAppAuthenLimit(invoker.getInterface().getName(),invocation.getMethodName(),invocation.getParameterTypes());
+		UserAccessTokenAuthenRequest userAuthenReq = new UserAccessTokenAuthenRequest();
+		userAuthenReq.setAppId(invocation.getAttachment(RPCAuthenParamKey.BIZ_APP_ID,""));
+		userAuthenReq.setAppSecretKey(invocation.getAttachment(RPCAuthenParamKey.BIZ_APP_SECRETKEY,""));
+		userAuthenReq.setUserId(invocation.getAttachment(RPCAuthenParamKey.USER_ID,""));
+		userAuthenReq.setUserAccessToken(invocation.getAttachment(RPCAuthenParamKey.USER_ACCESS_TOKEN,""));
 		
+		/* 根据不同用户类型进行不同形式认证  */
+		boolean authenConfirm = false;
+		String authenFailReason = "";
+		if ("endUser".equals(userType)) {
+			UserAccessTokenAuthenResponse authenResponse = this.endUserAuthen(appAuthenLimit, userAuthenReq);
+			authenConfirm = authenResponse.isSuccessful();
+			if ( !authenConfirm )
+				authenFailReason = authenResponse.getStrMessage();
+		} else if ("adminUser".equals(userType)) {
+			UserAccessTokenAuthenResponse authenResponse = this.adminUserAuthen(appAuthenLimit, userAuthenReq);
+			authenConfirm = authenResponse.isSuccessful();
+			if ( !authenConfirm )
+				authenFailReason = authenResponse.getStrMessage();
+		} else if ("anonymous".equals(userType)) {
+			AppAuthenRequest appAuthenReq = new AppAuthenRequest();
+			appAuthenReq.setAppId(userAuthenReq.getAppId());
+			appAuthenReq.setAppSecretKey(userAuthenReq.getAppSecretKey());
+			SimpleResponse authenResponse = this.appAuthen(appAuthenReq);
+			authenConfirm = authenResponse.isSuccessful();
+			if ( !authenConfirm )
+				authenFailReason = authenResponse.getStrMessage();
+		}
 		
+		/* 认证失败：返回失败信息 */
+		if ( !authenConfirm ) {
+			result = new RpcResult();
+			result.getAttachments().put(RPCAuthenParamKey.AUTHEN_CONFIRM, String.valueOf(false));
+			result.getAttachments().put(RPCAuthenParamKey.AUTHEN_FAIL_REASON, authenFailReason);
+			return result;
+		}
 		
-		return invoker.invoke(invocation);
+		/* 认证成功：记录当前用户、当前调用服务的消费者 */
+		CallerIdentityInfo.setUsertype(userType);
+		if ("endUser".equals(userType) || "adminUser".equals(userType) ) {
+			OPOwner.setCurrentUser(userAuthenReq.getUserId());
+			CallerIdentityInfo.setAccesstoken(userAuthenReq.getUserAccessToken());
+		} else 
+			OPOwner.setCurrentUser(userType);
+		if (appAuthenLimit) {
+			OPOwner.setCurrentSys(userAuthenReq.getAppId());
+			CallerIdentityInfo.setAppsecretkey(userAuthenReq.getAppSecretKey());
+			CallerIdentityInfo.setRedirecturi(invocation.getAttachment(RPCAuthenParamKey.BIZ_APP_DOMAIN,""));
+		}
+		
+		/* 执行并标记认证通过 */
+		result = invoker.invoke(invocation);
+		result.getAttachments().put(RPCAuthenParamKey.AUTHEN_CONFIRM, String.valueOf(true));
+		return result;
 	}
 	
-	public void endUserAuthen() {
-		
+	private UserAccessTokenAuthenResponse endUserAuthen(boolean appAuthenLimit, UserAccessTokenAuthenRequest autenRequest) {
+		IdentityAuthenticationBizService authenService = (IdentityAuthenticationBizService) applicationContext.getBean(IdentityBeanId);
+		if (appAuthenLimit)
+			return authenService.endUserAuthen(autenRequest);
+		else
+			return authenService.endUserAuthenOnly(autenRequest);
 	}
 	
-	public void adminUserAuthen() {
-		
+	private UserAccessTokenAuthenResponse adminUserAuthen(boolean appAuthenLimit, UserAccessTokenAuthenRequest autenRequest) {
+		IdentityAuthenticationBizService authenService = (IdentityAuthenticationBizService) applicationContext.getBean(IdentityBeanId);
+		if (appAuthenLimit)
+			return authenService.adminUserAuthen(autenRequest);
+		else
+			return authenService.adminUserAuthenOnly(autenRequest);
 	}
 	
-	public void appAuthen() {
-		
+	private SimpleResponse appAuthen(AppAuthenRequest appAuthenRequest) {
+		IdentityAuthenticationBizService authenService = (IdentityAuthenticationBizService) applicationContext.getBean(IdentityBeanId);
+		return authenService.appAuthen(appAuthenRequest);
 	}
 	
 	/**
@@ -77,9 +153,9 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 		/* 按默认值计算访问权限 */
 		if ("endUser".equals(userType))
 			userTypeAccessAble = defaultEndUser;
-		if ("adminUser".equals(userType))
+		else if ("adminUser".equals(userType))
 			userTypeAccessAble = defaultAdminUser;
-		if ("anonymous".equals(userType))
+		else if ("anonymous".equals(userType))
 			userTypeAccessAble = defaultAnonymous;
 		
 		/* 未定义认证控制配置文件（即认证控制按默认值走） */

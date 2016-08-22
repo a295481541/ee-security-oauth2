@@ -14,7 +14,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.json.JSONObject;
 
 public class MockHttpRequest {
-	ApiURL baseURL = new ApiURL("test");
+	ApiURL baseURL = new ApiURL("runtime");
 	/* 定义调用地址和调用参数 */
 	private final String getEndUserSignOnGrantURL = baseURL.getSecurityApiURL()+"/getEndUserSignOnGrant";
 	private final String getEndUserAccessTokenURL = baseURL.getSecurityApiURL()+"/getEndUserAccessToken";
@@ -25,8 +25,8 @@ public class MockHttpRequest {
 	
 	public static void main(String[] args) throws Exception {
 		MockHttpRequest me = new MockHttpRequest();
+//		me.endUserLoginWithMD5Password();
 		me.adminLoginAndGetEndUserInfo();
-//		MockHttpRequest.endUserLoginWithMD5Password();
 	}
 	
 	/**
@@ -43,11 +43,13 @@ public class MockHttpRequest {
 		PostMethod method;
 		String returnMessage;
 		JSONObject jsonObject;
-		String appId = "432B31FB2F7C4BB19ED06374FB0C1850";
-		String appSecretKey = "pASS12#";
-		String appDomain = "http://www.zhigongjiaoyu.com";
-		String loginAccount = "gjm2015";
-		String password = "gjm2015Password";
+		String appId = "9CFF0CA0D43D4B2DAC1EFC6A86FCB191";
+		String appSecretKey = "pASS41#";
+		String appDomain = "http://hz.saas.workeredu.com";
+//		String loginAccount = "gjm2015";
+//		String password = "gjm2015Password";
+		String loginAccount = "weier0052";
+		String password = "888888";
 		
 		/* 获得登录授权码 */
 		method = new PostMethod(getEndUserSignOnGrantURL);
@@ -86,13 +88,13 @@ public class MockHttpRequest {
 		PostMethod method;
 		String returnMessage;
 		JSONObject jsonObject;
-		String appId = "432B31FB2F7C4BB19ED06374FB0C1850";
-		String appSecretKey = "pASS12#";
-		String adminId = "38424AE288CF4C1CB22BF324C17AAB74";
-		String loginAccount = "md5Account";
-		String adminPassword = "md5Password";
-		String getEndUserId = "BD0C7C464D3448A4984ECA13661CA04B";
-		String appDomain = "http://www.zhigongjiaoyu.com";
+		String appId = "9CFF0CA0D43D4B2DAC1EFC6A86FCB191";
+		String appSecretKey = "pASS41#";
+		String appDomain = "http://hz.saas.workeredu.com";
+		String adminId = "9A9B1DECEE3F4FFFA017A545257C2DC1";
+		String loginAccount = "hzjywEEAdmin";
+		String adminPassword = "sBPf$881";
+		String getEndUserId = "f2d1c10bac1082a301e42d5ab9e0f46f";
 		
 		/* 获得登录授权码 */
 		method = new PostMethod(getAdminSignOnGrantURL);

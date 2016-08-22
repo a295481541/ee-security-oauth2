@@ -26,6 +26,14 @@ public interface IdentityAuthenticationBizService {
 	 * @return successful为true标识应用和令牌验证均通过，如果为false则可以通过appIdentityConfirm或userIdentityConfirm判断哪部分认证未通过
 	 */
 	public UserAccessTokenAuthenResponse endUserAuthen(UserAccessTokenAuthenRequest request);
+	/**
+	 * 仅认证最终用户令牌，不认证业务应用系统
+	 * @param request
+	 * @return
+	 * 2016年8月22日
+	 * @author Orion
+	 */
+	public UserAccessTokenAuthenResponse endUserAuthenOnly(UserAccessTokenAuthenRequest request);
 	
 	/**
 	 * 服务人员认证
@@ -36,6 +44,15 @@ public interface IdentityAuthenticationBizService {
 	 * @author Orion
 	 */
 	public UserAccessTokenAuthenResponse adminUserAuthen(UserAccessTokenAuthenRequest request);
+	/**
+	 * 仅认证服务人员令牌，不认证业务应用系统
+	 * @param request
+	 * @return
+	 * 2016年8月22日
+	 * @author Orion
+	 */
+	public UserAccessTokenAuthenResponse adminUserAuthenOnly(UserAccessTokenAuthenRequest request);
+	
 	/**
 	 * 检查服务提供者状态
 	 * @return

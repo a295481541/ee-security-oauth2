@@ -65,10 +65,39 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 	public UserAccessTokenAuthenResponse endUserAuthen(UserAccessTokenAuthenRequest request) {
 		return this.userAuthen(request, AuthenCacheKey.ENDUSER_ACCESSTOKEN_PREFIX);
 	}
+	@Override
+	public UserAccessTokenAuthenResponse endUserAuthenOnly(UserAccessTokenAuthenRequest request) {
+		UserAccessTokenAuthenResponse result = new UserAccessTokenAuthenResponse();
+		result.setSuccessful(false);
+		
+		SimpleResponse userAuthenResult = this.userTokenAuthen(request, AuthenCacheKey.ENDUSER_ACCESSTOKEN_PREFIX);
+		result.setUserIdentityConfirm(userAuthenResult.isSuccessful());
+		if ( !userAuthenResult.isSuccessful() ) {
+			result.addMessage(userAuthenResult.getStrMessage());
+			return result;
+		}
+		
+		result.setSuccessful(true);
+		return result;
+	}
 
 	@Override
 	public UserAccessTokenAuthenResponse adminUserAuthen(UserAccessTokenAuthenRequest request) {
 		return this.userAuthen(request, AuthenCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX);
+	}
+	public UserAccessTokenAuthenResponse adminUserAuthenOnly(UserAccessTokenAuthenRequest request) {
+		UserAccessTokenAuthenResponse result = new UserAccessTokenAuthenResponse();
+		result.setSuccessful(false);
+		
+		SimpleResponse userAuthenResult = this.userTokenAuthen(request, AuthenCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX);
+		result.setUserIdentityConfirm(userAuthenResult.isSuccessful());
+		if ( !userAuthenResult.isSuccessful() ) {
+			result.addMessage(userAuthenResult.getStrMessage());
+			return result;
+		}
+		
+		result.setSuccessful(true);
+		return result;
 	}
 
 	@Override
@@ -101,6 +130,36 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 		}
 		result.setAppIdentityConfirm(true);
 		
+		/* 验证访问令牌（令牌所有者是否与传入的用户标识匹配） */
+		SimpleResponse userAuthenResult = this.userTokenAuthen(request, accesstokenPrefix);
+		result.setUserIdentityConfirm(userAuthenResult.isSuccessful());
+		if ( !userAuthenResult.isSuccessful() ) {
+			result.addMessage(userAuthenResult.getStrMessage());
+			return result;
+		}
+		
+		result.setSuccessful(true);
+		return result;
+	}
+	
+	/**
+	 * 认证用户令牌
+	 * @param request
+	 * @param accesstokenPrefix
+	 * @return
+	 * 2016年8月22日
+	 * @author Orion
+	 */
+	private SimpleResponse userTokenAuthen(UserAccessTokenAuthenRequest request, String accesstokenPrefix) {
+		SimpleResponse result = new SimpleResponse();
+		result.setSuccessful(false);
+		/* 参数检查 */
+		if (request == null || EEBeanUtils.isNULL(request.getUserId())
+				|| EEBeanUtils.isNULL(request.getUserAccessToken())) {
+			result.addMessage("参数不完整(" + this.getClass().getName() + ")");
+			return result;
+		}
+		
 		/* 获得传入访问令牌的所有者标识 */
 		StringResponse getUserIdResult = 
 				getIdentityUtil().getUserIdByCodeOrToken(accesstokenPrefix, request.getUserAccessToken(), request.getAppId());
@@ -114,8 +173,6 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 			result.addMessage("访问令牌验证失败("+this.getClass().getName()+"("+this.getClass().getName()+")");
 			return result;
 		}
-		result.setUserIdentityConfirm(true);
-		
 		result.setSuccessful(true);
 		return result;
 	}
