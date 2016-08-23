@@ -1,4 +1,4 @@
-package com.eenet.extension.dubbo;
+package com.eenet.authen.extension.dubbo;
 
 import java.io.IOException;
 import java.io.InputStream;

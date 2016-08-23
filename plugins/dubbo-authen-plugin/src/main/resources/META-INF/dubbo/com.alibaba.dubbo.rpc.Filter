@@ -1,1 +1,2 @@
-identityConfirmFilter=com.eenet.extension.dubbo.IdentityConfirmFilter
+identityConfirmFilter=com.eenet.authen.extension.dubbo.IdentityConfirmFilter
+identityInjectFilter=com.eenet.authen.extension.dubbo.IdentityInjectFilter

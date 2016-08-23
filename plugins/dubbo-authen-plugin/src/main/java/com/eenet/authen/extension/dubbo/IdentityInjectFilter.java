@@ -1,4 +1,4 @@
-package com.eenet.extension.dubbo;
+package com.eenet.authen.extension.dubbo;
 
 import java.lang.reflect.Constructor;
 
