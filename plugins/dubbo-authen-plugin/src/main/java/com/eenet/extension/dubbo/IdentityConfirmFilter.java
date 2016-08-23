@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -25,13 +24,13 @@ import com.eenet.common.OPOwner;
 import com.eenet.util.EEBeanUtils;
 
 /**
- * 
+ * 服务提供者认证调用者身份过滤器
  * 2016年8月22日
  * @author Orion
  */
 public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 	private static ApplicationContext applicationContext;
-	private static String IdentityBeanId;
+	private static String AuthenServiceBeanId;
 	
 	private static boolean defaultEndUser = true; //最终用户是否可访问
 	private static boolean defaultAdminUser = true; //管理员是否可访问
@@ -42,7 +41,7 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 	@Override
 	public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
 		Result result = null;
-		if (applicationContext==null || !applicationContext.containsBean(IdentityBeanId)) {
+		if (applicationContext==null || !applicationContext.containsBean(AuthenServiceBeanId)) {
 			result = new RpcResult();
 			result.getAttachments().put(RPCAuthenParamKey.AUTHEN_CONFIRM, String.valueOf(false));
 			result.getAttachments().put(RPCAuthenParamKey.AUTHEN_FAIL_REASON, "业务服务Provider配置文件有误");
@@ -118,7 +117,7 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 	}
 	
 	private UserAccessTokenAuthenResponse endUserAuthen(boolean appAuthenLimit, UserAccessTokenAuthenRequest autenRequest) {
-		IdentityAuthenticationBizService authenService = (IdentityAuthenticationBizService) applicationContext.getBean(IdentityBeanId);
+		IdentityAuthenticationBizService authenService = (IdentityAuthenticationBizService) applicationContext.getBean(AuthenServiceBeanId);
 		if (appAuthenLimit)
 			return authenService.endUserAuthen(autenRequest);
 		else
@@ -126,7 +125,7 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 	}
 	
 	private UserAccessTokenAuthenResponse adminUserAuthen(boolean appAuthenLimit, UserAccessTokenAuthenRequest autenRequest) {
-		IdentityAuthenticationBizService authenService = (IdentityAuthenticationBizService) applicationContext.getBean(IdentityBeanId);
+		IdentityAuthenticationBizService authenService = (IdentityAuthenticationBizService) applicationContext.getBean(AuthenServiceBeanId);
 		if (appAuthenLimit)
 			return authenService.adminUserAuthen(autenRequest);
 		else
@@ -134,7 +133,7 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 	}
 	
 	private SimpleResponse appAuthen(AppAuthenRequest appAuthenRequest) {
-		IdentityAuthenticationBizService authenService = (IdentityAuthenticationBizService) applicationContext.getBean(IdentityBeanId);
+		IdentityAuthenticationBizService authenService = (IdentityAuthenticationBizService) applicationContext.getBean(AuthenServiceBeanId);
 		return authenService.appAuthen(appAuthenRequest);
 	}
 	
@@ -226,14 +225,14 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 	****************************************************************************/
 	
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) {
 		if (IdentityConfirmFilter.applicationContext == null)
 			IdentityConfirmFilter.applicationContext = applicationContext;
 	}
 	
-	public void setIdentityBeanId(String identityBeanId) {
-		if (IdentityConfirmFilter.IdentityBeanId == null)
-			IdentityConfirmFilter.IdentityBeanId = identityBeanId;
+	public void setAuthenServiceBeanId(String authenServiceBeanId) {
+		if (IdentityConfirmFilter.AuthenServiceBeanId == null)
+			IdentityConfirmFilter.AuthenServiceBeanId = authenServiceBeanId;
 	}
 	
 	public void setPropertyFile(String propertyFile) {
