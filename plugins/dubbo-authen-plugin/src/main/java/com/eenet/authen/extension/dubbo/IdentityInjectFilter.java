@@ -47,7 +47,7 @@ public class IdentityInjectFilter implements Filter, ApplicationContextAware {
 		
 		/* 调用服务，身份确认直接返回 */
 		result = invoker.invoke(invocation);
-		boolean identityConfirm = Boolean.valueOf(result.getAttachment(RPCAuthenParamKey.AUTHEN_CONFIRM));
+		boolean identityConfirm = Boolean.valueOf(result.getAttachment(RPCAuthenParamKey.AUTHEN_CONFIRM,"true"));
 		if (identityConfirm)
 			return result;
 		
