@@ -39,7 +39,7 @@ public class NewAppNUser extends SpringEnvironment{
 //	@Test
 	public void createAdmin() {
 		AdminUserInfo admin = new AdminUserInfo();
-		admin.setName("超级管理员");
+		admin.setName("广州职工教育网管理员");
 //		admin.setDataDescription("勿删！！！重要测试数据");
 		admin = adminService.save(admin);
 		System.out.println(admin.getAtid() + "," + admin.getName());
@@ -81,13 +81,13 @@ public class NewAppNUser extends SpringEnvironment{
 		}
 	}
 	
-	@Test
+//	@Test
 	public void createAPP() {
 		BusinessApp app = new BusinessApp();
 		String appSecretKey = "pASS"+(new Random().nextInt(100))+"#";
-		app.setAppName("职工教育网（测试系统）");
+		app.setAppName("广州职工教育网（测试系统）");
 		app.setAppType(BusinessAppType.WEBAPP);
-		app.setRedirectURIPrefix("http://test.saas.workeredu.com");
+		app.setRedirectURIPrefix("http://gz.saas.workeredu.com");
 		app.setSecretKey(appSecretKey);
 		app.setDataDescription("勿删！！！重要测试数据");
 		app = appService.registeApp(app);
@@ -151,11 +151,11 @@ public class NewAppNUser extends SpringEnvironment{
 		}
 	}
 	
-//	@Test
+	@Test
 	public void createAdminLoginAccountNCredential() throws Exception {
-		String loginAccount = "superman";
-		String password = "sEPp$341";
-		String adminUserId = "620368E56754424585A0FD296FBADC55";
+		String loginAccount = "gzjywEEAdmin";
+		String password = "sePa$841";
+		String adminUserId = "49604539BED04DD3BE7E234E59233933";
 		AdminUserLoginAccount account = new AdminUserLoginAccount();
 		AdminUserInfo admin = new AdminUserInfo();admin.setAtid(adminUserId);
 		account.setUserInfo(admin);

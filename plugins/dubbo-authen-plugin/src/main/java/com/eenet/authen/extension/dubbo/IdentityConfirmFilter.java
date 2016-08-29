@@ -21,6 +21,7 @@ import com.eenet.authen.request.UserAccessTokenAuthenRequest;
 import com.eenet.authen.response.UserAccessTokenAuthenResponse;
 import com.eenet.base.SimpleResponse;
 import com.eenet.common.OPOwner;
+import com.eenet.common.exception.AuthenException;
 import com.eenet.util.EEBeanUtils;
 
 /**
@@ -42,20 +43,18 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 	public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
 		Result result = null;
 		if (applicationContext==null || !applicationContext.containsBean(AuthenServiceBeanId)) {
-			result = new RpcResult();
-			result.getAttachments().put(RPCAuthenParamKey.AUTHEN_CONFIRM, String.valueOf(false));
-			result.getAttachments().put(RPCAuthenParamKey.AUTHEN_FAIL_REASON, "业务服务Provider配置文件有误");
-			return result;
+			RpcResult rpcRS = new RpcResult();
+			rpcRS.setException(new AuthenException("业务服务Provider配置文件有误"));
+			return rpcRS;
 		}
 		
 		/* 判断当前用户类型能否访问该服务  */
 		String userType = invocation.getAttachment(RPCAuthenParamKey.USER_TYPE,"anonymous");
 		boolean userTypeAccessAble = this.isUserTypeAccessAble(userType,invoker.getInterface().getName(),invocation.getMethodName(),invocation.getParameterTypes());
 		if (!userTypeAccessAble) {
-			result = new RpcResult();
-			result.getAttachments().put(RPCAuthenParamKey.AUTHEN_CONFIRM, String.valueOf(false));
-			result.getAttachments().put(RPCAuthenParamKey.AUTHEN_FAIL_REASON, userType+"用户不可访问该服务");
-			return result;
+			RpcResult rpcRS = new RpcResult();
+			rpcRS.setException(new AuthenException(userType+"用户不可访问该服务"));
+			return rpcRS;
 		}
 		
 		/* 根据参数组装认证请求对象  */
@@ -91,10 +90,9 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 		
 		/* 认证失败：返回失败信息 */
 		if ( !authenConfirm ) {
-			result = new RpcResult();
-			result.getAttachments().put(RPCAuthenParamKey.AUTHEN_CONFIRM, String.valueOf(false));
-			result.getAttachments().put(RPCAuthenParamKey.AUTHEN_FAIL_REASON, authenFailReason);
-			return result;
+			RpcResult rpcRS = new RpcResult();
+			rpcRS.setException(new AuthenException(authenFailReason));
+			return rpcRS;
 		}
 		
 		/* 认证成功：记录当前用户、当前调用服务的消费者 */
@@ -112,7 +110,6 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 		
 		/* 执行并标记认证通过 */
 		result = invoker.invoke(invocation);
-		result.getAttachments().put(RPCAuthenParamKey.AUTHEN_CONFIRM, String.valueOf(true));
 		return result;
 	}
 	

@@ -39,12 +39,12 @@ public class RPCAuthenParamKey {
 	/**
 	 * 身份确认结果标识【含：最终用户/服务人员、业务系统】
 	 */
-	public final static String AUTHEN_CONFIRM = "AUTHEN_CONFIRM";
+//	public final static String AUTHEN_CONFIRM = "AUTHEN_CONFIRM";
 	
 	/**
 	 * 身份验证失败原因
 	 */
-	public final static String AUTHEN_FAIL_REASON = "AUTHEN_FAIL_REASON";
+//	public final static String AUTHEN_FAIL_REASON = "AUTHEN_FAIL_REASON";
 	
 	/**
 	 * 身份验证失败来源哪里（@see com.eenet.auth.IdentityConfirmFailFrom）
