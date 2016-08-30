@@ -1,5 +1,7 @@
 package com.eenet.authen.identifier;
 
+import com.eenet.util.EEBeanUtils;
+
 /**
  * 调用者者身份认证信息
  * 2016年8月15日
@@ -54,9 +56,12 @@ public class CallerIdentityInfo {
 	}
 	/**
 	 * @param usertype the 用户类型（取值：endUser,adminUser,anonymous） to set
+	 * 空对象则标注为anonymous
 	 */
 	public static void setUsertype(String usertype) {
-		if ("endUser".equals(usertype) || "adminUser".equals(usertype) || "anonymous".equals(usertype))
+		if (EEBeanUtils.isNULL(usertype))
+			userType.set("anonymous");
+		else if ("endUser".equals(usertype) || "adminUser".equals(usertype) || "anonymous".equals(usertype))
 			userType.set(usertype);
 		else
 			throw new RuntimeException("用户类型只允许：endUser,adminUser,anonymous("+CallerIdentityInfo.class.getName()+")");

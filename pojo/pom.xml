@@ -15,6 +15,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.eenet.framework</groupId>
+			<artifactId>util</artifactId>
+			<version>${dev-framework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.eenet.framework</groupId>
 			<artifactId>base-pojo</artifactId>
 			<version>${dev-framework.version}</version>
 		</dependency>

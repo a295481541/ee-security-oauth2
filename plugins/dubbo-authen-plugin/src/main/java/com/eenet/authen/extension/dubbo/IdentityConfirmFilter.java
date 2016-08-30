@@ -262,16 +262,4 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 			} catch (IOException e) {}
 		}
 	}
-	
-	public static void main(String[] args) {
-		Object[] objs = new Object[8];
-		int a = 3;
-		ppp(args);
-		ppp(objs);
-		ppp(a);
-	}
-	
-	public static void ppp(Object o) {
-		System.out.println(o.getClass().isArray()+" , "+o.getClass().getName() + " , " +o.getClass().getSimpleName());
-	}
 }
