@@ -81,13 +81,13 @@ public class NewAppNUser extends SpringEnvironment{
 		}
 	}
 	
-//	@Test
+	@Test
 	public void createAPP() {
 		BusinessApp app = new BusinessApp();
-		String appSecretKey = "pASS"+(new Random().nextInt(100))+"#";
-		app.setAppName("广州职工教育网（测试系统）");
+		String appSecretKey = "pAsW"+(new Random().nextInt(100))+"^";
+		app.setAppName("EEIM");
 		app.setAppType(BusinessAppType.WEBAPP);
-		app.setRedirectURIPrefix("http://gz.saas.workeredu.com");
+		app.setRedirectURIPrefix("http://eechat.gzedu.com");
 		app.setSecretKey(appSecretKey);
 		app.setDataDescription("勿删！！！重要测试数据");
 		app = appService.registeApp(app);
@@ -151,7 +151,7 @@ public class NewAppNUser extends SpringEnvironment{
 		}
 	}
 	
-	@Test
+//	@Test
 	public void createAdminLoginAccountNCredential() throws Exception {
 		String loginAccount = "gzjywEEAdmin";
 		String password = "sePa$841";

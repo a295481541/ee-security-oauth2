@@ -17,7 +17,8 @@ import com.eenet.util.EEBeanUtils;
 
 /**
  * 收集当前应用和用户身份信息
- * 支持从cookie和求参数两个渠道获得身份信息
+ * 支持从cookie和请求参数两个渠道获得身份信息
+ * ★当cookie和请求参数有相同属性时以请求参数为准
  * ★当无用户信息时该过滤器不作任何跳转，收集到的用户身份记录在以下对象
  * @see com.eenet.common.OPOwner
  * @see com.eenet.authen.identifier.CallerIdentityInfo
@@ -64,23 +65,23 @@ public class GatherAppNUserIdentifierFilter implements Filter {
 		}
 		
 		
-		/* 逐一判断是否已获取，没有的尝试从请求参数中获取 */
-		if ( OPOwner.UNKNOW_APP_FLAG.equals(OPOwner.getCurrentSys()) )
+		/* 请求参数中逐一获取 */
+		if ( !EEBeanUtils.isNULL(request.getParameter(AppID_PARAM_TAG)) )
 			OPOwner.setCurrentSys( request.getParameter(AppID_PARAM_TAG) );
 		
-		if ( EEBeanUtils.isNULL(CallerIdentityInfo.getAppsecretkey()) )
+		if ( !EEBeanUtils.isNULL(request.getParameter(AppSecretKey_PARAM_TAG)) )
 			CallerIdentityInfo.setAppsecretkey( request.getParameter(AppSecretKey_PARAM_TAG) );
 		
-		if ( EEBeanUtils.isNULL(CallerIdentityInfo.getRedirecturi()) )
+		if ( !EEBeanUtils.isNULL(request.getParameter(RedirectURI_PARAM_TAG)) )
 			CallerIdentityInfo.setRedirecturi( request.getParameter(RedirectURI_PARAM_TAG) );
 		
-		if ( OPOwner.UNKNOW_USER_FLAG.equals(OPOwner.getCurrentUser()) )
+		if ( !EEBeanUtils.isNULL(request.getParameter(UserId_PARAM_TAG)) )
 			OPOwner.setCurrentUser( request.getParameter(UserId_PARAM_TAG) );
 		
-		if ( EEBeanUtils.isNULL(CallerIdentityInfo.getAccesstoken()) )
+		if ( !EEBeanUtils.isNULL(request.getParameter(UserAccessToken_PARAM_TAG)) )
 			CallerIdentityInfo.setAccesstoken( request.getParameter(UserAccessToken_PARAM_TAG) );
 		
-		if ( EEBeanUtils.isNULL(CallerIdentityInfo.getUsertype()) )
+		if ( !EEBeanUtils.isNULL(request.getParameter(UserType_PARAM_TAG)) )
 			CallerIdentityInfo.setUsertype( request.getParameter(UserType_PARAM_TAG) );
 	}
 	

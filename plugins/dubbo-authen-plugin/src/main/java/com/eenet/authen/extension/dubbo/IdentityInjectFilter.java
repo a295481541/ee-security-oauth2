@@ -18,6 +18,7 @@ import com.eenet.authen.request.UserAccessTokenAuthenRequest;
 import com.eenet.base.IBaseResponse;
 import com.eenet.common.OPOwner;
 import com.eenet.common.exception.AuthenException;
+import com.eenet.util.EEBeanUtils;
 import com.eenet.util.cryptography.EncryptException;
 import com.eenet.util.cryptography.RSAEncrypt;
 import com.eenet.util.cryptography.RSAUtil;
@@ -68,7 +69,7 @@ public class IdentityInjectFilter implements Filter, ApplicationContextAware {
 	private AppAuthenRequest obtainCurrentApp() throws EncryptException {
 		AppAuthenRequest result = new AppAuthenRequest();
 		if ( OPOwner.getCurrentSys().equals(OPOwner.UNKNOW_APP_FLAG) ) {
-			if ( applicationContext.containsBean(AppIdentityBeanId) ) {
+			if ( !EEBeanUtils.isNULL(AppIdentityBeanId) && applicationContext.containsBean(AppIdentityBeanId) ) {
 				if (encrypt==null)
 					throw new EncryptException("未找到加密公钥("+this.getClass().getName()+")");
 				result = (AppAuthenRequest)applicationContext.getBean(AppIdentityBeanId);
