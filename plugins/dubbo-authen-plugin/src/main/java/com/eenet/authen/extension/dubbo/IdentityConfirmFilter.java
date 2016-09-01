@@ -78,14 +78,18 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 			authenConfirm = authenResponse.isSuccessful();
 			if ( !authenConfirm )
 				authenFailReason = authenResponse.getStrMessage();
-		} else if ("anonymous".equals(userType)) {
-			AppAuthenRequest appAuthenReq = new AppAuthenRequest();
-			appAuthenReq.setAppId(userAuthenReq.getAppId());
-			appAuthenReq.setAppSecretKey(userAuthenReq.getAppSecretKey());
-			SimpleResponse authenResponse = this.appAuthen(appAuthenReq);
-			authenConfirm = authenResponse.isSuccessful();
-			if ( !authenConfirm )
-				authenFailReason = authenResponse.getStrMessage();
+		} else if ( "anonymous".equals(userType) ) {
+			if (!appAuthenLimit)
+				authenConfirm = true;
+			else {
+				AppAuthenRequest appAuthenReq = new AppAuthenRequest();
+				appAuthenReq.setAppId(userAuthenReq.getAppId());
+				appAuthenReq.setAppSecretKey(userAuthenReq.getAppSecretKey());
+				SimpleResponse authenResponse = this.appAuthen(appAuthenReq);
+				authenConfirm = authenResponse.isSuccessful();
+				if ( !authenConfirm )
+					authenFailReason = authenResponse.getStrMessage();
+			}
 		}
 		
 		/* 认证失败：返回失败信息 */
@@ -168,13 +172,17 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 			paramExp.deleteCharAt(paramExp.lastIndexOf(","));
 		paramExp.append(")");
 		
+		
+		
+		
 		/* 按优先级匹配表达式并赋值 */
 		if ( AuthenRuleProperties.containsKey(serviceNameExp+methodNameExp+paramExp.toString()) ) //按服务名+方法名+参数列表计算访问权限
-			userTypeAccessAble = Boolean.valueOf(AuthenRuleProperties.getProperty(serviceNameExp+methodNameExp+paramExp.toString(),"false"));
+			userTypeAccessAble = Boolean.valueOf(AuthenRuleProperties.getProperty(serviceNameExp+methodNameExp+paramExp.toString(),"false").trim());
 		else if ( AuthenRuleProperties.containsKey(serviceNameExp+methodNameExp+"(*)") ) //按服务名+方法名计算访问权限
-			userTypeAccessAble = Boolean.valueOf(AuthenRuleProperties.getProperty(serviceNameExp+methodNameExp+"(*)","false"));
+			userTypeAccessAble = Boolean.valueOf(AuthenRuleProperties.getProperty(serviceNameExp+methodNameExp+"(*)","false").trim());
 		else if ( AuthenRuleProperties.containsKey(serviceNameExp+".*") ) //按服务名计算访问权限
-			userTypeAccessAble = Boolean.valueOf(AuthenRuleProperties.getProperty(serviceNameExp+".*","false"));
+			userTypeAccessAble = Boolean.valueOf(AuthenRuleProperties.getProperty(serviceNameExp+".*","false").trim());
+		
 		
 		return userTypeAccessAble;
 	}
@@ -206,11 +214,11 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 		
 		/* 按优先级匹配表达式并赋值 */
 		if ( AuthenRuleProperties.containsKey(serviceNameExp+methodNameExp+paramExp.toString()) ) //按服务名+方法名+参数列表计算访问权限
-			appAuthenLimit = Boolean.valueOf(AuthenRuleProperties.getProperty(serviceNameExp+methodNameExp+paramExp.toString(),"true"));
+			appAuthenLimit = Boolean.valueOf(AuthenRuleProperties.getProperty(serviceNameExp+methodNameExp+paramExp.toString(),"true").trim());
 		else if ( AuthenRuleProperties.containsKey(serviceNameExp+methodNameExp+"(*)") ) //按服务名+方法名计算访问权限
-			appAuthenLimit = Boolean.valueOf(AuthenRuleProperties.getProperty(serviceNameExp+methodNameExp+"(*)","true"));
+			appAuthenLimit = Boolean.valueOf(AuthenRuleProperties.getProperty(serviceNameExp+methodNameExp+"(*)","true").trim());
 		else if ( AuthenRuleProperties.containsKey(serviceNameExp+".*") ) //按服务名计算访问权限
-			appAuthenLimit = Boolean.valueOf(AuthenRuleProperties.getProperty(serviceNameExp+".*","true"));
+			appAuthenLimit = Boolean.valueOf(AuthenRuleProperties.getProperty(serviceNameExp+".*","true").trim());
 		
 		return appAuthenLimit;
 	}
