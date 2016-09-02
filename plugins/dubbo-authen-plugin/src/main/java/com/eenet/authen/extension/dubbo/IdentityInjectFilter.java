@@ -50,7 +50,7 @@ public class IdentityInjectFilter implements Filter, ApplicationContextAware {
 			UserAccessTokenAuthenRequest userIdentifier = this.obtainCurrentUser();
 			invocation.getAttachments().put(RPCAuthenParamKey.USER_ID, userIdentifier.getUserId());
 			invocation.getAttachments().put(RPCAuthenParamKey.USER_ACCESS_TOKEN, userIdentifier.getUserAccessToken());
-			invocation.getAttachments().put(RPCAuthenParamKey.USER_TYPE, CallerIdentityInfo.getUsertype());
+			invocation.getAttachments().put(RPCAuthenParamKey.USER_TYPE, OPOwner.getUsertype());
 			
 			/* 调用服务，身份确认直接返回 */
 			result = invoker.invoke(invocation);

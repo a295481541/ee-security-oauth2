@@ -100,7 +100,7 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 		}
 		
 		/* 认证成功：记录当前用户、当前调用服务的消费者 */
-		CallerIdentityInfo.setUsertype(userType);
+		OPOwner.setUsertype(userType);
 		if ("endUser".equals(userType) || "adminUser".equals(userType) ) {
 			OPOwner.setCurrentUser(userAuthenReq.getUserId());
 			CallerIdentityInfo.setAccesstoken(userAuthenReq.getUserAccessToken());

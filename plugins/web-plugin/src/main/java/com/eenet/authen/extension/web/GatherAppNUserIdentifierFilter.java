@@ -60,7 +60,7 @@ public class GatherAppNUserIdentifierFilter implements Filter {
 					CallerIdentityInfo.setAccesstoken(c.getValue());
 				
 				if ( UserType_PARAM_TAG.equals(c.getName()) ) //用户类型
-					CallerIdentityInfo.setUsertype(c.getValue());
+					OPOwner.setUsertype(c.getValue());
 			}
 		}
 		
@@ -82,7 +82,7 @@ public class GatherAppNUserIdentifierFilter implements Filter {
 			CallerIdentityInfo.setAccesstoken( request.getParameter(UserAccessToken_PARAM_TAG) );
 		
 		if ( !EEBeanUtils.isNULL(request.getParameter(UserType_PARAM_TAG)) )
-			CallerIdentityInfo.setUsertype( request.getParameter(UserType_PARAM_TAG) );
+			OPOwner.setUsertype( request.getParameter(UserType_PARAM_TAG) );
 	}
 	
 	@Override
