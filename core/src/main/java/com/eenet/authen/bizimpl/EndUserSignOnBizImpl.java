@@ -9,12 +9,14 @@ import com.eenet.authen.EndUserLoginAccountBizService;
 import com.eenet.authen.EndUserSignOnBizService;
 import com.eenet.authen.SignOnGrant;
 import com.eenet.authen.cacheSyn.AuthenCacheKey;
+import com.eenet.authen.identifier.CallerIdentityInfo;
 import com.eenet.authen.util.IdentityUtil;
 import com.eenet.authen.util.SignOnUtil;
 import com.eenet.base.SimpleResponse;
 import com.eenet.base.StringResponse;
 import com.eenet.baseinfo.user.EndUserInfo;
 import com.eenet.baseinfo.user.EndUserInfoBizService;
+import com.eenet.common.OPOwner;
 import com.eenet.common.cache.RedisClient;
 import com.eenet.util.EEBeanUtils;
 import com.eenet.util.cryptography.EncryptException;
@@ -198,6 +200,14 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 			token.addMessage(mkFreshTokenResult.getStrMessage());
 			return token;
 		}
+		
+		/* 在当前线程注入个人访问令牌和请求应用身份信息
+		 * 注入访问令牌是因为调用基础服务取个人信息时需要验证令牌 */
+		OPOwner.setCurrentSys(appId);
+		CallerIdentityInfo.setAppsecretkey(secretKey);
+		OPOwner.setCurrentUser(getUserIdResult.getResult());
+		OPOwner.setUsertype("endUser");
+		CallerIdentityInfo.setAccesstoken(mkAccessTokenResult.getResult());
 		
 		/* 获得最终用户基本信息 */
 		EndUserInfo getEndUserResult = getEndUserInfoBizService().get(getUserIdResult.getResult());

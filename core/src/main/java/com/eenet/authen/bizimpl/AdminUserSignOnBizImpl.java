@@ -8,12 +8,14 @@ import com.eenet.authen.AdminUserSignOnBizService;
 import com.eenet.authen.BusinessAppBizService;
 import com.eenet.authen.SignOnGrant;
 import com.eenet.authen.cacheSyn.AuthenCacheKey;
+import com.eenet.authen.identifier.CallerIdentityInfo;
 import com.eenet.authen.util.IdentityUtil;
 import com.eenet.authen.util.SignOnUtil;
 import com.eenet.base.SimpleResponse;
 import com.eenet.base.StringResponse;
 import com.eenet.baseinfo.user.AdminUserInfo;
 import com.eenet.baseinfo.user.AdminUserInfoBizService;
+import com.eenet.common.OPOwner;
 import com.eenet.common.cache.RedisClient;
 import com.eenet.util.EEBeanUtils;
 import com.eenet.util.cryptography.EncryptException;
@@ -181,6 +183,14 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 			token.addMessage(mkFreshTokenResult.getStrMessage());
 			return token;
 		}
+		
+		/* 在当前线程注入个人访问令牌和请求应用身份信息
+		 * 注入访问令牌是因为调用基础服务取个人信息时需要验证令牌 */
+		OPOwner.setCurrentSys(appId);
+		CallerIdentityInfo.setAppsecretkey(secretKey);
+		OPOwner.setCurrentUser(getUserIdResult.getResult());
+		OPOwner.setUsertype("adminUser");
+		CallerIdentityInfo.setAccesstoken(mkAccessTokenResult.getResult());
 		
 		/* 获得服务人员基本信息 */
 		AdminUserInfo getAdminUserResult = getAdminUserInfoBizService().get(getUserIdResult.getResult());

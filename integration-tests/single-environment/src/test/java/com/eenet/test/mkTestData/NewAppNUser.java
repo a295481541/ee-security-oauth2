@@ -39,7 +39,7 @@ public class NewAppNUser extends SpringEnvironment{
 //	@Test
 	public void createAdmin() {
 		AdminUserInfo admin = new AdminUserInfo();
-		admin.setName("广州职工教育网管理员");
+		admin.setName("EEIM管理员");
 //		admin.setDataDescription("勿删！！！重要测试数据");
 		admin = adminService.save(admin);
 		System.out.println(admin.getAtid() + "," + admin.getName());
@@ -81,7 +81,7 @@ public class NewAppNUser extends SpringEnvironment{
 		}
 	}
 	
-	@Test
+//	@Test
 	public void createAPP() {
 		BusinessApp app = new BusinessApp();
 		String appSecretKey = "pAsW"+(new Random().nextInt(100))+"^";
@@ -151,11 +151,11 @@ public class NewAppNUser extends SpringEnvironment{
 		}
 	}
 	
-//	@Test
+	@Test
 	public void createAdminLoginAccountNCredential() throws Exception {
-		String loginAccount = "gzjywEEAdmin";
-		String password = "sePa$841";
-		String adminUserId = "49604539BED04DD3BE7E234E59233933";
+		String loginAccount = "eechat.admin";
+		String password = "sEpa$738";
+		String adminUserId = "C7547688CFFD4C2BAEEC0EAA3EE1E026";
 		AdminUserLoginAccount account = new AdminUserLoginAccount();
 		AdminUserInfo admin = new AdminUserInfo();admin.setAtid(adminUserId);
 		account.setUserInfo(admin);

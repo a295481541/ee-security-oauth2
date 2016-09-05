@@ -10,8 +10,8 @@
 		<module>pojo</module>
 		<module>service</module>
 		<module>core</module>
-		<module>publisher</module>
 		<module>plugins</module>
+		<module>publisher</module>
 	</modules>
 
 	<build>

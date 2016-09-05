@@ -16,6 +16,11 @@
 			<artifactId>core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>eenet.security.oauth2.plugins</groupId>
+			<artifactId>dubbo-authen-plugin</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
 		<!-- Spring -->
 		<dependency>
