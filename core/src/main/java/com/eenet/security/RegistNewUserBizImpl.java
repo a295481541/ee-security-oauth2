@@ -43,13 +43,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 			return result;
 		}
 		
-		/* 接入系统身份认证 */
-//		SimpleResponse appAuthRS = getIdentityAuthenticationBizService().appAuthen(appID);
-//		if (!appAuthRS.isSuccessful()) {
-//			result.addMessage(appAuthRS.getStrMessage());
-//			return result;
-//		}
-		/* 在当前线程注入接入系统身份 */
+		/* 在当前线程注入接入系统身份（验证当前系统在新增用户时完成） */
 		OPOwner.setCurrentSys(appID.getAppId());
 		CallerIdentityInfo.setAppsecretkey(appID.getAppSecretKey());
 		
