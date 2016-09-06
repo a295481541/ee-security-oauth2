@@ -10,6 +10,7 @@ import com.eenet.authen.EndUserSignOnBizService;
 import com.eenet.authen.SignOnGrant;
 import com.eenet.authen.cacheSyn.AuthenCacheKey;
 import com.eenet.authen.identifier.CallerIdentityInfo;
+import com.eenet.authen.util.ABBizCode;
 import com.eenet.authen.util.IdentityUtil;
 import com.eenet.authen.util.SignOnUtil;
 import com.eenet.base.SimpleResponse;
@@ -47,6 +48,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		grant.setSuccessful(false);
 		/* 参数检查 */
 		if (EEBeanUtils.isNULL(appId) || EEBeanUtils.isNULL(loginAccount) || EEBeanUtils.isNULL(password)) {
+			grant.setRSBizCode(ABBizCode.AB0006);
 			grant.addMessage("参数不完整("+this.getClass().getName()+")");
 			return grant;
 		}
@@ -56,10 +58,12 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		try {
 			passwordPlaintext = RSAUtil.decryptWithTimeMillis(getTransferRSADecrypt(), password, 5);
 			if (EEBeanUtils.isNULL(passwordPlaintext)) {
+				grant.setRSBizCode(ABBizCode.AB0006);
 				grant.addMessage("无法解密提供的最终用户登录密码("+this.getClass().getName()+")");
 				return grant;
 			}
 		} catch (EncryptException e) {
+			grant.setRSBizCode(ABBizCode.AB0006);
 			grant.addMessage(e.toString());
 			return grant;
 		}
@@ -67,6 +71,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		/* 检查业务应用app是否存在，跳转地址是否合法(仅web应用) */
 		SimpleResponse existApp = getSignOnUtil().existAPP(appId, redirectURI, getBusinessAppBizService());
 		if (!existApp.isSuccessful()) {
+			grant.setRSBizCode(ABBizCode.AB0006);
 			grant.addMessage(existApp.getStrMessage());
 			return grant;
 		}
@@ -77,6 +82,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		
 			
 		if (!loginAccountInfo.isSuccessful()) {
+			grant.setRSBizCode(ABBizCode.AB0007);
 			grant.addMessage(loginAccountInfo.getStrMessage());
 			return grant;
 		}
@@ -99,6 +105,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 			if (!passwordEqual && encryptionType.equals("MD5") && MD5Util.encrypt(passwordPlaintext).equals(credential.getPassword()) )
 				passwordEqual = true;
 		} catch (EncryptException e) {
+			grant.setRSBizCode(ABBizCode.AB0006);
 			grant.addMessage(e.toString());
 			return grant;
 		}
@@ -112,12 +119,14 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 				if ( !passwordEqual && accountPassword.isSuccessful() && encryptionType.equals("MD5") && MD5Util.encrypt(passwordPlaintext).equals(accountPassword.getAccountLoginPassword()) )
 					passwordEqual = true;
 			} catch (EncryptException e) {
+				grant.setRSBizCode(ABBizCode.AB0006);
 				grant.addMessage(e.toString());
 				return grant;
 			}
 			
 		}
 		if (!passwordEqual) {
+			grant.setRSBizCode(ABBizCode.AB0007);
 			grant.addMessage("最终用户登录账号或密码错误("+this.getClass().getName()+")");
 			return grant;
 		}
@@ -128,8 +137,10 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		grant.setSuccessful(makeCodeResult.isSuccessful());
 		if (makeCodeResult.isSuccessful())
 			grant.setGrantCode(makeCodeResult.getResult());
-		else
+		else {
+			grant.setRSBizCode(ABBizCode.AB0006);
 			grant.addMessage(makeCodeResult.getStrMessage());
+		}
 		
 		return grant;
 	}
@@ -140,6 +151,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		token.setSuccessful(false);
 		/* 参数检查 */
 		if (EEBeanUtils.isNULL(appId) || EEBeanUtils.isNULL(secretKey) || EEBeanUtils.isNULL(grantCode)) {
+			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage("参数不完整("+this.getClass().getName()+")");
 			return token;
 		}
@@ -149,10 +161,12 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		try {
 			secretKeyPlaintext = RSAUtil.decryptWithTimeMillis(getTransferRSADecrypt(), secretKey, 5);
 			if (EEBeanUtils.isNULL(secretKeyPlaintext)) {
+				token.setRSBizCode(ABBizCode.AB0006);
 				token.addMessage("无法解密提供的业务系统秘钥("+this.getClass().getName()+")");
 				return token;
 			}
 		} catch (EncryptException e) {
+			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(e.toString());
 			return token;
 		}
@@ -160,6 +174,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		/* 验证业务应用系统 */
 		SimpleResponse validateResult = getIdentityUtil().validateAPP(appId, secretKeyPlaintext, getStorageRSADecrypt(), getBusinessAppBizService());
 		if (!validateResult.isSuccessful()) {
+			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(validateResult.getStrMessage());
 			return token;
 		}
@@ -168,6 +183,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		StringResponse getUserIdResult = 
 				getIdentityUtil().getUserIdByCodeOrToken(AuthenCacheKey.ENDUSER_GRANTCODE_PREFIX, grantCode, appId);
 		if (!getUserIdResult.isSuccessful()) {
+			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(getUserIdResult.getStrMessage());
 			return token;
 		}
@@ -176,6 +192,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		SimpleResponse rmCodeResult = 
 				getSignOnUtil().removeCodeOrToken(AuthenCacheKey.ENDUSER_GRANTCODE_PREFIX, grantCode, appId);
 		if (!rmCodeResult.isSuccessful()) {
+			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(rmCodeResult.getStrMessage());
 			return token;
 		}
@@ -189,6 +206,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		StringResponse mkAccessTokenResult = 
 				getSignOnUtil().makeAccessToken(AuthenCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, appId, getUserIdResult.getResult(), getBusinessAppBizService());
 		if (!mkAccessTokenResult.isSuccessful()) {
+			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(mkAccessTokenResult.getStrMessage());
 			return token;
 		}
@@ -197,6 +215,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		StringResponse mkFreshTokenResult = 
 				getSignOnUtil().makeRefreshToken(AuthenCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appId, getUserIdResult.getResult());
 		if (!mkFreshTokenResult.isSuccessful()) {
+			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(mkFreshTokenResult.getStrMessage());
 			return token;
 		}
@@ -212,6 +231,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		/* 获得最终用户基本信息 */
 		EndUserInfo getEndUserResult = getEndUserInfoBizService().get(getUserIdResult.getResult());
 		if (!getEndUserResult.isSuccessful()) {
+			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(getEndUserResult.getStrMessage());
 			return token;
 		}
