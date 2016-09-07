@@ -10,6 +10,24 @@
 	<name>web protect for eenet oauth2 security</name>
 
 	<dependencies>
+		<dependency>
+			<groupId>eenet.security.oauth2</groupId>
+			<artifactId>service</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.eenet.framework</groupId>
+			<artifactId>util</artifactId>
+			<version>${dev-framework.version}</version>
+		</dependency>
+		
+		<!-- spring mvc -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		
 		<!-- servlet -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -17,17 +35,5 @@
 			<version>${servlet.version}</version>
 			<scope>provided</scope>
 		</dependency>
-		
-		<dependency>
-			<groupId>com.eenet.framework</groupId>
-			<artifactId>util</artifactId>
-			<version>${dev-framework.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>eenet.security.oauth2</groupId>
-			<artifactId>pojo</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		
 	</dependencies>
 </project>
