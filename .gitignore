@@ -3,6 +3,8 @@
 *.classpath
 *.gitignore
 !/.gitignore
+.metadata
+RemoteSystemsTempFiles
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
