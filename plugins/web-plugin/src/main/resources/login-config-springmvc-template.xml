@@ -15,6 +15,7 @@
 		<property name="endUserSignOnService" ref="EndUserSignOnBizService"/>
 		<property name="adminUserSignOnService" ref="AdminUserSignOnBizService"/>
 		<property name="transferEncrypt" ref=""/>
+		<property name="loginFailPageLocation" value=""/>
 		<property name="defaultPageLocation" value=""/>
 	</bean>
 </beans>
