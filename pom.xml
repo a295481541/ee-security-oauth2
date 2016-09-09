@@ -3,15 +3,15 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eenet.security.oauth2</groupId>
 	<artifactId>products</artifactId>
-	<version>2.04</version>
+	<version>2.041</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>parent</module>
 		<module>pojo</module>
 		<module>service</module>
 		<module>core</module>
-		<module>publisher</module>
 		<module>plugins</module>
+		<module>publisher</module>
 	</modules>
 
 	<build>

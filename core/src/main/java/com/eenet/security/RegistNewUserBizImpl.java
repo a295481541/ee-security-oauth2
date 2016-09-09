@@ -12,12 +12,14 @@ import com.eenet.authen.EndUserLoginAccountBizService;
 import com.eenet.authen.EndUserSignOnBizService;
 import com.eenet.authen.IdentityAuthenticationBizService;
 import com.eenet.authen.SignOnGrant;
+import com.eenet.authen.identifier.CallerIdentityInfo;
 import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.base.SimpleResponse;
 import com.eenet.baseinfo.user.AdminUserInfo;
 import com.eenet.baseinfo.user.AdminUserInfoBizService;
 import com.eenet.baseinfo.user.EndUserInfo;
 import com.eenet.baseinfo.user.EndUserInfoBizService;
+import com.eenet.common.OPOwner;
 import com.eenet.common.code.SystemCode;
 import com.eenet.security.RegistNewUserBizService;
 import com.eenet.util.EEBeanUtils;
@@ -41,12 +43,9 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 			return result;
 		}
 		
-		/* 接入系统身份认证 */
-		SimpleResponse appAuthRS = getIdentityAuthenticationBizService().appAuthen(appID);
-		if (!appAuthRS.isSuccessful()) {
-			result.addMessage(appAuthRS.getStrMessage());
-			return result;
-		}
+		/* 在当前线程注入接入系统身份（验证当前系统在新增用户时完成） */
+		OPOwner.setCurrentSys(appID.getAppId());
+		CallerIdentityInfo.setAppsecretkey(appID.getAppSecretKey());
 		
 		/* 新增用户 */
 		EndUserInfo savedEndUser = getEndUserInfoBizService().save(endUser);

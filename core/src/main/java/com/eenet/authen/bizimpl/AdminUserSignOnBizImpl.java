@@ -8,12 +8,15 @@ import com.eenet.authen.AdminUserSignOnBizService;
 import com.eenet.authen.BusinessAppBizService;
 import com.eenet.authen.SignOnGrant;
 import com.eenet.authen.cacheSyn.AuthenCacheKey;
+import com.eenet.authen.identifier.CallerIdentityInfo;
+import com.eenet.authen.util.ABBizCode;
 import com.eenet.authen.util.IdentityUtil;
 import com.eenet.authen.util.SignOnUtil;
 import com.eenet.base.SimpleResponse;
 import com.eenet.base.StringResponse;
 import com.eenet.baseinfo.user.AdminUserInfo;
 import com.eenet.baseinfo.user.AdminUserInfoBizService;
+import com.eenet.common.OPOwner;
 import com.eenet.common.cache.RedisClient;
 import com.eenet.util.EEBeanUtils;
 import com.eenet.util.cryptography.EncryptException;
@@ -43,6 +46,7 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		grant.setSuccessful(false);
 		/* 参数检查 */
 		if (EEBeanUtils.isNULL(appId) || EEBeanUtils.isNULL(loginAccount) || EEBeanUtils.isNULL(password)) {
+			grant.setRSBizCode(ABBizCode.AB0006);
 			grant.addMessage("参数不完整("+this.getClass().getName()+")");
 			return grant;
 		}
@@ -52,10 +56,12 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		try {
 			passwordPlaintext = RSAUtil.decryptWithTimeMillis(getTransferRSADecrypt(), password, 2);
 			if (EEBeanUtils.isNULL(passwordPlaintext)) {
+				grant.setRSBizCode(ABBizCode.AB0006);
 				grant.addMessage("无法解密提供的服务人员登录密码("+this.getClass().getName()+")");
 				return grant;
 			}
 		} catch (EncryptException e) {
+			grant.setRSBizCode(ABBizCode.AB0006);
 			grant.addMessage(e.toString());
 			return grant;
 		}
@@ -63,6 +69,7 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		/* 检查业务应用app是否存在，跳转地址是否合法(仅web应用) */
 		SimpleResponse existApp = getSignOnUtil().existAPP(appId, redirectURI, getBusinessAppBizService());
 		if (!existApp.isSuccessful()) {
+			grant.setRSBizCode(ABBizCode.AB0006);
 			grant.addMessage(existApp.getStrMessage());
 			return grant;
 		}
@@ -70,11 +77,13 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		/* 获得服务人员个人信息及登录秘钥信息 */
 		AdminUserInfo adminUser = getAdminUserLoginAccountBizService().retrieveAdminUserInfo(loginAccount);
 		if (!adminUser.isSuccessful()) {
+			grant.setRSBizCode(ABBizCode.AB0007);
 			grant.addMessage(adminUser.getStrMessage());
 			return grant;
 		}
 		AdminUserCredential credential = getAdminUserCredentialBizService().retrieveAdminUserSecretKey(adminUser.getAtid(), getStorageRSADecrypt());
 		if (!credential.isSuccessful()) {
+			grant.setRSBizCode(ABBizCode.AB0007);
 			grant.addMessage(credential.getStrMessage());
 			return grant;
 		}
@@ -85,20 +94,24 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		 */
 		if (credential.getEncryptionType().equals("RSA")) {
 			if (!passwordPlaintext.equals(credential.getPassword())) {
+				grant.setRSBizCode(ABBizCode.AB0007);
 				grant.addMessage("服务人员登录账号或密码错误("+this.getClass().getName()+")");
 				return grant;
 			}
 		} else if (credential.getEncryptionType().equals("MD5")) {
 			try {
 				if (!MD5Util.encrypt(passwordPlaintext).equals(credential.getPassword())) {
+					grant.setRSBizCode(ABBizCode.AB0007);
 					grant.addMessage("服务人员登录账号或密码错误("+this.getClass().getName()+")");
 					return grant;
 				}
 			} catch (EncryptException e) {
+				grant.setRSBizCode(ABBizCode.AB0006);
 				grant.addMessage(e.toString());
 				return grant;
 			}
 		}  else {
+			grant.setRSBizCode(ABBizCode.AB0006);
 			grant.addMessage("加密方式未知["+credential.getEncryptionType()+"]("+this.getClass().getName()+")");
 			return grant;
 		}
@@ -109,8 +122,10 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		grant.setSuccessful(makeCodeResult.isSuccessful());
 		if (makeCodeResult.isSuccessful())
 			grant.setGrantCode(makeCodeResult.getResult());
-		else
+		else {
+			grant.setRSBizCode(ABBizCode.AB0006);
 			grant.addMessage(makeCodeResult.getStrMessage());
+		}
 		
 		return grant;
 	}
@@ -121,6 +136,7 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		token.setSuccessful(false);
 		/* 参数检查 */
 		if (EEBeanUtils.isNULL(appId) || EEBeanUtils.isNULL(secretKey) || EEBeanUtils.isNULL(grantCode)) {
+			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage("参数不完整("+this.getClass().getName()+")");
 			return token;
 		}
@@ -130,10 +146,12 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		try {
 			secretKeyPlaintext = RSAUtil.decryptWithTimeMillis(getTransferRSADecrypt(), secretKey, 2);
 			if (EEBeanUtils.isNULL(secretKeyPlaintext)) {
+				token.setRSBizCode(ABBizCode.AB0006);
 				token.addMessage("无法解密提供的业务系统秘钥("+this.getClass().getName()+")");
 				return token;
 			}
 		} catch (EncryptException e) {
+			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(e.toString());
 			return token;
 		}
@@ -141,6 +159,7 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		/* 验证业务应用系统 */
 		SimpleResponse validateResult = getIdentityUtil().validateAPP(appId, secretKeyPlaintext, getStorageRSADecrypt(), getBusinessAppBizService());
 		if (!validateResult.isSuccessful()) {
+			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(validateResult.getStrMessage());
 			return token;
 		}
@@ -149,6 +168,7 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		StringResponse getUserIdResult = 
 				getIdentityUtil().getUserIdByCodeOrToken(AuthenCacheKey.ADMINUSER_GRANTCODE_PREFIX, grantCode, appId);
 		if (!getUserIdResult.isSuccessful()) {
+			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(getUserIdResult.getStrMessage());
 			return token;
 		}
@@ -157,6 +177,7 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		SimpleResponse rmCodeResult = 
 				getSignOnUtil().removeCodeOrToken(AuthenCacheKey.ADMINUSER_GRANTCODE_PREFIX, grantCode, appId);
 		if (!rmCodeResult.isSuccessful()) {
+			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(rmCodeResult.getStrMessage());
 			return token;
 		}
@@ -170,6 +191,7 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		StringResponse mkAccessTokenResult = 
 				getSignOnUtil().makeAccessToken(AuthenCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX, appId, getUserIdResult.getResult(), getBusinessAppBizService());
 		if (!mkAccessTokenResult.isSuccessful()) {
+			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(mkAccessTokenResult.getStrMessage());
 			return token;
 		}
@@ -178,13 +200,23 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		StringResponse mkFreshTokenResult = 
 				getSignOnUtil().makeRefreshToken(AuthenCacheKey.ADMINUSER_REFRESHTOKEN_PREFIX, appId, getUserIdResult.getResult());
 		if (!mkFreshTokenResult.isSuccessful()) {
+			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(mkFreshTokenResult.getStrMessage());
 			return token;
 		}
 		
+		/* 在当前线程注入个人访问令牌和请求应用身份信息
+		 * 注入访问令牌是因为调用基础服务取个人信息时需要验证令牌 */
+		OPOwner.setCurrentSys(appId);
+		CallerIdentityInfo.setAppsecretkey(secretKey);
+		OPOwner.setCurrentUser(getUserIdResult.getResult());
+		OPOwner.setUsertype("adminUser");
+		CallerIdentityInfo.setAccesstoken(mkAccessTokenResult.getResult());
+		
 		/* 获得服务人员基本信息 */
 		AdminUserInfo getAdminUserResult = getAdminUserInfoBizService().get(getUserIdResult.getResult());
 		if (!getAdminUserResult.isSuccessful()) {
+			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(getAdminUserResult.getStrMessage());
 			return token;
 		}

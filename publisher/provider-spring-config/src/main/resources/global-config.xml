@@ -55,4 +55,10 @@
 		<property name="callSMSAppId" value="e7800319ac1082a6237aaeec6260a117"/>
 		<property name="baseDAOService" ref="GenericDAO" />
 	</bean>
+	
+	<!-- 定义身份注入过滤器 -->
+	<bean id="IdentityInjectFilter" class="com.eenet.authen.extension.dubbo.IdentityInjectFilter">
+		<!-- <property name="appIdentityBeanId" value="AppAuthenIdentifier" /> --><!-- openapi仅被其他应用调用，身份信息由调用者传入，所以无需定义 -->
+		<!-- <property name="encrypt" ref="TransferRSAEncrypt"/> --><!-- openapi仅被其他应用调用，加密信息由调用者传入，所以无需定义 -->
+	</bean>
 </beans>

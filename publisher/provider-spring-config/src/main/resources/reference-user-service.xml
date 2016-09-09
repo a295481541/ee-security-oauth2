@@ -12,7 +12,7 @@
 						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 						http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
 	<!-- 最终用户管理服务 -->
-	<dubbo:reference id="EndUserInfoBizService" interface="com.eenet.baseinfo.user.EndUserInfoBizService"/>
+	<dubbo:reference id="EndUserInfoBizService" interface="com.eenet.baseinfo.user.EndUserInfoBizService" filter="identityInjectFilter" />
 	<!-- 服务人员管理服务 -->
-	<dubbo:reference id="AdminUserInfoBizService" interface="com.eenet.baseinfo.user.AdminUserInfoBizService"/>
+	<dubbo:reference id="AdminUserInfoBizService" interface="com.eenet.baseinfo.user.AdminUserInfoBizService" filter="identityInjectFilter" />
 </beans>

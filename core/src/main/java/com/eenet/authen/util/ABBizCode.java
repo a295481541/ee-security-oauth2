@@ -13,5 +13,8 @@ public class ABBizCode {
 	public static final BizCode AB0004 = new BizCode("AB0004","短信发送失败-短信平台反馈发送有误");
 	/** 短信发送失败-运营商反馈发送有误 */
 	public static final BizCode AB0005 = new BizCode("AB0005","短信发送失败-运营商反馈发送有误");
-	
+	/** 登录失败：系统错误 */
+	public static final BizCode AB0006 = new BizCode("AB0006","登录失败-系统错误");
+	/** 登录失败：登录账号或密码错误 */
+	public static final BizCode AB0007 = new BizCode("AB0007","登录失败-登录账号或密码错误");
 }
