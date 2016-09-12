@@ -30,7 +30,7 @@
 					<stopPort>5588</stopPort>
 					<webAppConfig>
 						<contextPath>/simple-web</contextPath>
-						<defaultsDescriptor>src/main/resources/webdefault.xml</defaultsDescriptor>
+						<!-- <defaultsDescriptor>src/main/resources/webdefault.xml</defaultsDescriptor> -->
 					</webAppConfig>
 					<scanIntervalSeconds>0</scanIntervalSeconds>
 					<connectors>
@@ -60,6 +60,11 @@
 			<groupId>com.eenet.framework</groupId>
 			<artifactId>base-FrontEnd</artifactId>
 			<version>${dev-framework.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>eenet.security.oauth2.plugins</groupId>
+			<artifactId>web-plugin</artifactId>
+			<version>${eenet.security.version}</version>
 		</dependency>
 
 		<!-- servlet -->
