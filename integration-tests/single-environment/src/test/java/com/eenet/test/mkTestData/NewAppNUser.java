@@ -81,15 +81,15 @@ public class NewAppNUser extends SpringEnvironment{
 		}
 	}
 	
-//	@Test
+	@Test
 	public void createAPP() {
 		BusinessApp app = new BusinessApp();
-		String appSecretKey = "pAsW"+(new Random().nextInt(100))+"^";
-		app.setAppName("EEIM");
+		String appSecretKey = "MtsSP&"+(new Random().nextInt(100))+"^";
+		app.setAppName("运维支持系统");
 		app.setAppType(BusinessAppType.WEBAPP);
-		app.setRedirectURIPrefix("http://eechat.gzedu.com");
+		app.setRedirectURIPrefix("http://mtss.gzedu.com");
 		app.setSecretKey(appSecretKey);
-		app.setDataDescription("勿删！！！重要测试数据");
+//		app.setDataDescription("勿删！！！重要测试数据");
 		app = appService.registeApp(app);
 		System.out.println("APPID: " + app.getAtid() + ",系统中文名：" + app.getAppName() + ",接入密码: "+appSecretKey+",合法地址： "+app.getRedirectURIPrefix());
 	}
@@ -151,7 +151,7 @@ public class NewAppNUser extends SpringEnvironment{
 		}
 	}
 	
-	@Test
+//	@Test
 	public void createAdminLoginAccountNCredential() throws Exception {
 		String loginAccount = "eechat.admin";
 		String password = "sEpa$738";
