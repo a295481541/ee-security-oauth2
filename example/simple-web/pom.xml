@@ -33,6 +33,7 @@
 						<!-- <defaultsDescriptor>src/main/resources/webdefault.xml</defaultsDescriptor> -->
 					</webAppConfig>
 					<scanIntervalSeconds>0</scanIntervalSeconds>
+					<contextXml>${project.basedir}/src/test/resources/jetty-context.xml</contextXml>
 					<connectors>
 						<connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
 							<port>8080</port>
