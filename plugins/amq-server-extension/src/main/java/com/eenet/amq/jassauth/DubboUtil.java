@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.security.KeyFactory;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.crypto.Cipher;
@@ -40,18 +42,31 @@ public class DubboUtil {
 			ApplicationConfig application = new ApplicationConfig();
 			application.setName("jms");
 			// 连接注册中心配置
-			RegistryConfig registry = new RegistryConfig();
+			
 			String zookeeperUrl = props.getProperty("zookeeper");
 			
 			if (zookeeperUrl == null || "".equals(zookeeperUrl.trim())) {
 				throw new Exception("please appoin the zookeeper url so that the services can be worked ");
 			}
-			registry.setAddress(zookeeperUrl);
+			String []  urls = zookeeperUrl.split(",");
+			List<RegistryConfig> registryConfigs = new ArrayList<>();
+			for (int i = 0; i < urls.length; i++) {
+				RegistryConfig registry = new RegistryConfig();
+				registry.setAddress("zookeeper://" +urls[i]);
+				registryConfigs.add(registry);
+				System.out.println("zookeeper://" +urls[i]);
+				
+			}
+			
+			
 			// 引用远程服务
 			ReferenceConfig<IdentityAuthenticationBizService> reference = new ReferenceConfig<IdentityAuthenticationBizService>();
 			reference.setApplication(application);
-			reference.setRegistry(registry); // 多个注册中心可以用setRegistries()
+			//reference.setRegistry(registry); // 多个注册中心可以用setRegistries()
+			reference.setRegistries(registryConfigs);
 			reference.setInterface(IdentityAuthenticationBizService.class);
+			
+			System.out.println( reference.get());
 			
 			service = reference.get();
 		}
