@@ -1,5 +1,8 @@
 package com.eenet.security;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.eenet.authen.AccessToken;
 import com.eenet.authen.AdminUserCredential;
 import com.eenet.authen.AdminUserCredentialBizService;
@@ -12,6 +15,7 @@ import com.eenet.authen.EndUserLoginAccountBizService;
 import com.eenet.authen.EndUserSignOnBizService;
 import com.eenet.authen.IdentityAuthenticationBizService;
 import com.eenet.authen.SignOnGrant;
+import com.eenet.authen.bizimpl.EndUserLoginAccountBizImpl;
 import com.eenet.authen.identifier.CallerIdentityInfo;
 import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.base.SimpleResponse;
@@ -25,30 +29,37 @@ import com.eenet.security.RegistNewUserBizService;
 import com.eenet.util.EEBeanUtils;
 
 public class RegistNewUserBizImpl implements RegistNewUserBizService {
+	private static final Logger log = LoggerFactory.getLogger("error");
 
 	@Override
 	public AccessToken registEndUserWithLogin(EndUserInfo endUser, EndUserLoginAccount account,
 			EndUserCredential credential, AppAuthenRequest appID) {
+		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] start..........." +OPOwner.getUsertype());
 		AccessToken result = new AccessToken();
 		result.setSuccessful(false);
 		/* 参数检查 */
 		if (endUser==null || account==null || credential==null || appID==null) {
+			log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] 最终用户信息、登陆账号信息或密码信息未知");
 			result.addMessage("最终用户信息、登陆账号信息或密码信息未知("+this.getClass().getName()+")");
 			result.setRSBizCode(SystemCode.AA0002);
 			return result;
 		}
 		if (!EEBeanUtils.isNULL(endUser.getAtid())) {
+			log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] 定义了已存在的最终用户");
 			result.addMessage("定义了已存在的最终用户("+this.getClass().getName()+")");
 			result.setRSBizCode(SystemCode.AA0003);
 			return result;
 		}
+		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] check over");
 		
 		/* 在当前线程注入接入系统身份（验证当前系统在新增用户时完成） */
 		OPOwner.setCurrentSys(appID.getAppId());
 		CallerIdentityInfo.setAppsecretkey(appID.getAppSecretKey());
 		
+		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] current app :"+OPOwner.getCurrentSys()+", current user :" + OPOwner.getCurrentUser() + ", current userType :" + OPOwner.getUsertype());
 		/* 新增用户 */
 		EndUserInfo savedEndUser = getEndUserInfoBizService().save(endUser);
+		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] saved user result : "+ EEBeanUtils.object2Json(savedEndUser));
 		if (!savedEndUser.isSuccessful()) {
 			result.addMessage(savedEndUser.getStrMessage());
 			return result;
@@ -57,6 +68,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		/* 注册登陆账号 */
 		account.setUserInfo(savedEndUser);
 		EndUserLoginAccount savedAccount = getEndUserLoginAccountBizService().registeEndUserLoginAccount(account);
+		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] registe account result : " + EEBeanUtils.object2Json(savedAccount));
 		if (!savedAccount.isSuccessful()) {
 			result.addMessage(savedAccount.getStrMessage());
 			return result;
@@ -66,6 +78,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		String userCipherPassword = credential.getPassword();
 		credential.setEndUser(savedEndUser);
 		SimpleResponse savedCredential = getEndUserCredentialBizService().initEndUserLoginPassword(credential);
+		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] saved password result : "+ EEBeanUtils.object2Json(savedCredential));
 		if (!savedCredential.isSuccessful()) {
 			result.addMessage(savedCredential.getStrMessage());
 			return result;
@@ -74,6 +87,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		/* 获得认证授权码 */
 		SignOnGrant grant = getEndUserSignOnBizService().getSignOnGrant(appID.getAppId(), appID.getRedirectURI(), account.getLoginAccount(),
 				userCipherPassword);
+		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] get grant code result : "+EEBeanUtils.object2Json(grant));
 		if (!grant.isSuccessful()) {
 			result.addMessage(grant.getStrMessage());
 			return result;
@@ -81,6 +95,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		
 		/* 获得访问令牌 */
 		result = getEndUserSignOnBizService().getAccessToken(appID.getAppId(), appID.getAppSecretKey(), grant.getGrantCode());
+		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] get token result : "+EEBeanUtils.object2Json(result));
 		return result;
 	}
 
@@ -125,6 +140,23 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		}
 		
 		result.setSuccessful(true);
+		return result;
+	}
+	
+	public AccessToken opownerTest(){
+		System.out.println("[opownerTest] start.....");
+		System.err.println("Usertype : " + OPOwner.getUsertype());
+		
+		OPOwner.setCurrentSys(EEBeanUtils.getUUID());
+		CallerIdentityInfo.setAppsecretkey(EEBeanUtils.getUUID());
+		OPOwner.setCurrentUser(EEBeanUtils.getUUID());
+		OPOwner.setUsertype("endUser");
+		CallerIdentityInfo.setAccesstoken(EEBeanUtils.getUUID());
+		
+		System.out.println("[opownerTest] end....."+ OPOwner.getUsertype());
+		
+		AccessToken result = new AccessToken();
+		result.setAccessToken(CallerIdentityInfo.getAccesstoken());
 		return result;
 	}
 	
