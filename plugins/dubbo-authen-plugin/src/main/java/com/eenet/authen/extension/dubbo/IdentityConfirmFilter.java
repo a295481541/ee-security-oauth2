@@ -41,6 +41,10 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 
 	@Override
 	public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
+		/* 将当前身份设置为默认值 */
+		OPOwner.reset();
+		CallerIdentityInfo.reset();
+		
 		Result result = null;
 		if (applicationContext==null || !applicationContext.containsBean(AuthenServiceBeanId)) {
 			RpcResult rpcRS = new RpcResult();

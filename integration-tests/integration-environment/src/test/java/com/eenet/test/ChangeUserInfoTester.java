@@ -9,21 +9,21 @@ import org.apache.commons.httpclient.util.EncodingUtil;
 import org.json.JSONObject;
 
 public class ChangeUserInfoTester {
-	ApiURL baseURL = new ApiURL("test");
+	ApiURL baseURL = new ApiURL("runtime");
 	/* 定义调用地址和调用参数 */
 	private final String getEndUserSignOnGrantURL = baseURL.getSecurityApiURL()+"/getEndUserSignOnGrant";
 	private final String getEndUserAccessTokenURL = baseURL.getSecurityApiURL()+"/getEndUserAccessToken";
 	private final String refreshEndUserAccessTokenURL = baseURL.getSecurityApiURL()+"/refreshEndUserAccessToken";
 	private final String saveEndUserURL = baseURL.getBaseinfoApiURL()+"/saveEndUser";
-	private final String appId = "FAC6D2625780432A9C197EF3E2337F08";
-	private final String appSecretKey = "pASS12#";
-	private final String appDomain = "http://hz.zhigongjiaoyu.com";
+	private final String appId = "AC9CCD9AD6194E1CAD8C05FE718DD6C6";
+	private final String appSecretKey = "pASS25#";
+	private final String appDomain = "http://xlims.gzedu.com";
 	
 	public static void main(String[] args) throws Exception {
 		ChangeUserInfoTester me = new ChangeUserInfoTester();
-		Map<String,String> loginRS = me.endUserLogin("gz2016001","854733^AAb");
-		loginRS = me.refreshEndUserToken(loginRS.get("refreshToken"), loginRS.get("userId"));
-		me.changeUserInfo(loginRS.get("accessToken"), loginRS.get("userId"));
+		Map<String,String> loginRS = me.endUserLogin("13922202252","654321");
+//		loginRS = me.refreshEndUserToken(loginRS.get("refreshToken"), loginRS.get("userId"));
+//		me.changeUserInfo(loginRS.get("accessToken"), loginRS.get("userId"));
 	}
 	
 	public Map<String,String> endUserLogin(String loginAccount, String password) throws Exception {

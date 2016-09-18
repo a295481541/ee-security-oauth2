@@ -45,4 +45,10 @@ public class CallerIdentityInfo {
 	public static void setRedirecturi(String redirecturi) {
 		redirectURI.set(redirecturi);
 	}
+	
+	public static void reset() {
+		accessToken.set(null);
+		appSecretKey.set(null);
+		redirectURI.set(null);
+	}
 }

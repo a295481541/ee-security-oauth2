@@ -31,6 +31,10 @@ public class GatherAppNUserIdentifierFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
+		/* 将当前身份设置为默认值 */
+		OPOwner.reset();
+		CallerIdentityInfo.reset();
+		
 		HttpServletRequest httpRequest = (HttpServletRequest)request;
 		
 		this.injectCallerAppAndUser(httpRequest);

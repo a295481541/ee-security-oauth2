@@ -34,6 +34,10 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 	@Override
 	public AccessToken registEndUserWithLogin(EndUserInfo endUser, EndUserLoginAccount account,
 			EndUserCredential credential, AppAuthenRequest appID) {
+		/* 将当前身份设置为默认值 */
+		OPOwner.reset();
+		CallerIdentityInfo.reset();
+		
 		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] start..........." +OPOwner.getUsertype());
 		AccessToken result = new AccessToken();
 		result.setSuccessful(false);
