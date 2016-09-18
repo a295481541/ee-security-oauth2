@@ -128,6 +128,23 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		return result;
 	}
 	
+	public AccessToken opownerTest(){
+		System.out.println("[opownerTest] start.....");
+		System.err.println("Usertype : " + OPOwner.getUsertype());
+		
+		OPOwner.setCurrentSys(EEBeanUtils.getUUID());
+		CallerIdentityInfo.setAppsecretkey(EEBeanUtils.getUUID());
+		OPOwner.setCurrentUser(EEBeanUtils.getUUID());
+		OPOwner.setUsertype("endUser");
+		CallerIdentityInfo.setAccesstoken(EEBeanUtils.getUUID());
+		
+		System.out.println("[opownerTest] end....."+ OPOwner.getUsertype());
+		
+		AccessToken result = new AccessToken();
+		result.setAccessToken(CallerIdentityInfo.getAccesstoken());
+		return result;
+	}
+	
 	private IdentityAuthenticationBizService identityAuthenticationBizService;
 	
 	private AdminUserInfoBizService adminUserInfoBizService;

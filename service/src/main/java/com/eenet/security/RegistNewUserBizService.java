@@ -38,4 +38,6 @@ public interface RegistNewUserBizService {
 	 * @author Orion
 	 */
 	public SimpleResponse registAdminUserWithoutLogin(AdminUserInfo adminUser, AdminUserLoginAccount account, AdminUserCredential credential);
+	
+	public AccessToken opownerTest();
 }
