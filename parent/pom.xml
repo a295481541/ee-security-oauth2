@@ -48,7 +48,7 @@
 				<redis.server.1><![CDATA[redis://:REDIS@172.16.165.222:6379]]></redis.server.1>
 				<!-- zookeeper配置 -->
 				<zookeeper.address>172.16.165.222:2181</zookeeper.address>
-				<dubbo.port>20880</dubbo.port>
+				<dubbo.port>20881</dubbo.port>
 				<!-- 打war包名称 -->
 				<provider.finalName>security-provider</provider.finalName>
 				<openapi.finalName>security-api</openapi.finalName>

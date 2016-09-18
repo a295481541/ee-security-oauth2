@@ -1,5 +1,7 @@
 package com.eenet.security;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
@@ -22,12 +24,14 @@ import com.eenet.base.BooleanResponse;
 import com.eenet.base.SimpleResponse;
 import com.eenet.baseinfo.user.AdminUserInfo;
 import com.eenet.baseinfo.user.EndUserInfo;
+import com.eenet.common.OPOwner;
 import com.eenet.common.code.SystemCode;
 import com.eenet.security.RegistNewUserBizService;
 import com.eenet.util.EEBeanUtils;
 
 @Controller
 public class RegistNewUserController {
+	private static final Logger log = LoggerFactory.getLogger("error");
 	@Autowired
 	private RegistNewUserBizService registNewUserBizService;
 	@Autowired
@@ -123,6 +127,8 @@ public class RegistNewUserController {
 		user.setCrss(identity.getAppId());
 		account.setCrss(identity.getAppId());
 		credential.setCrss(identity.getAppId());
+		
+		log.error("userType    :  "+OPOwner.getUsertype() +"thread id: " +Thread.currentThread().getId());
 		
 		AccessToken token = registNewUserBizService.registEndUserWithLogin(user, account, credential, appAttribute);
 		return EEBeanUtils.object2Json(token);

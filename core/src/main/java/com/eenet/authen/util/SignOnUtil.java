@@ -1,5 +1,8 @@
 package com.eenet.authen.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.eenet.authen.BusinessApp;
 import com.eenet.authen.BusinessAppBizService;
 import com.eenet.authen.BusinessAppType;
@@ -16,6 +19,7 @@ import com.eenet.util.EEBeanUtils;
  */
 public class SignOnUtil {
 	private RedisClient RedisClient;//Redis客户端
+	private static final Logger log = LoggerFactory.getLogger("error");
 	
 	/**
 	 * 检查业务系统是否存在，跳转地址是否合法(仅web应用需要)
@@ -75,7 +79,10 @@ public class SignOnUtil {
 		
 		try {
 			String code = EEBeanUtils.getUUID();
+			log.error("[makeGrantCode("+Thread.currentThread().getId()+")] make redis key : " + prefix+":"+appId+":"+code +", value : "+userId);
 			boolean cached = getRedisClient().setObject(prefix+":"+appId+":"+code, userId, 60 * 15);
+			log.error("[makeGrantCode("+Thread.currentThread().getId()+")] get redis result : " + getRedisClient().getObject(prefix+":"+appId+":"+code,String.class));
+			
 			result.setSuccessful(cached);
 			if (cached)
 				result.setResult(code);

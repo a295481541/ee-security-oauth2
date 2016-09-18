@@ -3,6 +3,10 @@ package com.eenet.authen.bizimpl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.impl.Log4JLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.eenet.authen.EndUserLoginAccount;
 import com.eenet.authen.EndUserLoginAccountBizService;
 import com.eenet.authen.cacheSyn.SynEndUserLoginAccount2Redis;
@@ -14,6 +18,7 @@ import com.eenet.base.query.ConditionItem;
 import com.eenet.base.query.QueryCondition;
 import com.eenet.base.query.RangeType;
 import com.eenet.baseinfo.user.EndUserInfo;
+import com.eenet.common.OPOwner;
 import com.eenet.common.cache.RedisClient;
 import com.eenet.util.EEBeanUtils;
 import com.eenet.util.cryptography.EncryptException;
@@ -26,27 +31,34 @@ import com.eenet.util.cryptography.RSAUtil;
  * 2016年6月7日
  */
 public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUserLoginAccountBizService {
+	private static final Logger log = LoggerFactory.getLogger("error");
 	private RedisClient RedisClient;//Redis客户端
 	@Override
 	public EndUserLoginAccount registeEndUserLoginAccount(EndUserLoginAccount account) {
+		log.error("[registeEndUserLoginAccount("+Thread.currentThread().getId()+")] start..........." +OPOwner.getUsertype());
 		EndUserLoginAccount result = new EndUserLoginAccount();
 		result.setSuccessful(true);
 		/* 参数检查 */
 		if (account == null) {
+			log.error("[registeEndUserLoginAccount("+Thread.currentThread().getId()+")] account null ");
 			result.setSuccessful(false);
 			result.addMessage("要注册的用户登录账号未知("+this.getClass().getName()+")");
 		} else if (account.getUserInfo()==null || EEBeanUtils.isNULL(account.getUserInfo().getAtid()) || EEBeanUtils.isNULL(account.getLoginAccount()) || account.getAccountType()==null ) {
+			log.error("[registeEndUserLoginAccount("+Thread.currentThread().getId()+")] atid not nul or account null");
 			result.setSuccessful(false);
 			result.addMessage("要注册的用户登录账号参数不全，END USER标识、登录账号、账号类型均不可为空("+this.getClass().getName()+")");
 		} else if (!EEBeanUtils.isNULL(account.getAccountLoginPassword())) {
+			log.error("[registeEndUserLoginAccount("+Thread.currentThread().getId()+")] account password not null(no allow)");
 			result.setSuccessful(false);
 			result.addMessage("新账号不再支持使用私有密码，请设置统一用户密码，已有账号的私有秘钥仍可登陆("+this.getClass().getName()+")");
 		}
 		if (!result.isSuccessful())
 			return result;
+		log.error("[registeEndUserLoginAccount("+Thread.currentThread().getId()+")] check over");
 		
 		/* 检查要注册的账号是否存在 */
 		EndUserLoginAccount existAccount = this.retrieveEndUserLoginAccountInfo(account.getLoginAccount());
+		log.error("[registeEndUserLoginAccount("+Thread.currentThread().getId()+")] exist account check: "+EEBeanUtils.object2Json(existAccount));
 		if ( existAccount.isSuccessful() && account.getUserInfo().getAtid().equals(existAccount.getUserInfo().getAtid()) ) {//账号存在并且指向同一个用户
 			existAccount.setRSBizCode(ABBizCode.AB0001);
 			return existAccount;
@@ -58,6 +70,7 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 		
 		/* 保存到数据库 */
 		result = super.save(account);
+		log.error("[registeEndUserLoginAccount("+Thread.currentThread().getId()+")] saved result : " + EEBeanUtils.object2Json(result));
 		if (result.isSuccessful())
 			SynEndUserLoginAccount2Redis.syn(getRedisClient(), result);
 		
