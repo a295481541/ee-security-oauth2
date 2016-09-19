@@ -18,6 +18,7 @@ import com.eenet.authen.SignOnGrant;
 import com.eenet.authen.bizimpl.EndUserLoginAccountBizImpl;
 import com.eenet.authen.identifier.CallerIdentityInfo;
 import com.eenet.authen.request.AppAuthenRequest;
+import com.eenet.authen.util.ABBizCode;
 import com.eenet.base.SimpleResponse;
 import com.eenet.baseinfo.user.AdminUserInfo;
 import com.eenet.baseinfo.user.AdminUserInfoBizService;
@@ -54,6 +55,13 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 			result.setRSBizCode(SystemCode.AA0003);
 			return result;
 		}
+		
+		EndUserLoginAccount existAccount = getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(account.getLoginAccount());
+		if (existAccount.isSuccessful()) {
+			result.addMessage("该账号已被使用("+this.getClass().getName()+")");
+			result.setRSBizCode(ABBizCode.AB0002);
+			return result;
+		}
 		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] check over");
 		
 		/* 在当前线程注入接入系统身份（验证当前系统在新增用户时完成） */
@@ -65,6 +73,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		EndUserInfo savedEndUser = getEndUserInfoBizService().save(endUser);
 		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] saved user result : "+ EEBeanUtils.object2Json(savedEndUser));
 		if (!savedEndUser.isSuccessful()) {
+			result.setRSBizCode(savedEndUser.getRSBizCode());
 			result.addMessage(savedEndUser.getStrMessage());
 			return result;
 		}
@@ -74,6 +83,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		EndUserLoginAccount savedAccount = getEndUserLoginAccountBizService().registeEndUserLoginAccount(account);
 		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] registe account result : " + EEBeanUtils.object2Json(savedAccount));
 		if (!savedAccount.isSuccessful()) {
+			result.setRSBizCode(savedAccount.getRSBizCode());
 			result.addMessage(savedAccount.getStrMessage());
 			return result;
 		}
@@ -84,6 +94,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		SimpleResponse savedCredential = getEndUserCredentialBizService().initEndUserLoginPassword(credential);
 		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] saved password result : "+ EEBeanUtils.object2Json(savedCredential));
 		if (!savedCredential.isSuccessful()) {
+			result.setRSBizCode(savedCredential.getRSBizCode());
 			result.addMessage(savedCredential.getStrMessage());
 			return result;
 		}
@@ -93,6 +104,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 				userCipherPassword);
 		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] get grant code result : "+EEBeanUtils.object2Json(grant));
 		if (!grant.isSuccessful()) {
+			result.setRSBizCode(grant.getRSBizCode());
 			result.addMessage(grant.getStrMessage());
 			return result;
 		}
