@@ -129,7 +129,7 @@ public class RegistNewUserController {
 		return EEBeanUtils.object2Json(token);
 	}
 	
-	@RequestMapping(value = "/regist/endUserWithMulAccountAndLogin", produces = {"application/json;charset=UTF-8"})
+	@RequestMapping(value = "/regist/endUserWithMulAccountAndLogin", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String registEndUserWithMulAccountAndLogin(@ModelAttribute("user")EndUserInfo user, @ModelAttribute("account")EndUserLoginAccountListModel account, @ModelAttribute("credential")EndUserCredential credential) {
 		SimpleResponse response = new SimpleResponse();
