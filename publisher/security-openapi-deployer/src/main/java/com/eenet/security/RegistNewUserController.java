@@ -18,6 +18,7 @@ import com.eenet.authen.AdminUserLoginAccount;
 import com.eenet.authen.EndUserCredential;
 import com.eenet.authen.EndUserLoginAccount;
 import com.eenet.authen.IdentityAuthenticationBizService;
+import com.eenet.authen.identifier.CallerIdentityInfo;
 import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.authen.response.UserAccessTokenAuthenResponse;
 import com.eenet.base.BooleanResponse;
@@ -26,6 +27,7 @@ import com.eenet.baseinfo.user.AdminUserInfo;
 import com.eenet.baseinfo.user.EndUserInfo;
 import com.eenet.common.OPOwner;
 import com.eenet.common.code.SystemCode;
+import com.eenet.model.EndUserLoginAccountListModel;
 import com.eenet.security.RegistNewUserBizService;
 import com.eenet.util.EEBeanUtils;
 
@@ -110,27 +112,39 @@ public class RegistNewUserController {
 	
 	@RequestMapping(value = "/registEndUserWithLogin", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
-	public String registEndUserWithLogin(APIRequestIdentity identity,String redirectURI, @ModelAttribute("user")EndUserInfo user, @ModelAttribute("account")EndUserLoginAccount account, @ModelAttribute("credential")EndUserCredential credential) {
+	public String registEndUserWithLogin(String redirectURI, @ModelAttribute("user")EndUserInfo user, @ModelAttribute("account")EndUserLoginAccount account, @ModelAttribute("credential")EndUserCredential credential) {
 		SimpleResponse response = new SimpleResponse();
 		response.setSuccessful(false);
 		
-		if (identity==null || EEBeanUtils.isNULL(identity.getAppId()) || EEBeanUtils.isNULL(identity.getAppSecretKey()) ) {
+		if (OPOwner.UNKNOW_APP_FLAG.equals(OPOwner.getCurrentSys())
+				|| EEBeanUtils.isNULL(CallerIdentityInfo.getAppsecretkey())
+				|| EEBeanUtils.isNULL(CallerIdentityInfo.getRedirecturi())) {
 			response.setRSBizCode(SystemCode.AA0002);
 			return EEBeanUtils.object2Json(response);
 		}
 		
-		AppAuthenRequest appAttribute = new AppAuthenRequest();
-		appAttribute.setAppId(identity.getAppId());
-		appAttribute.setAppSecretKey(identity.getAppSecretKey());
-		appAttribute.setRedirectURI(redirectURI);
+		log.error("CurrentSys : "+OPOwner.getCurrentSys());
 		
-		user.setCrss(identity.getAppId());
-		account.setCrss(identity.getAppId());
-		credential.setCrss(identity.getAppId());
+		AccessToken token = registNewUserBizService.registEndUserWithLogin(user, account, credential);
+		return EEBeanUtils.object2Json(token);
+	}
+	
+	@RequestMapping(value = "/regist/endUserWithMulAccountAndLogin", produces = {"application/json;charset=UTF-8"})
+	@ResponseBody
+	public String registEndUserWithMulAccountAndLogin(@ModelAttribute("user")EndUserInfo user, @ModelAttribute("account")EndUserLoginAccountListModel account, @ModelAttribute("credential")EndUserCredential credential) {
+		SimpleResponse response = new SimpleResponse();
+		response.setSuccessful(false);
 		
-		log.error("userType    :  "+OPOwner.getUsertype() +"thread id: " +Thread.currentThread().getId());
+		if (OPOwner.UNKNOW_APP_FLAG.equals(OPOwner.getCurrentSys())
+				|| EEBeanUtils.isNULL(CallerIdentityInfo.getAppsecretkey())
+				|| EEBeanUtils.isNULL(CallerIdentityInfo.getRedirecturi())) {
+			response.setRSBizCode(SystemCode.AA0002);
+			return EEBeanUtils.object2Json(response);
+		}
 		
-		AccessToken token = registNewUserBizService.registEndUserWithLogin(user, account, credential, appAttribute);
+		log.error("CurrentSys : "+OPOwner.getCurrentSys());
+		
+		AccessToken token = registNewUserBizService.registEndUserWithMulAccountAndLogin(user, account.getM(), credential);
 		return EEBeanUtils.object2Json(token);
 	}
 	

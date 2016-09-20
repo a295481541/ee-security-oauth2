@@ -57,7 +57,7 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 		boolean userTypeAccessAble = this.isUserTypeAccessAble(userType,invoker.getInterface().getName(),invocation.getMethodName(),invocation.getParameterTypes());
 		if (!userTypeAccessAble) {
 			RpcResult rpcRS = new RpcResult();
-			rpcRS.setException(new AuthenException(userType+"用户不可访问该服务"));
+			rpcRS.setException(new AuthenException(userType+"用户不可访问"+invoker.getInterface().getName()+"."+invocation.getMethodName()+"服务"));
 			return rpcRS;
 		}
 		
@@ -255,14 +255,14 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 			Properties properties = new Properties();
 			properties.load(propertiesIn);
 			
-			if (EEBeanUtils.isNULL(properties.getProperty("default.endUser")))
+			if ( properties.containsKey("default.endUser") )
 				defaultEndUser = Boolean.valueOf(properties.getProperty("default.endUser","true").trim());
-			if (EEBeanUtils.isNULL(properties.getProperty("default.adminUser")))
+			if ( properties.containsKey("default.adminUser") )
 				defaultAdminUser = Boolean.valueOf(properties.getProperty("default.adminUser","true").trim());
-			if (EEBeanUtils.isNULL(properties.getProperty("default.anonymous")))
+			if ( properties.containsKey("default.anonymous") )
 				defaultAnonymous = Boolean.valueOf(properties.getProperty("default.anonymous","false").trim());
-			if (EEBeanUtils.isNULL(properties.getProperty("default.default.app")))
-				defaultApp = Boolean.valueOf(properties.getProperty("default.default.app","true").trim());
+			if ( properties.containsKey("default.app") )
+				defaultApp = Boolean.valueOf(properties.getProperty("default.app","true").trim());
 			
 			AuthenRuleProperties = properties;
 		} catch (Exception e) {

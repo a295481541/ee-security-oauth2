@@ -1,6 +1,9 @@
 package com.eenet.test;
 
 public class ApiURL {
+	private static final String localEnvSecurityApiURL = "http://127.0.0.1:8080/security-api";
+	private static final String localEnvbaseinfoApiURL = "http://127.0.0.1:8080/baseinfo-openapi";
+	
 	private static final String devEnvSecurityApiURL = "http://172.16.165.223:8080/security-api";
 	private static final String devEnvbaseinfoApiURL = "http://172.16.165.223:8080/baseinfo-openapi";
 	
@@ -23,7 +26,9 @@ public class ApiURL {
 	 * @return the securityApiURL
 	 */
 	public String getSecurityApiURL() {
-		if (envFlag.equals("dev"))
+		if (envFlag.equals("local"))
+			return localEnvSecurityApiURL;
+		else if (envFlag.equals("dev"))
 			return devEnvSecurityApiURL;
 		else if (envFlag.equals("test"))
 			return testEnvSecurityApiURL;
@@ -35,7 +40,9 @@ public class ApiURL {
 	 * @return the baseinfoApiURL
 	 */
 	public String getBaseinfoApiURL() {
-		if (envFlag.equals("dev"))
+		if (envFlag.equals("local"))
+			return localEnvbaseinfoApiURL;
+		else if (envFlag.equals("dev"))
 			return devEnvbaseinfoApiURL;
 		else if (envFlag.equals("test"))
 			return testEnvbaseinfoApiURL;

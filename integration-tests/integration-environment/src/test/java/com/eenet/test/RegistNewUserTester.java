@@ -31,6 +31,7 @@ public class RegistNewUserTester {
 		String password = "abc123";
 		System.out.println("手机："+mobile+",登录密码："+password);
 		
+		/* 基本参数 */
 		method = new PostMethod(registEndUserWithLoginURL);
 		method.addParameter("appId", appId);
 		method.addParameter("redirectURI", appDomain);
