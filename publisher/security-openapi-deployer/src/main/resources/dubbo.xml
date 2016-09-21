@@ -18,5 +18,5 @@
 	<dubbo:registry protocol="zookeeper" address="${zookeeper.address}" client="curator"/>
 	
 	<!-- 启动时检查所有服务的可用性 -->
-	<dubbo:consumer check="false" timeout="60000" retries="5" loadbalance="leastactive" actives="2000"/><!-- 任何服务不可以均会导致系统无法启动 -->
+	<dubbo:consumer check="false" timeout="60000" retries="5" loadbalance="leastactive" actives="2000" filter="identityInjectFilter"/><!-- 任何服务不可以均会导致系统无法启动 -->
 </beans>

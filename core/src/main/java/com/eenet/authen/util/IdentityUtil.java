@@ -1,11 +1,15 @@
 package com.eenet.authen.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.eenet.authen.BusinessApp;
 import com.eenet.authen.BusinessAppBizService;
 import com.eenet.base.SimpleResponse;
 import com.eenet.base.StringResponse;
 import com.eenet.common.cache.RedisClient;
 import com.eenet.common.exception.RedisOPException;
+import com.eenet.security.RegistNewUserBizImpl;
 import com.eenet.util.EEBeanUtils;
 import com.eenet.util.cryptography.EncryptException;
 import com.eenet.util.cryptography.RSADecrypt;
@@ -18,6 +22,7 @@ import com.eenet.util.cryptography.RSAUtil;
  */
 public class IdentityUtil {
 	private RedisClient RedisClient;//Redis客户端
+	private static final Logger log = LoggerFactory.getLogger(IdentityUtil.class);
 	
 	/**
 	 * 校验业务系统身份
@@ -85,6 +90,7 @@ public class IdentityUtil {
 		
 		try {
 			String userId = getRedisClient().getObject(prefix + ":" + appId + ":" + codeOrToken, String.class);
+			log.error("[getUserIdByCodeOrToken("+Thread.currentThread().getId()+")] redis target key : " + prefix + ":" + appId + ":" + codeOrToken +", value : "+userId);
 			if (EEBeanUtils.isNULL(userId))
 				result.addMessage("无效登录授权码/访问授权码/刷新授权码("+this.getClass().getName()+")");
 			else {

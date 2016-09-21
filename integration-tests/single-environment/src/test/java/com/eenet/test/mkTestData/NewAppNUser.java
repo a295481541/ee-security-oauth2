@@ -88,10 +88,10 @@ public class NewAppNUser extends SpringEnvironment{
 //	@Test
 	public void createAPP() {
 		BusinessApp app = new BusinessApp();
-		String appSecretKey = "MtsSP&"+(new Random().nextInt(100))+"^";
-		app.setAppName("运维支持系统");
+		String appSecretKey = "pcoSE&"+(new Random().nextInt(100))+")";
+		app.setAppName("学习平台");
 		app.setAppType(BusinessAppType.WEBAPP);
-		app.setRedirectURIPrefix("http://mtss.gzedu.com");
+		app.setRedirectURIPrefix("http://pcourse.gzedu.com ");
 		app.setSecretKey(appSecretKey);
 //		app.setDataDescription("勿删！！！重要测试数据");
 		app = appService.registeApp(app);

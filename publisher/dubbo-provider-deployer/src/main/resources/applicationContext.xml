@@ -34,4 +34,10 @@
 	<!-- 通过dubbo发布服务  -->
 	<import resource="distribution-authen-service.xml"/><!-- 认证服务 -->
 	<import resource="distribution-security-service.xml"/><!-- 认证、授权等扩展业务服务 -->
+	
+	<!-- 调用者身份认证控制（app和user） -->
+	<bean id="IdentityConfirmFilter" class="com.eenet.authen.extension.dubbo.IdentityConfirmFilter">
+		<property name="propertyFile" value="/AuthenRule.properties"/>
+		<property name="authenServiceBeanId" value="IdentityAuthenticationBizImpl"/>
+	</bean>
 </beans>
