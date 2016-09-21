@@ -17,10 +17,12 @@ import com.eenet.authen.EndUserLoginAccountBizService;
 import com.eenet.authen.EndUserSignOnBizService;
 import com.eenet.authen.IdentityAuthenticationBizService;
 import com.eenet.authen.SignOnGrant;
-import com.eenet.authen.bizimpl.EndUserLoginAccountBizImpl;
 import com.eenet.authen.identifier.CallerIdentityInfo;
 import com.eenet.authen.util.ABBizCode;
 import com.eenet.base.SimpleResponse;
+import com.eenet.base.query.ConditionItem;
+import com.eenet.base.query.QueryCondition;
+import com.eenet.base.query.RangeType;
 import com.eenet.baseinfo.user.AdminUserInfo;
 import com.eenet.baseinfo.user.AdminUserInfoBizService;
 import com.eenet.baseinfo.user.EndUserInfo;
@@ -66,7 +68,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		EndUserInfo savedEndUser = getEndUserInfoBizService().save(endUser);
 		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] saved user result : "+ EEBeanUtils.object2Json(savedEndUser));
 		if (!savedEndUser.isSuccessful()) {
-			result.setRSBizCode(savedEndUser.getRSBizCode());
+			this.markBizCodeAsSaveUserFail(result, savedEndUser.getAtid());
 			result.addMessage(savedEndUser.getStrMessage());
 			return result;
 		}
@@ -209,6 +211,29 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		
 		result.setSuccessful(true);
 		return result;
+	}
+	
+	/**
+	 * 当新增用户失败时，在返回结果标记bizcode
+	 * 有用户也有账号标记：AB0009；有用户但没有登录账号标记：ABBizCode.AB0010
+	 * @param result 待返回的结果
+	 * @param endUserAtid 用户id 
+	 * 2016年9月21日
+	 * @author Orion
+	 */
+	private void markBizCodeAsSaveUserFail(SimpleResponse result, String endUserAtid) {
+		boolean existUser = !EEBeanUtils.isNULL(endUserAtid);
+		boolean existAccount = false;
+		if (existUser) {
+			QueryCondition condition = new QueryCondition();
+			condition.addCondition(new ConditionItem("userInfo.atid",RangeType.EQUAL,endUserAtid,null));
+			existAccount = getEndUserLoginAccountBizService().query(condition).getCount()==0;
+		}
+		
+		if (existUser && existAccount) //有用户也有账号
+			result.setRSBizCode(ABBizCode.AB0009);
+		else if (existUser && !existAccount) //有用户但没有账号
+			result.setRSBizCode(ABBizCode.AB0010);
 	}
 	
 	private IdentityAuthenticationBizService identityAuthenticationBizService;

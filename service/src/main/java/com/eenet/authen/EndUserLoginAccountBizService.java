@@ -1,6 +1,8 @@
 package com.eenet.authen;
 
 import com.eenet.base.SimpleResponse;
+import com.eenet.base.SimpleResultSet;
+import com.eenet.base.query.QueryCondition;
 import com.eenet.baseinfo.user.EndUserInfo;
 import com.eenet.util.cryptography.RSADecrypt;
 
@@ -48,6 +50,16 @@ public interface EndUserLoginAccountBizService {
 	 * @return 如果是RSA加密形式则返回明文，否则返回密文。返回对象只包含加密方式和密码明文（或密文）
 	 */
 	public EndUserLoginAccount retrieveEndUserAccountPassword(String loginAccount, RSADecrypt StorageRSAEncrypt);
+	
+	/**
+	 * 登录账号综合查询（单表）
+	 * @param condition 查询条件对象
+	 * @return
+	 * 2016年9月21日
+	 * @author Orion
+	 */
+	public SimpleResultSet<EndUserLoginAccount> query (QueryCondition condition);
+	
 	/**
 	 * 不应该再考虑维护账号的私有密码
 	 */

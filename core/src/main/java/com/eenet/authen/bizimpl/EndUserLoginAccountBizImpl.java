@@ -207,6 +207,11 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 		return result;
 	}
 	
+	@Override
+	public SimpleResultSet<EndUserLoginAccount> query(QueryCondition condition) {
+		return super.query(condition);
+	}
+	
 	/****************************************************************************
 	**                                                                         **
 	**                           Getter & Setter                               **
