@@ -36,12 +36,16 @@ public class NewAppNUser extends SpringEnvironment{
 	private EndUserCredentialBizService endUserCredentialService = (EndUserCredentialBizService)super.getContext().getBean("EndUserCredentialBizImpl");
 	private RSAEncrypt encrypt = (RSAEncrypt)super.getContext().getBean("TransferRSAEncrypt");
 	
-//	@Test
+	@Test
 	public void createAdmin() {
 		AdminUserInfo admin = new AdminUserInfo();
-		admin.setName("EEIM管理员");
+		admin.setName("推广平台系统管理员");
 //		admin.setDataDescription("勿删！！！重要测试数据");
 		admin = adminService.save(admin);
+		if ( !admin.isSuccessful() ) {
+			System.out.println(admin.getStrMessage());
+			return;
+		}
 		System.out.println(admin.getAtid() + "," + admin.getName());
 	}
 	
@@ -81,7 +85,7 @@ public class NewAppNUser extends SpringEnvironment{
 		}
 	}
 	
-	@Test
+//	@Test
 	public void createAPP() {
 		BusinessApp app = new BusinessApp();
 		String appSecretKey = "MtsSP&"+(new Random().nextInt(100))+"^";
