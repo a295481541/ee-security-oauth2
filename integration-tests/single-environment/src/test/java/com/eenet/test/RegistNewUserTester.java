@@ -40,7 +40,7 @@ public class RegistNewUserTester extends SpringEnvironment {
 		appAtt.setAppSecretKey(RSAUtil.encryptWithTimeMillis(encrypt, "pASS12#"));
 		appAtt.setRedirectURI("http://www.zhigongjiaoyu.com");
 		
-		AccessToken accessToken = regService.registEndUserWithLogin(endUser, account, credential, appAtt);
+		AccessToken accessToken = regService.registEndUserWithLogin(endUser, account, credential);
 		System.out.println(EEBeanUtils.object2Json(accessToken));
 	}
 	
