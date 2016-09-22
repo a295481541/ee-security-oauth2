@@ -22,6 +22,7 @@ import com.eenet.baseinfo.user.AdminUserInfoBizService;
 import com.eenet.baseinfo.user.EndUserInfo;
 import com.eenet.baseinfo.user.EndUserInfoBizService;
 import com.eenet.test.env.SpringEnvironment;
+import com.eenet.test.env.UserSignOn;
 import com.eenet.util.EEBeanUtils;
 import com.eenet.util.cryptography.RSAEncrypt;
 import com.eenet.util.cryptography.RSAUtil;
@@ -35,9 +36,11 @@ public class NewAppNUser extends SpringEnvironment{
 	private EndUserLoginAccountBizService endUserAccountService = (EndUserLoginAccountBizService)super.getContext().getBean("EndUserLoginAccountBizImpl");
 	private EndUserCredentialBizService endUserCredentialService = (EndUserCredentialBizService)super.getContext().getBean("EndUserCredentialBizImpl");
 	private RSAEncrypt encrypt = (RSAEncrypt)super.getContext().getBean("TransferRSAEncrypt");
+	private UserSignOn signOn = new UserSignOn();
 	
-	@Test
-	public void createAdmin() {
+//	@Test
+	public void createAdmin() throws Exception {
+		signOn.adminUserSignOn(null, null);
 		AdminUserInfo admin = new AdminUserInfo();
 		admin.setName("推广平台系统管理员");
 //		admin.setDataDescription("勿删！！！重要测试数据");
@@ -155,11 +158,12 @@ public class NewAppNUser extends SpringEnvironment{
 		}
 	}
 	
-//	@Test
+	@Test
 	public void createAdminLoginAccountNCredential() throws Exception {
-		String loginAccount = "eechat.admin";
-		String password = "sEpa$738";
-		String adminUserId = "C7547688CFFD4C2BAEEC0EAA3EE1E026";
+		signOn.adminUserSignOn(null, null);
+		String loginAccount = "tg.admin";
+		String password = "tgR^553";
+		String adminUserId = "95E1155DF4F64480B98CB55C7723B894";
 		AdminUserLoginAccount account = new AdminUserLoginAccount();
 		AdminUserInfo admin = new AdminUserInfo();admin.setAtid(adminUserId);
 		account.setUserInfo(admin);

@@ -31,8 +31,8 @@ public class RegisteEndUserLoginAccountTester {
 		method.addParameter("userType", "anonymous");
 		
 		/* 业务参数 */
-		method.addParameter("userInfo.atid", "732A61138E0944B4AA10935655C16D27");
-		method.addParameter("loginAccount", "13922828753");
+		method.addParameter("userInfo.atid", "4ED83EC8D2BD4BA39A1D403885012F1F");
+		method.addParameter("loginAccount", "13543421610");
 		method.addParameter("accountType", "MOBILE");
 		
 		client.executeMethod(method);

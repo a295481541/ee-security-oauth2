@@ -18,5 +18,20 @@
 	<dubbo:registry protocol="zookeeper" address="172.16.146.152:2181" client="curator"/>
 	
 	<!-- 启动时检查所有服务的可用性 -->
-	<dubbo:consumer check="false" timeout="60000" retries="5" loadbalance="leastactive" actives="2000"/><!-- 任何服务不可以均会导致系统无法启动 -->
+	<dubbo:consumer check="false" timeout="60000" retries="5" loadbalance="leastactive" actives="2000" filter="identityInjectFilter"/><!-- 任何服务不可以均会导致系统无法启动 -->
+	
+	<bean id="IdentityInjectFilter" class="com.eenet.authen.extension.dubbo.IdentityInjectFilter" >
+		<property name="AppIdentityBeanId" value="currentApp" />
+		<property name="encrypt" ref="RSAEncrypt"/>
+	</bean>
+	
+	<bean id="currentApp" class="com.eenet.authen.request.AppAuthenRequest">
+		<property name="appId" value="4F6C06B5C9BB41A08335D51F5E5CD39C"/>
+		<property name="appSecretKey" value="MtsSP&amp;38^"/>
+		<property name="redirectURI" value="http://mtss.gzedu.com"/>
+	</bean>
+	<bean id="RSAEncrypt"  class="com.eenet.util.cryptography.RSAEncrypt">
+		<property name="modulus" value="128951193183221034225822737570948469888666421590885614987162582380797352756426542467671046441297008343889791818897096336951333883547706106993937530910572634357960447078042872959529127054187264213720849616059022547779162032875109639419560326484813446402232709792095857078282196324645931652527727698345505904311"/>
+		<property name="publicExponent" value="65537"/>
+	</bean>
 </beans>
