@@ -19,4 +19,8 @@ public class ABBizCode {
 	public static final BizCode AB0007 = new BizCode("AB0007","登录失败-登录账号或密码错误");
 	/** 注册未全部成功-部分登录账号未能完成绑定但有部分已绑定 */
 	public static final BizCode AB0008 = new BizCode("AB0008","注册未全部成功-部分登录账号未能完成绑定但有部分已绑定");
+	/** 已存在身份证、手机或邮箱和登录账号 */
+	public static final BizCode AB0009 = new BizCode("AB0009","已存在身份证、手机或邮箱和登录账号");
+	/** 已存在身份证、手机或邮箱但没有登录账号 */
+	public static final BizCode AB0010 = new BizCode("AB0010","已存在身份证、手机或邮箱但没有登录账号");
 }
