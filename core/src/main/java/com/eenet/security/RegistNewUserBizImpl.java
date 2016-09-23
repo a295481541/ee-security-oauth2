@@ -234,29 +234,6 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		return result;
 	}
 	
-	/**
-	 * 当新增用户失败时，在返回结果标记bizcode
-	 * 有用户也有账号标记：AB0009；有用户但没有登录账号标记：ABBizCode.AB0010
-	 * @param result 待返回的结果
-	 * @param endUserAtid 用户id 
-	 * 2016年9月21日
-	 * @author Orion
-	 */
-	private void markBizCodeAsSaveUserFail(SimpleResponse result, String endUserAtid) {
-		boolean existUser = !EEBeanUtils.isNULL(endUserAtid);
-		boolean existAccount = false;
-		if (existUser) {
-			QueryCondition condition = new QueryCondition();
-			condition.addCondition(new ConditionItem("userInfo.atid",RangeType.EQUAL,endUserAtid,null));
-			existAccount = getEndUserLoginAccountBizService().query(condition).getCount()==0;
-		}
-		
-		if (existUser && existAccount) //有用户也有账号
-			result.setRSBizCode(ABBizCode.AB0009);
-		else if (existUser && !existAccount) //有用户但没有账号
-			result.setRSBizCode(ABBizCode.AB0010);
-	}
-	
 	private IdentityAuthenticationBizService identityAuthenticationBizService;
 	
 	private AdminUserInfoBizService adminUserInfoBizService;
