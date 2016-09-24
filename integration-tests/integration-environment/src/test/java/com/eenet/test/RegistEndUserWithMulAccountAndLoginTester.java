@@ -3,7 +3,6 @@ package com.eenet.test;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.util.EncodingUtil;
-import org.json.JSONObject;
 
 public class RegistEndUserWithMulAccountAndLoginTester {
 	ApiURL baseURL = new ApiURL("local");
@@ -13,7 +12,6 @@ public class RegistEndUserWithMulAccountAndLoginTester {
 	private HttpClient client;
 	private PostMethod method;
 	private String returnMessage;
-	private JSONObject jsonObject;
 	
 	private final String appId = "4F6C06B5C9BB41A08335D51F5E5CD39C";
 	private final String appDomain = "http://mtss.gzedu.com";
