@@ -12,6 +12,7 @@ public class EndUserCredentialReSetTester {
 	/* 定义调用地址和调用参数 */
 	private final String sendSMSCode4ResetPasswordURL = baseURL.getSecurityApiURL()+"/security/sendSMSCode4ResetPassword";
 	private final String resetPasswordBySMSCodeWithLoginURL = baseURL.getSecurityApiURL()+"/security/resetPasswordBySMSCodeWithLogin";
+	private final String resetPasswordBySMSCodeWithoutLoginURL = baseURL.getSecurityApiURL()+"/security/resetPasswordBySMSCodeWithoutLogin";
 	private HttpClient client;
 	private PostMethod method;
 	private String returnMessage;
@@ -20,17 +21,19 @@ public class EndUserCredentialReSetTester {
 	private final String appId = "9CFF0CA0D43D4B2DAC1EFC6A86FCB191";
 	private final String appDomain = "http://hz.saas.workeredu.com";
 	private final String appSecretKey = "pASS41#";
-	private final long mobile = 13922202252l;
+	private final long mobile = 13928727719l;
 	
 	public static void main(String[] args) throws Exception {
 		EndUserCredentialReSetTester tester = new EndUserCredentialReSetTester();
-		tester.resetPasswordBySMS();
+//		tester.resetPasswordBySMS();
 		
-		String userId = "9BC7BA2AEF584220BBC2845BF61A04B9";//<==要重置密码用户的标识，从resetPasswordBySMS()方法获得
-		String smsCode = "343827";//<==收到短信后填于此处
+		String userId = "1c6441eeac1082a355afbf497085fad2";//<==要重置密码用户的标识，从resetPasswordBySMS()方法获得
+		String smsCode = "361486";//<==收到短信后填于此处
 		String newPassword = new Random().nextInt(1000000) +"^AAb";
 		System.out.println("设置新密码： "+newPassword);
-//		tester.resetPasswordBySMSCodeWithLogin(userId, smsCode, newPassword);
+//		
+		tester.resetPasswordBySMSCodeWithLogin(userId, smsCode, newPassword);
+//		tester.resetPasswordBySMSCodeWithoutLogin(userId, smsCode, newPassword);
 	}
 	
 	public void resetPasswordBySMS() throws Exception {
@@ -56,6 +59,22 @@ public class EndUserCredentialReSetTester {
 		method.addParameter("endUser.atid", userId);
 		method.addParameter("password", MockHttpRequest.encrypt(newPassword+"##"+System.currentTimeMillis()));
 		method.addParameter("smsCode", smsCode);
+		method.addParameter("mobile", String.valueOf(mobile));
+		client.executeMethod(method);
+		
+		returnMessage = EncodingUtil.getString(method.getResponseBody(), "UTF-8");
+		System.out.println("returnMessage : " + returnMessage);
+	}
+	
+	public void resetPasswordBySMSCodeWithoutLogin(String userId, String smsCode, String newPassword)  throws Exception {
+		method = new PostMethod(resetPasswordBySMSCodeWithoutLoginURL);
+		method.addParameter("appId", appId);
+		method.addParameter("redirectURI", appDomain);
+		method.addParameter("appSecretKey", MockHttpRequest.encrypt(appSecretKey+"##"+System.currentTimeMillis()));
+		method.addParameter("endUser.atid", userId);
+		method.addParameter("password", MockHttpRequest.encrypt(newPassword+"##"+System.currentTimeMillis()));
+		method.addParameter("smsCode", smsCode);
+		method.addParameter("mobile", String.valueOf(mobile));
 		client.executeMethod(method);
 		
 		returnMessage = EncodingUtil.getString(method.getResponseBody(), "UTF-8");

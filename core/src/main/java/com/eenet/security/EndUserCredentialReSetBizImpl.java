@@ -11,6 +11,7 @@ import com.eenet.authen.EndUserLoginAccount;
 import com.eenet.authen.EndUserLoginAccountBizService;
 import com.eenet.authen.EndUserSignOnBizService;
 import com.eenet.authen.IdentityAuthenticationBizService;
+import com.eenet.authen.LoginAccountType;
 import com.eenet.authen.SignOnGrant;
 import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.base.SimpleResponse;
@@ -142,7 +143,7 @@ public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizS
 
 	@Override
 	public AccessToken resetPasswordBySMSCodeWithLogin(AppAuthenRequest appRequest, EndUserCredential credential,
-			String smsCode) {
+			String smsCode, String mobile) {
 		AccessToken result = new AccessToken();
 		result.setSuccessful(false);
 		
@@ -154,27 +155,28 @@ public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizS
 		}
 		
 		/* 使用短信验证码重置密码 */
-		SimpleResponse resetRS = resetPasswordBySMSCodeWithoutLogin(credential, smsCode);
+		SimpleResponse resetRS = resetPasswordBySMSCodeWithoutLogin(credential, smsCode, mobile);
 		if ( !resetRS.isSuccessful() ) {
 			result.addMessage(resetRS.getStrMessage());
 			return result;
 		}
 		
-		/* 获得当前用户登录账号（取一个账号） */
-		QueryCondition condition = new QueryCondition();
-		condition.setMaxQuantity(1);
-		condition.addCondition(new ConditionItem("userInfo.atid",RangeType.EQUAL,credential.getEndUser().getAtid(),null));
-		
-		SimpleResultSet<EndUserLoginAccount> queryAccountRS = getGenericBiz().query(condition,EndUserLoginAccount.class);
-		if ( !queryAccountRS.isSuccessful() ) {
-			result.addMessage(queryAccountRS.getStrMessage());
-			return result;
-		}
-		if ( queryAccountRS.getResultSet().size()!=1 ) {
-			result.addMessage("密码重置成功，但未设置登录账号无法直接登录("+this.getClass().getName()+")");
-			return result;
-		}
-		String loginAccount = queryAccountRS.getResultSet().get(0).getLoginAccount();
+//		/* 获得当前用户登录账号（取一个账号） */
+//		QueryCondition condition = new QueryCondition();
+//		condition.setMaxQuantity(1);
+//		condition.addCondition(new ConditionItem("userInfo.atid",RangeType.EQUAL,credential.getEndUser().getAtid(),null));
+//		
+//		SimpleResultSet<EndUserLoginAccount> queryAccountRS = getGenericBiz().query(condition,EndUserLoginAccount.class);
+//		if ( !queryAccountRS.isSuccessful() ) {
+//			result.addMessage(queryAccountRS.getStrMessage());
+//			return result;
+//		}
+//		if ( queryAccountRS.getResultSet().size()!=1 ) {
+//			result.addMessage("密码重置成功，但未设置登录账号无法直接登录("+this.getClass().getName()+")");
+//			return result;
+//		}
+//		String loginAccount = queryAccountRS.getResultSet().get(0).getLoginAccount();
+		String loginAccount = mobile;//如果被重置密码的用户没有手机登录账号则自动创建一个，所以该手机必然可以作为登录账号
 		
 		/* 获得认证授权码 */
 		SignOnGrant grant = getEndUserSignOnBizService().getSignOnGrant(appRequest.getAppId(),
@@ -190,7 +192,7 @@ public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizS
 	}
 
 	@Override
-	public SimpleResponse resetPasswordBySMSCodeWithoutLogin(EndUserCredential credential, String smsCode) {
+	public SimpleResponse resetPasswordBySMSCodeWithoutLogin(EndUserCredential credential, String smsCode, String mobile) {
 		SimpleResponse result = new SimpleResponse();
 		result.setSuccessful(false);
 		/* 参数检查 */
@@ -206,6 +208,41 @@ public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizS
 			return result;
 		}
 		
+		/* 检查指定的用户标识和手机所属用户是否一致 */
+		EndUserInfo user = getEndUserInfoBizService().getByMobileEmailId(String.valueOf(mobile), null, null);
+		if (!user.isSuccessful())
+			user = getEndUserLoginAccountBizService().retrieveEndUserInfo(String.valueOf(mobile));
+		if (!user.isSuccessful()) {
+			result.addMessage(user.getStrMessage());
+			return result;
+		}
+		if ( !credential.getEndUser().getAtid().equals(user.getAtid()) ) {
+			result.addMessage("手机所属用户和指定的用户标识不一致");
+			return result;
+		}
+		
+		/* 如果被重置密码的用户没有手机登录账号则自动创建一个 */
+		QueryCondition condition = new QueryCondition();
+		condition.setMaxQuantity(1);
+		condition.addCondition(new ConditionItem("loginAccount",RangeType.EQUAL,mobile,null));
+		SimpleResultSet<EndUserLoginAccount> queryAccountRS = getGenericBiz().query(condition,EndUserLoginAccount.class);
+		if ( !queryAccountRS.isSuccessful() ) {
+			result.addMessage(queryAccountRS.getStrMessage());
+			return result;
+		}
+		if ( queryAccountRS.getResultSet().size()==0 ) {//该手机没有作为账号，创建一个
+			EndUserLoginAccount account = new EndUserLoginAccount();
+			account.setUserInfo(user);
+			account.setAccountType(LoginAccountType.MOBILE);
+			account.setLoginAccount(mobile);
+			getEndUserLoginAccountBizService().registeEndUserLoginAccount(account);
+			result.addMessage(account.getStrMessage());
+		} else if ( queryAccountRS.getResultSet().size()==1 ) {//该手机已作为账号，不对账号进行任何处理
+			String existAccountUserId = queryAccountRS.getResultSet().get(0).getUserInfo().getAtid();
+			if ( !credential.getEndUser().getAtid().equals(existAccountUserId) )//手机账号所关联的用户不是要重置密码的用户
+				result.addMessage("手机账号所关联的用户不是要重置密码的用户");
+		}
+		
 		/* 重置用户登录密码 */
 		String newPasswordPlainText = null;
 		try {
@@ -215,9 +252,9 @@ public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizS
 			result.addMessage(e.toString());
 			return result;
 		}
-		
 		result = getResetLoginPasswordCom().resetEndUserLoginPassword(credential.getEndUser().getAtid(),
 				newPasswordPlainText, getStorageRSAEncrypt());
+		
 		return result;
 	}
 	

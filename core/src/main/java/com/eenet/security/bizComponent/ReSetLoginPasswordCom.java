@@ -48,12 +48,13 @@ public class ReSetLoginPasswordCom {
 		}
 		
 		/* 判断指定的最终用户是否存在 */
-		EndUserInfo existEndUser = getEndUserInfoBizService().get(endUserId);
-		if (!existEndUser.isSuccessful() || EEBeanUtils.isNULL(existEndUser.getAtid())) {
+		if ( !getEndUserInfoBizService().exist(endUserId).isSuccessful() ) {
 			result.setSuccessful(false);
 			result.addMessage("未找到指定要重置登录密码对应的最终用户");
 			return result;
 		}
+		EndUserInfo existEndUser = new EndUserInfo();
+		existEndUser.setAtid(endUserId);
 		
 		/* 从数据库取秘钥对象 */
 		QueryCondition query = new QueryCondition();

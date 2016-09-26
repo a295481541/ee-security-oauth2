@@ -58,17 +58,6 @@ public class EndUserSMSSignOnController {
 			return EEBeanUtils.object2Json(response);
 		}
 		
-		/* 业务系统认证 */
-		AppAuthenRequest appAttribute = new AppAuthenRequest();
-		appAttribute.setAppId(identity.getAppId());
-		appAttribute.setAppSecretKey(identity.getAppSecretKey());
-		
-		SimpleResponse appAuthen = identityAuthenticationBizService.appAuthen(appAttribute);
-		if (!appAuthen.isSuccessful()) {
-			response.addMessage(appAuthen.getStrMessage());
-			return EEBeanUtils.object2Json(response);
-		}
-		
 		/* 校验快速登录验证码 */
 		response = endUserSMSSignOnBizService.validateSMSCode4Login(identity.getAppId(), mobile, smsCode, false);
 		return EEBeanUtils.object2Json(response);

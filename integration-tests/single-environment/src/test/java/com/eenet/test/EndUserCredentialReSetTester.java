@@ -36,10 +36,10 @@ public class EndUserCredentialReSetTester extends SpringEnvironment {
 	private final String appId = "9CFF0CA0D43D4B2DAC1EFC6A86FCB191";
 	private final String redirectURI = "http://hz.saas.workeredu.com";
 	private final String appSecretKey = "pASS41#";
+	private long mobile = 13922202252l;
 	
 //	@Test
 	public void resetPasswordBySMS() {
-		long mobile = 13922202252l;
 		StringResponse sendSMSRS = resetService.sendSMSCode4ResetPassword(appId, mobile);
 		if ( !sendSMSRS.isSuccessful() ) {
 			System.out.println(sendSMSRS.getStrMessage());
@@ -70,7 +70,7 @@ public class EndUserCredentialReSetTester extends SpringEnvironment {
 		credential.setEndUser(endUser);credential.setPassword(RSAUtil.encryptWithTimeMillis(encrypt, newPassword));
 		System.out.println("新密码： "+newPassword);
 		
-		AccessToken accessToken = resetService.resetPasswordBySMSCodeWithLogin(appRequest, credential, smsCode);
+		AccessToken accessToken = resetService.resetPasswordBySMSCodeWithLogin(appRequest, credential, smsCode, String.valueOf(mobile));
 		if ( !accessToken.isSuccessful() ) {
 			System.out.println(accessToken.getStrMessage());
 			return;

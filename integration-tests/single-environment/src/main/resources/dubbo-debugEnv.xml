@@ -15,7 +15,7 @@
 	<dubbo:application name="eenet.security.debugEnv" />
 	
 	<!-- 使用zookeeper注册中心进行注册 -->
-	<dubbo:registry protocol="zookeeper" address="172.16.165.222:2181" client="curator"/>
+	<dubbo:registry protocol="zookeeper" address="172.16.146.152:2181" client="curator"/>
 	
 	<!-- 启动时检查所有服务的可用性 -->
 	<dubbo:consumer check="false" timeout="60000" retries="5" loadbalance="leastactive" actives="2000"/><!-- 任何服务不可以均会导致系统无法启动 -->

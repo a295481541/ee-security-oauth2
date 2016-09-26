@@ -36,22 +36,26 @@ public interface EndUserCredentialReSetBizService {
 	
 	/**
 	 * 使用短信验证码重置密码，并模拟登陆获得访问令牌
+	 * 如果被重置密码的用户没有手机登录账号则自动创建一个
 	 * @param 应用身份对象
 	 * @param curCredential password属性进行带时间戳加密
 	 * @param resetCode
+	 * @param mobile
 	 * @return
 	 * 2016年7月18日
 	 * @author Orion
 	 */
-	public AccessToken resetPasswordBySMSCodeWithLogin(AppAuthenRequest appRequest, EndUserCredential credential, String smsCode);
+	public AccessToken resetPasswordBySMSCodeWithLogin(AppAuthenRequest appRequest, EndUserCredential credential, String smsCode, String mobile);
 	
 	/**
 	 * 使用短信验证码重置密码
+	 * 如果被重置密码的用户没有手机登录账号则自动创建一个
 	 * @param credential password属性进行带时间戳加密
 	 * @param resetCode
+	 * @param mobile
 	 * @return
 	 * 2016年7月18日
 	 * @author Orion
 	 */
-	public SimpleResponse resetPasswordBySMSCodeWithoutLogin(EndUserCredential credential, String smsCode);
+	public SimpleResponse resetPasswordBySMSCodeWithoutLogin(EndUserCredential credential, String smsCode, String mobile);
 }
