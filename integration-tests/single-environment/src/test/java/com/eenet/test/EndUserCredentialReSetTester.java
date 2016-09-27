@@ -36,7 +36,7 @@ public class EndUserCredentialReSetTester extends SpringEnvironment {
 	private final String appId = "9CFF0CA0D43D4B2DAC1EFC6A86FCB191";
 	private final String redirectURI = "http://hz.saas.workeredu.com";
 	private final String appSecretKey = "pASS41#";
-	private long mobile = 13922202252l;
+	private long mobile = 13752059885l;
 	
 //	@Test
 	public void resetPasswordBySMS() {

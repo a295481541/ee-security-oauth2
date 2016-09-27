@@ -21,14 +21,14 @@ public class EndUserCredentialReSetTester {
 	private final String appId = "9CFF0CA0D43D4B2DAC1EFC6A86FCB191";
 	private final String appDomain = "http://hz.saas.workeredu.com";
 	private final String appSecretKey = "pASS41#";
-	private final long mobile = 13928727719l;
+	private final long mobile = 13650792174l;
 	
 	public static void main(String[] args) throws Exception {
 		EndUserCredentialReSetTester tester = new EndUserCredentialReSetTester();
 //		tester.resetPasswordBySMS();
 		
-		String userId = "1c6441eeac1082a355afbf497085fad2";//<==要重置密码用户的标识，从resetPasswordBySMS()方法获得
-		String smsCode = "361486";//<==收到短信后填于此处
+		String userId = "16129C49F6F34E9DBD1A804B18846909";//<==要重置密码用户的标识，从resetPasswordBySMS()方法获得
+		String smsCode = "868983";//<==收到短信后填于此处
 		String newPassword = new Random().nextInt(1000000) +"^AAb";
 		System.out.println("设置新密码： "+newPassword);
 //		
