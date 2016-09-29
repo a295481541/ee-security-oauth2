@@ -9,7 +9,7 @@ import org.apache.commons.httpclient.util.EncodingUtil;
 import org.json.JSONObject;
 
 public class ChangeUserInfoTester {
-	ApiURL baseURL = new ApiURL("runtime");
+	ApiURL baseURL = new ApiURL("test");
 	/* 定义调用地址和调用参数 */
 	private final String getEndUserSignOnGrantURL = baseURL.getSecurityApiURL()+"/getEndUserSignOnGrant";
 	private final String getEndUserAccessTokenURL = baseURL.getSecurityApiURL()+"/getEndUserAccessToken";
@@ -21,7 +21,8 @@ public class ChangeUserInfoTester {
 	
 	public static void main(String[] args) throws Exception {
 		ChangeUserInfoTester me = new ChangeUserInfoTester();
-		Map<String,String> loginRS = me.endUserLogin("13922202252","654321");
+		//测试机登录用户：mx_test14746122262611 密码：888888
+		Map<String,String> loginRS = me.endUserLogin("mx_test14746122262611","888888");
 //		loginRS = me.refreshEndUserToken(loginRS.get("refreshToken"), loginRS.get("userId"));
 //		me.changeUserInfo(loginRS.get("accessToken"), loginRS.get("userId"));
 	}

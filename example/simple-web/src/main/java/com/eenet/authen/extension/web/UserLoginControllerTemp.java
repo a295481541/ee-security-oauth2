@@ -25,6 +25,7 @@ public class UserLoginControllerTemp extends AbstractController{
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		System.out.println(request.getRequestURI());
+		System.out.println(request.getRequestURL());
 		System.out.println(request.getQueryString());
 		
 		System.out.println("-----------------head start---------------------");
@@ -35,7 +36,10 @@ public class UserLoginControllerTemp extends AbstractController{
 		}
 		System.out.println("-----------------head end---------------------");
 		
-		request.getRequestDispatcher(request.getRequestURI()).forward(request, response);
+		if (request.getHeader("Referer") != null) {
+			ModelAndView view = new ModelAndView("redirect:"+request.getHeader("Referer"));
+			return view;
+		}
 		
 		return null;
 	}

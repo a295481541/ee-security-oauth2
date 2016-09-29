@@ -9,7 +9,7 @@ import org.apache.commons.httpclient.util.EncodingUtil;
 import org.json.JSONObject;
 
 public class EndUserSMSSignOnTester {
-	ApiURL baseURL = new ApiURL("test");
+	ApiURL baseURL = new ApiURL("runtime");
 	private final String sendSMSCode4LoginURL = baseURL.getSecurityApiURL()+"/authen/EndUserSMSSignOn/sendSMSCode4Login";//发送短信获得快速登录验证码
 	private final String getAccessTokenURL = baseURL.getSecurityApiURL()+"/authen/EndUserSMSSignOn/getAccessToken";//获得访问授权码（通过短信验证码）
 	private final String getEndUserURL = baseURL.getBaseinfoApiURL()+"/getEndUser";//获得用户基本信息
