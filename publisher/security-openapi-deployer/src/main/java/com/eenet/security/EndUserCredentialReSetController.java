@@ -79,12 +79,12 @@ public class EndUserCredentialReSetController {
 	
 	@RequestMapping(value = "/security/resetPasswordBySMSCodeWithLogin", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
-	public String resetPasswordBySMSCodeWithLogin(APIRequestIdentity identity, String redirectURI, EndUserCredential credential, String smsCode) {
+	public String resetPasswordBySMSCodeWithLogin(APIRequestIdentity identity, String redirectURI, EndUserCredential credential, String smsCode, String mobile) {
 		AccessToken response = new AccessToken();
 		response.setSuccessful(false);
 		
 		/* 参数检查 */
-		if ( identity==null || credential==null || EEBeanUtils.isNULL(smsCode) || EEBeanUtils.isNULL(redirectURI) ) {
+		if ( identity==null || credential==null || EEBeanUtils.isNULL(smsCode) || EEBeanUtils.isNULL(redirectURI) || EEBeanUtils.isNULL(mobile)) {
 			response.setRSBizCode(SystemCode.AA0002);
 			return EEBeanUtils.object2Json(response);
 		}
@@ -95,18 +95,18 @@ public class EndUserCredentialReSetController {
 		appAttribute.setAppSecretKey(identity.getAppSecretKey());
 		appAttribute.setRedirectURI(redirectURI);
 		
-		response = endUserCredentialReSetBizService.resetPasswordBySMSCodeWithLogin(appAttribute, credential, smsCode);
+		response = endUserCredentialReSetBizService.resetPasswordBySMSCodeWithLogin(appAttribute, credential, smsCode, mobile);
 		return EEBeanUtils.object2Json(response);
 	}
 	
 	@RequestMapping(value = "/security/resetPasswordBySMSCodeWithoutLogin", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
-	public String resetPasswordBySMSCodeWithoutLogin(APIRequestIdentity identity, EndUserCredential credential, String smsCode) {
+	public String resetPasswordBySMSCodeWithoutLogin(APIRequestIdentity identity, EndUserCredential credential, String smsCode, String mobile) {
 		SimpleResponse response = new SimpleResponse();
 		response.setSuccessful(false);
 		
 		/* 参数检查 */
-		if ( identity==null || credential==null || EEBeanUtils.isNULL(smsCode)) {
+		if ( identity==null || credential==null || EEBeanUtils.isNULL(smsCode) || EEBeanUtils.isNULL(mobile)) {
 			response.setRSBizCode(SystemCode.AA0002);
 			return EEBeanUtils.object2Json(response);
 		}
@@ -122,7 +122,7 @@ public class EndUserCredentialReSetController {
 			return EEBeanUtils.object2Json(response);
 		}
 		
-		response = endUserCredentialReSetBizService.resetPasswordBySMSCodeWithoutLogin(credential, smsCode);
+		response = endUserCredentialReSetBizService.resetPasswordBySMSCodeWithoutLogin(credential, smsCode, mobile);
 		return EEBeanUtils.object2Json(response);
 	}
 }

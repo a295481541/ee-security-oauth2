@@ -68,17 +68,19 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 		userAuthenReq.setAppSecretKey(invocation.getAttachment(RPCAuthenParamKey.BIZ_APP_SECRETKEY,""));
 		userAuthenReq.setUserId(invocation.getAttachment(RPCAuthenParamKey.USER_ID,""));
 		userAuthenReq.setUserAccessToken(invocation.getAttachment(RPCAuthenParamKey.USER_ACCESS_TOKEN,""));
+		if ( "endUser".equals(userType) || "adminUser".equals(userType) )//用户类型为endUser或adminUser时，app始终需要进行认证
+			appAuthenLimit = true;
 		
 		/* 根据不同用户类型进行不同形式认证  */
 		boolean authenConfirm = false;
 		String authenFailReason = "";
 		if ("endUser".equals(userType)) {
-			UserAccessTokenAuthenResponse authenResponse = this.endUserAuthen(appAuthenLimit, userAuthenReq);
+			UserAccessTokenAuthenResponse authenResponse = this.endUserAuthen(userAuthenReq);
 			authenConfirm = authenResponse.isSuccessful();
 			if ( !authenConfirm )
 				authenFailReason = authenResponse.getStrMessage();
 		} else if ("adminUser".equals(userType)) {
-			UserAccessTokenAuthenResponse authenResponse = this.adminUserAuthen(appAuthenLimit, userAuthenReq);
+			UserAccessTokenAuthenResponse authenResponse = this.adminUserAuthen(userAuthenReq);
 			authenConfirm = authenResponse.isSuccessful();
 			if ( !authenConfirm )
 				authenFailReason = authenResponse.getStrMessage();
@@ -105,36 +107,28 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 		
 		/* 认证成功：记录当前用户、当前调用服务的消费者 */
 		OPOwner.setUsertype(userType);
+		OPOwner.setCurrentSys(userAuthenReq.getAppId());
+		CallerIdentityInfo.setAppsecretkey(userAuthenReq.getAppSecretKey());
+		CallerIdentityInfo.setRedirecturi(invocation.getAttachment(RPCAuthenParamKey.BIZ_APP_DOMAIN,""));
 		if ("endUser".equals(userType) || "adminUser".equals(userType) ) {
 			OPOwner.setCurrentUser(userAuthenReq.getUserId());
 			CallerIdentityInfo.setAccesstoken(userAuthenReq.getUserAccessToken());
 		} else 
 			OPOwner.setCurrentUser(userType);
-		if (appAuthenLimit) {
-			OPOwner.setCurrentSys(userAuthenReq.getAppId());
-			CallerIdentityInfo.setAppsecretkey(userAuthenReq.getAppSecretKey());
-			CallerIdentityInfo.setRedirecturi(invocation.getAttachment(RPCAuthenParamKey.BIZ_APP_DOMAIN,""));
-		}
 		
 		/* 执行并标记认证通过 */
 		result = invoker.invoke(invocation);
 		return result;
 	}
 	
-	private UserAccessTokenAuthenResponse endUserAuthen(boolean appAuthenLimit, UserAccessTokenAuthenRequest autenRequest) {
+	private UserAccessTokenAuthenResponse endUserAuthen(UserAccessTokenAuthenRequest autenRequest) {
 		IdentityAuthenticationBizService authenService = (IdentityAuthenticationBizService) applicationContext.getBean(AuthenServiceBeanId);
-		if (appAuthenLimit)
-			return authenService.endUserAuthen(autenRequest);
-		else
-			return authenService.endUserAuthenOnly(autenRequest);
+		return authenService.endUserAuthen(autenRequest);
 	}
 	
-	private UserAccessTokenAuthenResponse adminUserAuthen(boolean appAuthenLimit, UserAccessTokenAuthenRequest autenRequest) {
+	private UserAccessTokenAuthenResponse adminUserAuthen(UserAccessTokenAuthenRequest autenRequest) {
 		IdentityAuthenticationBizService authenService = (IdentityAuthenticationBizService) applicationContext.getBean(AuthenServiceBeanId);
-		if (appAuthenLimit)
-			return authenService.adminUserAuthen(autenRequest);
-		else
-			return authenService.adminUserAuthenOnly(autenRequest);
+		return authenService.adminUserAuthen(autenRequest);
 	}
 	
 	private SimpleResponse appAuthen(AppAuthenRequest appAuthenRequest) {

@@ -31,6 +31,10 @@ import com.eenet.common.OPOwner;
 import com.eenet.common.code.SystemCode;
 import com.eenet.security.RegistNewUserBizService;
 import com.eenet.util.EEBeanUtils;
+import com.eenet.util.cryptography.EncryptException;
+import com.eenet.util.cryptography.RSADecrypt;
+import com.eenet.util.cryptography.RSAEncrypt;
+import com.eenet.util.cryptography.RSAUtil;
 
 public class RegistNewUserBizImpl implements RegistNewUserBizService {
 	private static final Logger log = LoggerFactory.getLogger("error");
@@ -66,14 +70,30 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		
 		/* 新增用户 */
 		EndUserInfo savedEndUser = getEndUserInfoBizService().save(endUser);
+		boolean existEndUser = false;//是否为已存在的用户
 		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] saved user result : "+ EEBeanUtils.object2Json(savedEndUser));
-		if (!savedEndUser.isSuccessful()) {
-			this.markBizCodeAsSaveUserFail(result, savedEndUser.getAtid());
-			result.addMessage(savedEndUser.getStrMessage());
-			return result;
+		if ( !savedEndUser.isSuccessful() ) {//新增用户失败
+			if ( EEBeanUtils.isNULL(savedEndUser.getAtid()) ) {//不是用户已存在，属于系统错误，返回
+				result.addMessage(savedEndUser.getStrMessage());
+				return result;
+			} else {//用户已存在，完善个人信息，继续剩余流程
+				endUser.setAtid(savedEndUser.getAtid());
+				savedEndUser = getEndUserInfoBizService().save(endUser);
+				existEndUser = true;
+			}
 		}
 		
 		/* 注册登陆账号 */
+		String userCipherPassword = credential.getPassword();//用户密码（数据传输令牌加密的）密文
+		if (existEndUser) {//针对注册前已存在的用户，设置账号私有密码
+			try {
+				String passwordPlainText = RSAUtil.decryptWithTimeMillis(getTransferRSADecrypt(), userCipherPassword, 2);
+				String passwordStorageCipherPassword = RSAUtil.encrypt(getStorageRSAEncrypt(), passwordPlainText);
+				account.setAccountLoginPassword(passwordStorageCipherPassword);
+			} catch (EncryptException e) {
+				log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] 加、解密私有密码失败 : " + e.toString());
+			}
+		}
 		account.setUserInfo(savedEndUser);
 		EndUserLoginAccount savedAccount = getEndUserLoginAccountBizService().registeEndUserLoginAccount(account);
 		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] registe account result : " + EEBeanUtils.object2Json(savedAccount));
@@ -83,15 +103,16 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 			return result;
 		}
 		
-		/* 初始化登陆密码 */
-		String userCipherPassword = credential.getPassword();
-		credential.setEndUser(savedEndUser);
-		SimpleResponse savedCredential = getEndUserCredentialBizService().initEndUserLoginPassword(credential);
-		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] saved password result : "+ EEBeanUtils.object2Json(savedCredential));
-		if (!savedCredential.isSuccessful()) {
-			result.setRSBizCode(savedCredential.getRSBizCode());
-			result.addMessage(savedCredential.getStrMessage());
-			return result;
+		/* 初始化登陆密码，已存在的用户不初始化 */
+		if ( !existEndUser ) {
+			credential.setEndUser(savedEndUser);
+			SimpleResponse savedCredential = getEndUserCredentialBizService().initEndUserLoginPassword(credential);
+			log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] saved password result : "+ EEBeanUtils.object2Json(savedCredential));
+			if (!savedCredential.isSuccessful()) {
+				result.setRSBizCode(savedCredential.getRSBizCode());
+				result.addMessage(savedCredential.getStrMessage());
+				return result;
+			}
 		}
 		
 		/* 获得认证授权码 */
@@ -213,29 +234,6 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		return result;
 	}
 	
-	/**
-	 * 当新增用户失败时，在返回结果标记bizcode
-	 * 有用户也有账号标记：AB0009；有用户但没有登录账号标记：ABBizCode.AB0010
-	 * @param result 待返回的结果
-	 * @param endUserAtid 用户id 
-	 * 2016年9月21日
-	 * @author Orion
-	 */
-	private void markBizCodeAsSaveUserFail(SimpleResponse result, String endUserAtid) {
-		boolean existUser = !EEBeanUtils.isNULL(endUserAtid);
-		boolean existAccount = false;
-		if (existUser) {
-			QueryCondition condition = new QueryCondition();
-			condition.addCondition(new ConditionItem("userInfo.atid",RangeType.EQUAL,endUserAtid,null));
-			existAccount = getEndUserLoginAccountBizService().query(condition).getCount()==0;
-		}
-		
-		if (existUser && existAccount) //有用户也有账号
-			result.setRSBizCode(ABBizCode.AB0009);
-		else if (existUser && !existAccount) //有用户但没有账号
-			result.setRSBizCode(ABBizCode.AB0010);
-	}
-	
 	private IdentityAuthenticationBizService identityAuthenticationBizService;
 	
 	private AdminUserInfoBizService adminUserInfoBizService;
@@ -246,6 +244,9 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 	private EndUserLoginAccountBizService endUserLoginAccountBizService;
 	private EndUserCredentialBizService endUserCredentialBizService;
 	private EndUserSignOnBizService endUserSignOnBizService;
+	
+	private RSADecrypt TransferRSADecrypt;//数据传输解密私钥
+	private RSAEncrypt StorageRSAEncrypt;//数据存储加密公钥
 	public AdminUserInfoBizService getAdminUserInfoBizService() {
 		return adminUserInfoBizService;
 	}
@@ -308,5 +309,18 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 
 	public void setIdentityAuthenticationBizService(IdentityAuthenticationBizService identityAuthenticationBizService) {
 		this.identityAuthenticationBizService = identityAuthenticationBizService;
+	}
+	
+	public RSADecrypt getTransferRSADecrypt() {
+		return TransferRSADecrypt;
+	}
+	public void setTransferRSADecrypt(RSADecrypt transferRSADecrypt) {
+		TransferRSADecrypt = transferRSADecrypt;
+	}
+	public RSAEncrypt getStorageRSAEncrypt() {
+		return StorageRSAEncrypt;
+	}
+	public void setStorageRSAEncrypt(RSAEncrypt storageRSAEncrypt) {
+		StorageRSAEncrypt = storageRSAEncrypt;
 	}
 }

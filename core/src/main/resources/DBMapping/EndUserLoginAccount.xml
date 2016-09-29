@@ -54,10 +54,11 @@
 		<![CDATA[
 		INSERT INTO AUTHEN_ENDUSER_LOGIN_ACCOUNT(
 			ENDUSER_LOGIN_ACCOUNT_ID, CREATED_BY, CREATED_SID, REMARK,
-			]]><include refid="biz_columns" /><![CDATA[
+			]]><include refid="biz_columns" /><![CDATA[, ACCOUNT_PASSWORD
 		) VALUES (
 			#{atid,jdbcType=VARCHAR}, #{crps,jdbcType=VARCHAR}, #{crss,jdbcType=VARCHAR}, #{dataDescription,jdbcType=VARCHAR},
-			#{userInfo.atid,jdbcType=VARCHAR}, #{loginAccount,jdbcType=VARCHAR}, #{accountType,jdbcType=VARCHAR}, #{encryptionType,jdbcType=VARCHAR}
+			#{userInfo.atid,jdbcType=VARCHAR}, #{loginAccount,jdbcType=VARCHAR}, #{accountType,jdbcType=VARCHAR}, #{encryptionType,jdbcType=VARCHAR},
+			#{accountLoginPassword,jdbcType=VARCHAR}
 		)
 		]]>
 	</insert>

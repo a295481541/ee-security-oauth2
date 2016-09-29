@@ -81,52 +81,6 @@ public class EndUserLoginAccountController {
 	@RequestMapping(value = "/initEndUserLoginPassword", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String initEndUserLoginPassword(APIRequestIdentity identity, EndUserCredential credential) {
-		//anonymous,adminUser,sysUser
-		SimpleResponse response = new SimpleResponse();
-		response.setSuccessful(false);
-		
-		/* 用户类型检查 */
-		if (identity==null || EEBeanUtils.isNULL(identity.getUserType())) {
-			response.addMessage("用户类型未知");
-			return EEBeanUtils.object2Json(response);
-		} else if (identity.getUserType().equals("endUser")) {
-			response.addMessage(identity.getUserType()+"类型的用户不可初始化用户登录密码");
-			return EEBeanUtils.object2Json(response);
-		}
-		
-		/* 根据用户类型验证身份 */
-		if (identity.getUserType().equals("anonymous") || identity.getUserType().equals("sysUser")) {
-			AppAuthenRequest request = new AppAuthenRequest();
-			request.setAppId(identity.getAppId());
-			request.setAppSecretKey(identity.getAppSecretKey());
-			SimpleResponse appAuthen = identityAuthenticationBizService.appAuthen(request);
-			if (!appAuthen.isSuccessful()) {
-				response.addMessage(appAuthen.getStrMessage());
-				return EEBeanUtils.object2Json(response);
-			}
-		} else if (identity.getUserType().equals("adminUser")) {
-			UserAccessTokenAuthenResponse tokenAuthen = identityAuthenticationBizService.adminUserAuthen(identity);
-			if (!tokenAuthen.isSuccessful()) {
-				response.addMessage(tokenAuthen.getStrMessage());
-				return EEBeanUtils.object2Json(response);
-			}
-		} else {
-			response.addMessage("未知的用户类型："+identity.getUserType());
-			return EEBeanUtils.object2Json(response);
-		}
-		
-		/* 注入当前操作者信息 */
-		credential.setCrss(identity.getAppId());
-		credential.setMdss(identity.getAppId());
-		if (identity.getUserType().equals("endUser") || identity.getUserType().equals("adminUser")) {
-			credential.setCrps(identity.getUserId());
-			credential.setMdps(identity.getUserId());
-		} else {
-			credential.setCrps(identity.getUserType());
-			credential.setMdps(identity.getUserType());
-		}
-		
-		/* 执行业务 */
 		SimpleResponse result = endUserCredentialBizService.initEndUserLoginPassword(credential);
 		return EEBeanUtils.object2Json(result);
 	}

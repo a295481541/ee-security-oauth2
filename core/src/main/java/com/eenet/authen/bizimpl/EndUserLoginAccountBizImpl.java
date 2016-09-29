@@ -47,11 +47,7 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 			log.error("[registeEndUserLoginAccount("+Thread.currentThread().getId()+")] atid not nul or account null");
 			result.setSuccessful(false);
 			result.addMessage("要注册的用户登录账号参数不全，END USER标识、登录账号、账号类型均不可为空("+this.getClass().getName()+")");
-		} else if (!EEBeanUtils.isNULL(account.getAccountLoginPassword())) {
-			log.error("[registeEndUserLoginAccount("+Thread.currentThread().getId()+")] account password not null(no allow)");
-			result.setSuccessful(false);
-			result.addMessage("新账号不再支持使用私有密码，请设置统一用户密码，已有账号的私有秘钥仍可登陆("+this.getClass().getName()+")");
-		}
+		} 
 		if (!result.isSuccessful())
 			return result;
 		log.error("[registeEndUserLoginAccount("+Thread.currentThread().getId()+")] check over");

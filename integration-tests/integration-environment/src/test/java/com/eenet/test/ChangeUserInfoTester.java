@@ -9,7 +9,7 @@ import org.apache.commons.httpclient.util.EncodingUtil;
 import org.json.JSONObject;
 
 public class ChangeUserInfoTester {
-	ApiURL baseURL = new ApiURL("test");
+	ApiURL baseURL = new ApiURL("runtime");
 	/* 定义调用地址和调用参数 */
 	private final String getEndUserSignOnGrantURL = baseURL.getSecurityApiURL()+"/getEndUserSignOnGrant";
 	private final String getEndUserAccessTokenURL = baseURL.getSecurityApiURL()+"/getEndUserAccessToken";
