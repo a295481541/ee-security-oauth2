@@ -18,5 +18,32 @@
 	<dubbo:registry protocol="zookeeper" address="172.16.146.152:2181" client="curator"/>
 	
 	<!-- 启动时检查所有服务的可用性 -->
-	<dubbo:consumer check="false" timeout="60000" retries="5" loadbalance="leastactive" actives="2000"/><!-- 任何服务不可以均会导致系统无法启动 -->
+	<dubbo:consumer check="false" timeout="60000" retries="5" loadbalance="leastactive" actives="2000" filter="identityInjectFilter"/><!-- 任何服务不可以均会导致系统无法启动 -->
+	
+	<!-- 定义当前服务消费者身份 -->
+	<bean id="AppIdentity" class="com.eenet.authen.request.AppAuthenRequest">
+		<property name="appId" value="740270FEF0614F1090510884DACA07C9"/>
+		<property name="appSecretKey" value="pASS17#"/>
+		<property name="redirectURI" value="http://test.saas.workeredu.com"/>
+	</bean>
+	<bean id="IdentityInjectFilter" class="com.eenet.authen.extension.dubbo.IdentityInjectFilter">
+		<property name="AppIdentityBeanId" value="AppIdentity"/>
+		<property name="encrypt" ref="TransferRSAEncrypt"/>
+	</bean>
+	
+	<!-- 服务人员登录服务 -->
+	<dubbo:reference id="AdminUserSignOnBizService" interface="com.eenet.authen.AdminUserSignOnBizService"/>
+	<!-- 服务人员登录秘钥服务 -->
+	<dubbo:reference id="AdminUserCredentialBizService" interface="com.eenet.authen.AdminUserCredentialBizService"/>
+	<!-- 服务人员登录账号服务 -->
+	<dubbo:reference id="AdminUserLoginAccountBizService" interface="com.eenet.authen.AdminUserLoginAccountBizService"/>
+	
+	<!-- 最终用户登录服务 -->
+	<dubbo:reference id="EndUserSignOnBizService" interface="com.eenet.authen.EndUserSignOnBizService"/>
+	
+	<!-- 数据传输加密公钥 -->
+	<bean id="transferRSAEncrypt" class="com.eenet.util.cryptography.RSAEncrypt">
+		<property name="modulus" value="128951193183221034225822737570948469888666421590885614987162582380797352756426542467671046441297008343889791818897096336951333883547706106993937530910572634357960447078042872959529127054187264213720849616059022547779162032875109639419560326484813446402232709792095857078282196324645931652527727698345505904311" />
+		<property name="publicExponent" value="65537" />
+	</bean>
 </beans>
