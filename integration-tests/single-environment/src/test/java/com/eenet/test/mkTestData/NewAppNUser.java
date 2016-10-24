@@ -30,19 +30,24 @@ public class NewAppNUser extends SpringEnvironment{
 	private AdminUserInfoBizService adminService = (AdminUserInfoBizService)super.getContext().getBean("AdminUserInfoBizService");
 	private EndUserInfoBizService endUserService = (EndUserInfoBizService)super.getContext().getBean("EndUserInfoBizService");
 	private BusinessAppBizService appService = (BusinessAppBizService)super.getContext().getBean("BusinessAppBizImpl");
-	private AdminUserLoginAccountBizService adminAccountService = (AdminUserLoginAccountBizService)super.getContext().getBean("AdminUserLoginAccountBizImpl");
-	private AdminUserCredentialBizService adminCredentialService = (AdminUserCredentialBizService)super.getContext().getBean("AdminUserCredentialBizImpl");
+	private AdminUserLoginAccountBizService adminAccountService = (AdminUserLoginAccountBizService)super.getContext().getBean("AdminUserLoginAccountBizService");
+	private AdminUserCredentialBizService adminCredentialService = (AdminUserCredentialBizService)super.getContext().getBean("AdminUserCredentialBizService");
 	private EndUserLoginAccountBizService endUserAccountService = (EndUserLoginAccountBizService)super.getContext().getBean("EndUserLoginAccountBizImpl");
 	private EndUserCredentialBizService endUserCredentialService = (EndUserCredentialBizService)super.getContext().getBean("EndUserCredentialBizImpl");
 	private RSAEncrypt encrypt = (RSAEncrypt)super.getContext().getBean("TransferRSAEncrypt");
 	
 //	@Test
-	public void createAdmin() {
+	public void createAdmin() throws Exception {
+		super.adminLogin();
+		
 		AdminUserInfo admin = new AdminUserInfo();
-		admin.setName("EEIM管理员");
-//		admin.setDataDescription("勿删！！！重要测试数据");
+		admin.setName("测试系统管理员");
+		admin.setDataDescription("测试系统管理员，勿同步到生产环境");
 		admin = adminService.save(admin);
-		System.out.println(admin.getAtid() + "," + admin.getName());
+		if (!admin.isSuccessful())
+			System.err.println(admin.getStrMessage());
+		else
+			System.out.println(admin.getAtid() + "," + admin.getName());
 	}
 	
 //	@Test
@@ -81,7 +86,7 @@ public class NewAppNUser extends SpringEnvironment{
 		}
 	}
 	
-	@Test
+//	@Test
 	public void createAPP() {
 		BusinessApp app = new BusinessApp();
 		String appSecretKey = "pcoSE&"+(new Random().nextInt(100))+")";
@@ -151,28 +156,30 @@ public class NewAppNUser extends SpringEnvironment{
 		}
 	}
 	
-//	@Test
+	@Test
 	public void createAdminLoginAccountNCredential() throws Exception {
-		String loginAccount = "eechat.admin";
+		super.adminLogin();
+		
+		String loginAccount = "test.admin";
 		String password = "sEpa$738";
-		String adminUserId = "C7547688CFFD4C2BAEEC0EAA3EE1E026";
+		String adminUserId = "906161E5364F40658AA208E2493A84DE";
 		AdminUserLoginAccount account = new AdminUserLoginAccount();
 		AdminUserInfo admin = new AdminUserInfo();admin.setAtid(adminUserId);
 		account.setUserInfo(admin);
 		account.setAccountType(LoginAccountType.USERNAME);
 		account.setLoginAccount(loginAccount);
 		account = adminAccountService.registeAdminUserLoginAccount(account);
-		account.setDataDescription("勿删！！！重要测试数据");
+		account.setDataDescription("测试用户，勿同步到生产环境");
 		
 		AdminUserCredential credential = new AdminUserCredential();
 		credential.setAdminUser(admin);
 		credential.setPassword(RSAUtil.encryptWithTimeMillis(encrypt, password));
-		credential.setDataDescription("勿删！！！重要测试数据，密码："+password);
+		credential.setDataDescription("测试用户，勿同步到生产环境，密码："+password);
 		SimpleResponse initResult = adminCredentialService.initAdminUserLoginPassword(credential);
 		
 		if (account.isSuccessful() && initResult.isSuccessful())
 			System.out.println("管理员登录账号： "+loginAccount+",管理员登录密码："+password);
 		else
-			System.out.print("出错了");
+			System.out.print(account.getStrMessage());
 	}
 }

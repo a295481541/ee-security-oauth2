@@ -101,5 +101,10 @@
 			<artifactId>provider-spring-config</artifactId>
 			<version>${eenet.security.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>eenet.security.oauth2.plugins</groupId>
+			<artifactId>dubbo-authen-plugin</artifactId>
+			<version>${eenet.security.version}</version>
+		</dependency>
 	</dependencies>
 </project>
