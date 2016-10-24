@@ -69,11 +69,15 @@ public class IdentityInjectFilter implements Filter, ApplicationContextAware {
 	private AppAuthenRequest obtainCurrentApp() throws EncryptException {
 		AppAuthenRequest result = new AppAuthenRequest();
 		if ( OPOwner.getCurrentSys().equals(OPOwner.UNKNOW_APP_FLAG) ) {
-			if ( !EEBeanUtils.isNULL(AppIdentityBeanId) && applicationContext.containsBean(AppIdentityBeanId) ) {
+			if ( !EEBeanUtils.isNULL(AppIdentityBeanId) && applicationContext.containsBean(AppIdentityBeanId) ) {//定义了当前系统标识
 				if (encrypt==null)
 					throw new EncryptException("未找到加密公钥("+this.getClass().getName()+")");
-				result = (AppAuthenRequest)applicationContext.getBean(AppIdentityBeanId);
-				result.setAppSecretKey(RSAUtil.encrypt(encrypt, result.getAppSecretKey()+"##"+System.currentTimeMillis() ));
+				
+				AppAuthenRequest configRequest = (AppAuthenRequest)applicationContext.getBean(AppIdentityBeanId);
+				
+				result.setAppId(configRequest.getAppId());
+				result.setAppSecretKey(RSAUtil.encrypt(encrypt, configRequest.getAppSecretKey()+"##"+System.currentTimeMillis() ));
+				result.setRedirectURI(configRequest.getRedirectURI());
 			}
 		} else {
 			result.setAppId( OPOwner.getCurrentSys() );
