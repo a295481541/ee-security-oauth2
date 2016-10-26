@@ -1,5 +1,10 @@
 package com.eenet.security;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +23,7 @@ import com.eenet.authen.AdminUserLoginAccount;
 import com.eenet.authen.EndUserCredential;
 import com.eenet.authen.EndUserLoginAccount;
 import com.eenet.authen.IdentityAuthenticationBizService;
+import com.eenet.authen.LoginAccountType;
 import com.eenet.authen.identifier.CallerIdentityInfo;
 import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.authen.response.UserAccessTokenAuthenResponse;
@@ -129,9 +135,15 @@ public class RegistNewUserController {
 		return EEBeanUtils.object2Json(token);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/regist/endUserWithMulAccountAndLogin", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
-	public String registEndUserWithMulAccountAndLogin(@ModelAttribute("user")EndUserInfo user, @ModelAttribute("account")EndUserLoginAccountListModel account, @ModelAttribute("credential")EndUserCredential credential) {
+	public String registEndUserWithMulAccountAndLogin(@ModelAttribute("user")String user, @ModelAttribute("account")String account, @ModelAttribute("credential")String credential) {
+		
+		EndUserInfo info  = EEBeanUtils.json2Object(user, EndUserInfo.class);
+		List<EndUserLoginAccount> list = EEBeanUtils.json2Object(account, List.class);
+		EndUserCredential endUserCredential = EEBeanUtils.json2Object(credential, EndUserCredential .class);
+		
 		SimpleResponse response = new SimpleResponse();
 		response.setSuccessful(false);
 		
@@ -144,9 +156,14 @@ public class RegistNewUserController {
 		
 		log.error("CurrentSys : "+OPOwner.getCurrentSys());
 		
-		AccessToken token = registNewUserBizService.registEndUserWithMulAccountAndLogin(user, account.getM(), credential);
+		AccessToken token = registNewUserBizService.registEndUserWithMulAccountAndLogin(info, list, endUserCredential);
 		return EEBeanUtils.object2Json(token);
 	}
+	
+	
+	
+	
+	
 	
 	@RequestMapping(value = "/registAdminUserWithoutLogin", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
@@ -188,4 +205,65 @@ public class RegistNewUserController {
     public void bindCredential(WebDataBinder binder) {
             binder.setFieldDefaultPrefix("credential.");
     }
+    public static void main(String[] args) {
+		EndUserInfo info  = new EndUserInfo();
+		info.setName("张三");
+		info.setNamePing("zhangsan");
+		info.setSex("M");
+		info.setBirthday(new Date());
+		info.setIdCard("43000019900000");
+		info.setRealnameChecked(true);
+		info.setMobileChecked(true);
+		info.setEmailChecked(true);
+		info.setMobile(13533333333l);
+		info.setEmail("13533333333@163.com");
+		info.setUserCode("ZHANGSAN");
+		info.setCardPhoto("http://192.168.0.0/111.png");
+		info.setFolk("1");
+		
+		
+		System.out.println(EEBeanUtils.object2Json(info).replaceAll("\"", "'"));
+//		System.out.println(EEBeanUtils.json2Object(EEBeanUtils.object2Json(info), EndUserInfo.class).getBirthday());
+		
+		
+		
+		List<EndUserLoginAccount> list  = new ArrayList<EndUserLoginAccount>();
+		
+		EndUserLoginAccount account1 = new EndUserLoginAccount();
+		account1.setLoginAccount("eenet");
+		account1.setAccountType(LoginAccountType.EMAIL);
+		
+		EndUserLoginAccount account2 = new EndUserLoginAccount();
+		account2.setLoginAccount("eenet");
+		account2.setAccountType(LoginAccountType.EMAIL);
+		
+		EndUserLoginAccount account3 = new EndUserLoginAccount();
+		account3.setLoginAccount("eenet");
+		account3.setAccountType(LoginAccountType.EMAIL);
+		
+		list.add(account1);
+		list.add(account2);
+		list.add(account3);
+		
+		
+		String jsonStr = EEBeanUtils.object2Json(list).replace("\"", "'");
+		System.out.println("account : "+jsonStr);
+		
+		
+		System.out.println("account : " +EEBeanUtils.json2Object(jsonStr, List.class).get(0));
+		
+		
+		EndUserCredential credential = new EndUserCredential();
+		credential.setPassword("888888");
+		credential.setDataDescription("endUser");
+		
+		
+		System.out.println(EEBeanUtils.object2Json(credential).replaceAll("\"", "'"));
+		
+		
+//		System.out.println(EEBeanUtils.json2Object(EEBeanUtils.object2Json(credential), EndUserCredential.class) );
+		
+		System.out.println(UUID.randomUUID().toString().toUpperCase());
+		
+	}
 }
