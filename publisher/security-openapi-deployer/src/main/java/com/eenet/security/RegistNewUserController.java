@@ -1,5 +1,6 @@
 package com.eenet.security;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -36,6 +37,8 @@ import com.eenet.common.code.SystemCode;
 import com.eenet.model.EndUserLoginAccountListModel;
 import com.eenet.security.RegistNewUserBizService;
 import com.eenet.util.EEBeanUtils;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 @Controller
 public class RegistNewUserController {
@@ -141,7 +144,9 @@ public class RegistNewUserController {
 	public String registEndUserWithMulAccountAndLogin(@ModelAttribute("user")String user, @ModelAttribute("account")String account, @ModelAttribute("credential")String credential) {
 		
 		EndUserInfo info  = EEBeanUtils.json2Object(user, EndUserInfo.class);
-		List<EndUserLoginAccount> list = EEBeanUtils.json2Object(account, List.class);
+		Gson gson =new Gson();
+		List<EndUserLoginAccount> list = gson.fromJson(account, new TypeToken<List<EndUserLoginAccount>>() { }.getType());
+		
 		EndUserCredential endUserCredential = EEBeanUtils.json2Object(credential, EndUserCredential .class);
 		
 		SimpleResponse response = new SimpleResponse();
