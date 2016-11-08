@@ -147,6 +147,9 @@ public class RegistNewUserController {
 		Gson gson =new Gson();
 		List<EndUserLoginAccount> list = gson.fromJson(account, new TypeToken<List<EndUserLoginAccount>>() { }.getType());
 		
+		
+		EEBeanUtils.json2Object(user, EndUserInfo.class);
+		
 		EndUserCredential endUserCredential = EEBeanUtils.json2Object(credential, EndUserCredential .class);
 		
 		SimpleResponse response = new SimpleResponse();

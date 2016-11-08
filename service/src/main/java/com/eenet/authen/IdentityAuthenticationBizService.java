@@ -20,6 +20,13 @@ public interface IdentityAuthenticationBizService {
 	public SimpleResponse appAuthen(AppAuthenRequest request);
 	
 	/**
+	 * 业务应用认证
+	 * @param request 应用接入秘钥属性，以不带带时间戳形式加密
+	 * @return
+	 */
+	public SimpleResponse appAuthenWithoutTimeMillis(AppAuthenRequest request);
+	
+	/**
 	 * 最终用户认证
 	 * 同时认证最终用户身份和业务应用系统身份
 	 * @param request 应用接入秘钥属性，以带时间戳形式加密
@@ -60,4 +67,6 @@ public interface IdentityAuthenticationBizService {
 	 * @author Orion
 	 */
 	public boolean authenServiceProviderPing();
+
+	
 }

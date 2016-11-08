@@ -60,6 +60,42 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 		result.setSuccessful(true);
 		return result;
 	}
+	
+	@Override
+	public SimpleResponse appAuthenWithoutTimeMillis(AppAuthenRequest request) {
+		SimpleResponse result = new SimpleResponse();
+		result.setSuccessful(false);
+		/* 参数检查 */
+		if (request==null || EEBeanUtils.isNULL(request.getAppId()) || EEBeanUtils.isNULL(request.getAppSecretKey())) {
+			result.addMessage("参数不完整("+this.getClass().getName()+"("+this.getClass().getName()+")");
+			return result;
+		}
+		
+		
+		/* 计算传入的app密码明文 */
+		String secretKeyPlaintext = null;
+		try {
+			secretKeyPlaintext = RSAUtil.decrypt(getTransferRSADecrypt(), request.getAppSecretKey());
+//			secretKeyPlaintext = RSAUtil.decryptWithTimeMillis(getTransferRSADecrypt(), request.getAppSecretKey(), 2);
+			if (EEBeanUtils.isNULL(secretKeyPlaintext)) {
+				result.addMessage("无法解密提供的业务系统秘钥("+this.getClass().getName()+"("+this.getClass().getName()+")");
+				return result;
+			}
+		} catch (EncryptException e) {
+			result.addMessage(e.toString());
+			return result;
+		}
+		/* 验证业务应用系统 */
+		SimpleResponse validateResult = getIdentityUtil().validateAPP(request.getAppId(), secretKeyPlaintext, getStorageRSADecrypt(), getBusinessAppBizService());
+		
+		if (!validateResult.isSuccessful()) {
+			result.addMessage(validateResult.getStrMessage());
+			return result;
+		}
+		
+		result.setSuccessful(true);
+		return result;
+	}
 
 	@Override
 	public UserAccessTokenAuthenResponse endUserAuthen(UserAccessTokenAuthenRequest request) {

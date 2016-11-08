@@ -80,7 +80,8 @@ public class CustomLoginModule extends PropertiesLoginModule {
 			
 			IdentityAuthenticationBizService service = DubboUtil.getService();
 //			LOG.info("service : " +service );
-			response = service.appAuthen(request);
+//			response = service.appAuthen(request);
+			response = service.appAuthenWithoutTimeMillis(request);
 			LOG.info("response result: " + response.isSuccessful());
 		} catch (Exception e) {
 			LOG.info(e.getMessage());

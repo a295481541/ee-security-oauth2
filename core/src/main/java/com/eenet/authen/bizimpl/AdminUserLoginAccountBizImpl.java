@@ -162,6 +162,12 @@ public class AdminUserLoginAccountBizImpl extends SimpleBizImpl implements Admin
 		}
 	}
 	
+	
+	@Override
+	public SimpleResultSet<AdminUserLoginAccount> query(QueryCondition query) {
+		return super.query(query, AdminUserLoginAccount.class);
+	}
+	
 	/****************************************************************************
 	**                                                                         **
 	**                           Getter & Setter                               **
@@ -185,4 +191,7 @@ public class AdminUserLoginAccountBizImpl extends SimpleBizImpl implements Admin
 	public void setRedisClient(RedisClient redisClient) {
 		RedisClient = redisClient;
 	}
+
+	
+
 }

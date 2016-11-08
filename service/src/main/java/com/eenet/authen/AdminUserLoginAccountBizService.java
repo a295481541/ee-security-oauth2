@@ -1,6 +1,8 @@
 package com.eenet.authen;
 
 import com.eenet.base.SimpleResponse;
+import com.eenet.base.SimpleResultSet;
+import com.eenet.base.query.QueryCondition;
 import com.eenet.baseinfo.user.AdminUserInfo;
 
 /**
@@ -39,4 +41,6 @@ public interface AdminUserLoginAccountBizService {
 	 * @author Orion
 	 */
 	public AdminUserLoginAccount retrieveAdminUserLoginAccountInfo(String loginAccount);
+	
+	public SimpleResultSet<AdminUserLoginAccount> query(QueryCondition query);
 }
