@@ -139,7 +139,7 @@ public class RegistNewUserController {
 	}
 	
 	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/regist/endUserWithMulAccountAndLogin", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.GET)
+	@RequestMapping(value = "/regist/endUserWithMulAccountAndLogin", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String registEndUserWithMulAccountAndLogin(@ModelAttribute("user")String user, @ModelAttribute("account")String account, @ModelAttribute("credential")String credential) {
 		
