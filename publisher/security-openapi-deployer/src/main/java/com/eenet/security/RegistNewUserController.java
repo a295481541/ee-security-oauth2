@@ -139,16 +139,16 @@ public class RegistNewUserController {
 	}
 	
 	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/regist/endUserWithMulAccountAndLogin", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
+	@RequestMapping(value = "/regist/endUserWithMulAccountAndLogin", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.GET)
 	@ResponseBody
 	public String registEndUserWithMulAccountAndLogin(@ModelAttribute("user")String user, @ModelAttribute("account")String account, @ModelAttribute("credential")String credential) {
 		
 		EndUserInfo info  = EEBeanUtils.json2Object(user, EndUserInfo.class);
-		Gson gson =new Gson();
-		List<EndUserLoginAccount> list = gson.fromJson(account, new TypeToken<List<EndUserLoginAccount>>() { }.getType());
 		
+		List<EndUserLoginAccount> list =  EEBeanUtils.json2List(account, new TypeToken<List<EndUserLoginAccount>>() { }.getType());
 		
 		EEBeanUtils.json2Object(user, EndUserInfo.class);
+		
 		
 		EndUserCredential endUserCredential = EEBeanUtils.json2Object(credential, EndUserCredential .class);
 		
