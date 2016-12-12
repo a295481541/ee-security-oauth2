@@ -2,11 +2,16 @@ package com.eenet.authen.bizimpl;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.eenet.authen.EndUserCredential;
 import com.eenet.authen.EndUserCredentialBizService;
+import com.eenet.authen.EndUserLoginAccount;
+import com.eenet.authen.EndUserLoginAccountBizService;
 import com.eenet.authen.cacheSyn.SynEndUserCredential2Redis;
+import com.eenet.authen.cacheSyn.SynEndUserLoginAccount2Redis;
 import com.eenet.base.SimpleResponse;
 import com.eenet.base.SimpleResultSet;
 import com.eenet.base.biz.SimpleBizImpl;
@@ -29,12 +34,14 @@ import com.eenet.util.cryptography.RSAUtil;
  * 2016年6月9日
  */
 public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCredentialBizService {
+	private static final Logger log = LoggerFactory.getLogger(EndUserCredentialBizImpl.class);
 	private RedisClient RedisClient;//Redis客户端
 	private RSAEncrypt StorageRSAEncrypt;//数据存储加密公钥
 	private RSADecrypt StorageRSADecrypt;//数据存储解密私钥
 	private RSADecrypt TransferRSADecrypt;//数据传输解密私钥
 	private EndUserInfoBizService endUserInfoBizService;//最终用户信息服务
 	private ReSetLoginPasswordCom reSetLoginPasswordCom;//重置密码业务组件
+	private EndUserLoginAccountBizService endUserLoginAccountBizService;//最终用户账户服务
 	
 	@Override
 	public SimpleResponse initEndUserLoginPassword(EndUserCredential credential) {
@@ -180,6 +187,182 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 		
 		return result;
 	}
+	
+	
+	
+	@Override
+	public SimpleResponse changeEndUserLoginPassword(EndUserCredential curCredential,EndUserLoginAccount account, String newSecretKey) {
+		SimpleResponse result = new SimpleResponse();
+		/* 参数检查 */
+		if (curCredential==null || EEBeanUtils.isNULL(newSecretKey) || account ==null) {
+			result.setSuccessful(false);
+			result.addMessage("要修改的最终用户登录密码未知("+this.getClass().getName()+")");
+			return result;
+		} else if (EEBeanUtils.isNULL(curCredential.getPassword()) || curCredential.getEndUser()==null || EEBeanUtils.isNULL(curCredential.getEndUser().getAtid())) {
+			result.setSuccessful(false);
+			result.addMessage("要修改的最终用户登录秘钥参数不全，END USER标识、当前登录密码均不可为空("+this.getClass().getName()+")");
+		}
+		if (!result.isSuccessful())
+			return result;
+		
+		/* 判断指定的最终用户是否存在 */
+		EndUserInfo existEndUser = curCredential.getEndUser();
+		if (EEBeanUtils.isNULL(existEndUser.getName()) && existEndUser.getMobile()==null) {//尝试从密码对象中判断人员姓名或手机是否已存在
+			existEndUser = this.getEndUserInfoBizService().get(curCredential.getEndUser().getAtid());
+			if (!existEndUser.isSuccessful() || EEBeanUtils.isNULL(existEndUser.getAtid())) {
+				result.setSuccessful(false);
+				result.addMessage("未找到指定要设置登录密码对应的最终用户");
+				return result;
+			}
+		}
+		
+		/* 获得传入原密码明文 */
+		String passwordPlainText = null;//传入原密码明文
+		try {
+			log.info("get passwordPlainText start :" +curCredential.getPassword());
+			passwordPlainText = RSAUtil.decryptWithTimeMillis(getTransferRSADecrypt(), curCredential.getPassword(), 2);
+			log.info("passwordPlainText : " +passwordPlainText);
+		} catch (EncryptException e) {
+			result.setSuccessful(false);
+			result.addMessage(e.toString());
+			return result;
+		}
+		
+		log.info("判断该用户是否有该账号 start");
+		/* 判断该用户是否有该账号 */
+		EndUserLoginAccount existLoginAccount = endUserLoginAccountBizService.retrieveEndUserLoginAccountInfo(account.getLoginAccount());
+		
+		if (existLoginAccount == null ) {
+			result.setSuccessful(false);
+			result.addMessage("未找到该账户："+account.getLoginAccount());
+			return result;
+		}
+		
+		log.info("判断该用户是否有该账号 end" +existLoginAccount);
+		
+		log.info("判断该用户是否有最终用户登录密码 start");
+		/* 判断该用户是否有最终用户登录密码 */
+		EndUserCredential existCredential = getExistCredential(existEndUser.getAtid());
+		log.info("判断该用户是否有最终用户登录密码 end"+existCredential);
+		
+		boolean isAccountMatch = false;
+		boolean isCredentialMatch = false;
+		
+		try {
+			if (existCredential !=null ) {//有最终用户登录密码
+				isCredentialMatch = isPasswordMatch(existCredential.getEncryptionType(), existCredential.getPassword(), passwordPlainText);
+			}
+			
+			if(existLoginAccount != null){//有该账户
+				if (existEndUser.getAtid().equals(existLoginAccount.getUserInfo().getAtid())) {
+					if (!EEBeanUtils.isNULL(existLoginAccount.getAccountLoginPassword()) ) //没有指定密码
+						isAccountMatch = isPasswordMatch(existLoginAccount.getEncryptionType(),existLoginAccount.getAccountLoginPassword(), passwordPlainText);
+				}else{
+					result.setSuccessful(false);
+					result.addMessage("账户："+existLoginAccount.getAccountLoginPassword()+"指定错误！("+this.getClass().getName()+")");
+					return result;
+				}
+			}
+			
+			if (!isAccountMatch && !isCredentialMatch ) {
+				result.setSuccessful(false);
+				result.addMessage("原密码不正确！("+this.getClass().getName()+")");
+				return result;
+			}
+			
+		} catch (EncryptException e) {
+			log.info("isAccountMatch" +isAccountMatch);
+			log.info("isCredentialMatch" +isCredentialMatch);
+			result.setSuccessful(false);
+			result.addMessage(e.toString());
+			return result;
+		}
+		
+		
+		log.info("isAccountMatch" +isAccountMatch);
+		log.info("isCredentialMatch" +isCredentialMatch);
+		
+		/* 新密码加密 */
+		try {
+			String newPasswordPlainText = RSAUtil.decrypt(getTransferRSADecrypt(), newSecretKey);//用传输私钥解出新密码明文
+			String newPasswordCipherText = RSAUtil.encrypt(getStorageRSAEncrypt(), newPasswordPlainText);//用存储公钥加密新密码
+			log.info("newPasswordCipherText" +newPasswordCipherText);
+			if (EEBeanUtils.isNULL(newPasswordCipherText))
+				throw new EncryptException("修改密码前加密失败（空字符）");
+
+			if (isAccountMatch ||(!isAccountMatch && isCredentialMatch )  || (isCredentialMatch &&EEBeanUtils.isNULL(existLoginAccount.getAccountLoginPassword()) )) {// 命中 或者  没命中但是S表中存在  或者是有账号没密码
+				existLoginAccount.setAccountLoginPassword(newPasswordCipherText);
+				log.info("existLoginAccount store to db ...");
+				EndUserLoginAccount savedResult = endUserLoginAccountBizService.save(existLoginAccount);
+				log.info("existLoginAccount stored to db");
+				result.setSuccessful(savedResult.isSuccessful());
+				
+				if (savedResult.isSuccessful())
+					SynEndUserLoginAccount2Redis.syn(getRedisClient(), savedResult);
+				else
+					result.addMessage(savedResult.getStrMessage());
+				
+				log.info("existLoginAccount updated or created");
+			}
+			
+			if (existCredential == null) { //不存在登陆密码时创建登陆密码
+				existCredential = new EndUserCredential();
+				existCredential.setEndUser(existEndUser);
+				existCredential.setPassword(newPasswordCipherText);
+				/* 保存到数据库，再根据保存结果写缓存或返回错误信息 */
+				log.info("existCredential store to db ...");
+				EndUserCredential savedResult = super.save(existCredential);
+				log.info("existCredential stored to db");
+				result.setSuccessful(savedResult.isSuccessful());
+				if (savedResult.isSuccessful())
+					SynEndUserCredential2Redis.syn(getRedisClient(), savedResult);
+				else
+					result.addMessage(savedResult.getStrMessage());
+				log.info("existCredential updated or created");
+			}
+			
+		} catch (EncryptException e) {
+			result.setSuccessful(false);
+			result.addMessage(e.toString());
+			return result;
+		}
+		
+		return result;
+	}
+	
+	
+	
+	
+	private EndUserCredential getExistCredential (String userId){
+		QueryCondition query = new QueryCondition();
+		query.addCondition(new ConditionItem("endUser.atid",RangeType.EQUAL,userId,null));
+		SimpleResultSet<EndUserCredential> existCredential = super.query(query, EndUserCredential.class);
+		if (existCredential.isSuccessful() &&existCredential.getResultSet().size()>0) {
+			return existCredential.getResultSet().get(0);
+			
+		}
+		return null;
+	}
+	
+	
+	
+	/* 
+	 * 判断原有密码是否能匹配，不对则返回错误信息
+	 * 根据加密方式进行不同的密码匹配
+	 */
+	private boolean isPasswordMatch(String encryptionType,String existPasswordPlainText,String passwordPlainText) throws EncryptException{
+		
+		if (encryptionType.equals("RSA")) {
+			String exit = RSAUtil.decrypt(getStorageRSADecrypt(),existPasswordPlainText);
+			return !(EEBeanUtils.isNULL(exit) || !passwordPlainText.equals(exit));
+		} else if (encryptionType.equals("MD5")) {
+			String passwordPlainTextMD5 = MD5Util.encrypt(passwordPlainText);//对传入原密码进行md5加密
+			return !(EEBeanUtils.isNULL(passwordPlainTextMD5) || !passwordPlainTextMD5.equals(existPasswordPlainText));
+		} else {
+			throw new EncryptException("加密方式未知["+encryptionType+"]("+this.getClass().getName()+")");
+		}
+	}
+	
 
 	@Override
 	public SimpleResponse resetEndUserLoginPassword(String endUserId) {
@@ -383,4 +566,15 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 	public void setReSetLoginPasswordCom(ReSetLoginPasswordCom reSetLoginPasswordCom) {
 		this.reSetLoginPasswordCom = reSetLoginPasswordCom;
 	}
+
+	public EndUserLoginAccountBizService getEndUserLoginAccountBizService() {
+		return endUserLoginAccountBizService;
+	}
+
+	public void setEndUserLoginAccountBizService(EndUserLoginAccountBizService endUserLoginAccountBizService) {
+		this.endUserLoginAccountBizService = endUserLoginAccountBizService;
+	}
+	
+	
+	
 }

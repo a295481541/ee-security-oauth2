@@ -25,7 +25,7 @@
 				<redis.server.5><![CDATA[redis://:REDIS@172.16.165.222:6379/5]]></redis.server.5>
 				<redis.server.6><![CDATA[redis://:REDIS@172.16.165.222:6379/6]]></redis.server.6>
 				<!-- zookeeper配置 -->
-				<zookeeper.address>172.16.165.222:2181</zookeeper.address>
+				<zookeeper.address>127.0.0.1:2181</zookeeper.address>
 				<dubbo.port>20881</dubbo.port>
 				<!-- 打war包名称 -->
 				<provider.finalName>security-provider</provider.finalName>
@@ -49,6 +49,9 @@
 				<!-- zookeeper配置 -->
 				<zookeeper.address>172.16.165.222:2181</zookeeper.address>
 				<dubbo.port>20881</dubbo.port>
+				<!-- elk配置 -->
+				<elk.address>172.16.146.155</elk.address>
+				<elk.port>4568</elk.port>
 				<!-- 打war包名称 -->
 				<provider.finalName>security-provider</provider.finalName>
 				<openapi.finalName>security-api</openapi.finalName>
@@ -75,6 +78,9 @@
 				<!-- zookeeper配置 -->
 				<zookeeper.address>172.16.146.152:2181</zookeeper.address>
 				<dubbo.port>20881</dubbo.port>
+				<!-- elk配置 -->
+				<elk.address>172.16.146.155</elk.address>
+				<elk.port>4568</elk.port>
 				<!-- 打war包名称 -->
 				<provider.finalName>security-provider</provider.finalName>
 				<openapi.finalName>security-api</openapi.finalName>
@@ -115,7 +121,7 @@
 	</profiles>
 
 	<properties>
-		<dev-framework.version>1.12</dev-framework.version>
+		<dev-framework.version>1.11</dev-framework.version>
 		<eenet.baseinfo.version>1.06</eenet.baseinfo.version>
 		<spring.version>4.2.2.RELEASE</spring.version>
 		<spring-data-redis.version>1.6.2.RELEASE</spring-data-redis.version>

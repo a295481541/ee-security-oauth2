@@ -130,6 +130,57 @@ public class EndUserLoginAccountController {
 		return EEBeanUtils.object2Json(result);
 	}
 	
+	
+	
+	
+	@RequestMapping(value = "/changeEndUserLoginPasswordNew", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
+	@ResponseBody
+	public String changeEndUserLoginPasswordNew(APIRequestIdentity identity, EndUserCredential curCredential, EndUserLoginAccount account, String newSecretKey) {
+		//endUser(self)
+		SimpleResponse response = new SimpleResponse();
+		response.setSuccessful(false);
+		
+		/* 用户类型检查 */
+		if (identity==null || EEBeanUtils.isNULL(identity.getUserType())) {
+			response.addMessage("用户类型未知");
+			return EEBeanUtils.object2Json(response);
+		} else if (!identity.getUserType().equals("endUser")) {
+			response.addMessage(identity.getUserType()+"类型的用户不可修改最终用户主登录密码");
+			return EEBeanUtils.object2Json(response);
+		}
+		
+		/* 可进行操作判断 */
+		if (EEBeanUtils.isNULL(identity.getUserId()) || !identity.getUserId().equals(curCredential.getEndUser().getAtid())) {
+			response.addMessage("只允许修改自己的密码");
+			return EEBeanUtils.object2Json(response);
+		}
+		
+		/* 用户身份验证（令牌） */
+		UserAccessTokenAuthenResponse tokenAuthen = identityAuthenticationBizService.endUserAuthen(identity);
+		if (!tokenAuthen.isSuccessful()) {
+			response.addMessage(tokenAuthen.getStrMessage());
+			return EEBeanUtils.object2Json(response);
+		}
+		
+		/* 注入当前操作者信息 */
+		curCredential.setCrss(identity.getAppId());
+		curCredential.setMdss(identity.getAppId());
+		if (identity.getUserType().equals("endUser") || identity.getUserType().equals("adminUser")) {
+			curCredential.setCrps(identity.getUserId());
+			curCredential.setMdps(identity.getUserId());
+		} else {
+			curCredential.setCrps(identity.getUserType());
+			curCredential.setMdps(identity.getUserType());
+		}
+		
+		/* 执行业务 */
+		SimpleResponse result = endUserCredentialBizService.changeEndUserLoginPassword(curCredential, account, newSecretKey);
+		return EEBeanUtils.object2Json(result);
+	}
+	
+	
+	
+	
 	@RequestMapping(value = "/resetEndUserLoginPassword", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String resetEndUserLoginPassword(APIRequestIdentity identity, String endUserId) {

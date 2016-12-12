@@ -79,7 +79,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 			} else {//用户已存在，完善个人信息，继续剩余流程
 				endUser.setAtid(savedEndUser.getAtid());
 				savedEndUser = getEndUserInfoBizService().save(endUser);
-				existEndUser = true;
+				existEndUser = true;//IAMSMART53GEI6 0.11 //IAMSMART5YA8FO 0.12 IAMSMART5C48JJ 0.14   
 			}
 		}
 		

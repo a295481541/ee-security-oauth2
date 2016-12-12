@@ -231,4 +231,10 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 	public void setRedisClient(RedisClient redisClient) {
 		RedisClient = redisClient;
 	}
+
+	@Override
+	public EndUserLoginAccount save(EndUserLoginAccount m) {
+		return super.save(m);
+	}
+
 }
