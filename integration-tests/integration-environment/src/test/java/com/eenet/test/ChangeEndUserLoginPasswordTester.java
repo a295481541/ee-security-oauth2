@@ -156,7 +156,7 @@ public class ChangeEndUserLoginPasswordTester {
 	private PostMethod method;
 	private String returnMessage;
 	private JSONObject jsonObject;
-	public MyTester() {
+	public ChangeEndUserLoginPasswordTester() {
 		client = new HttpClient();
 		client.getParams().setContentCharset("UTF-8");
 		client.getHttpConnectionManager().getParams().setConnectionTimeout(3000);
