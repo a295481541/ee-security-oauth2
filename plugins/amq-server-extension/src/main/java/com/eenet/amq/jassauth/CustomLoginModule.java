@@ -29,7 +29,7 @@ import com.eenet.base.SimpleResponse;
  * amq认证
  */
 public class CustomLoginModule extends PropertiesLoginModule {
-
+	private static final String GROUP_FILE_PROP_NAME = "org.apache.activemq.jaas.properties.group";
 	private static final Logger LOG = LoggerFactory.getLogger(CustomLoginModule.class);
 
 	private Subject subject;
@@ -38,6 +38,7 @@ public class CustomLoginModule extends PropertiesLoginModule {
 	private String user;
 	private Set<Principal> principals = new HashSet<Principal>();
 	private boolean loginSucceeded;
+	private Map<String, Set<String>> groups;
 
 	@SuppressWarnings("rawtypes")
 	@Override
@@ -46,10 +47,12 @@ public class CustomLoginModule extends PropertiesLoginModule {
 		this.subject = subject;
 		this.callbackHandler = callbackHandler;
 		loginSucceeded = false;
+		groups = load(GROUP_FILE_PROP_NAME, "group", options).invertedPropertiesValuesMap();
 	}
+
 	@Override
 	public boolean login() throws LoginException {
-		
+
 		Callback[] callbacks = new Callback[2];
 		callbacks[0] = new NameCallback("Username: ");
 		callbacks[1] = new PasswordCallback("Password: ", false);
@@ -70,25 +73,26 @@ public class CustomLoginModule extends PropertiesLoginModule {
 		AppAuthenRequest request = new AppAuthenRequest();
 		request.setAppId(user);
 		request.setAppSecretKey(password);
-		
-//		LOG.info("user : " +user );
-//		LOG.info("password : " +password );
-//		LOG.info("request : " +request );
-		
+
+		// LOG.info("user : " +user );
+		// LOG.info("password : " +password );
+		// LOG.info("request : " +request );
+
 		SimpleResponse response = null;
 		try {
-			
+
 			IdentityAuthenticationBizService service = DubboUtil.getService();
-//			LOG.info("service : " +service );
-			response = service.appAuthen(request);
+			// LOG.info("service : " +service );
+			// response = service.appAuthen(request);
+			response = service.appAuthenWithoutTimeMillis(request);
 			LOG.info("response result: " + response.isSuccessful());
 		} catch (Exception e) {
 			LOG.info(e.getMessage());
 			throw new FailedLoginException("Connect to center auth system error!   " + response.getStrMessage());
 		}
-		
-//		LOG.info("response : " + response);
-//		LOG.info("response : " + response.isSuccessful());
+
+		// LOG.info("response : " + response);
+		// LOG.info("response : " + response.isSuccessful());
 
 		loginSucceeded = response.isSuccessful();
 		if (loginSucceeded)
@@ -97,26 +101,39 @@ public class CustomLoginModule extends PropertiesLoginModule {
 			return super.login();
 
 	}
+
 	@Override
 	public boolean commit() throws LoginException {
 		boolean result = loginSucceeded;
-		
+
 		if (result) {
-			System.out.println("principals" + principals);
+			
 			principals.add(new UserPrincipal(user));
+
+			Set<String> matchedGroups = groups.get(user);
+			
+			if (matchedGroups != null) {
+				for (String entry : matchedGroups) {
+					principals.add(new GroupPrincipal(entry));
+				}
+			}
+
 			principals.add(new GroupPrincipal("bizApps"));
+
 			subject.getPrincipals().addAll(principals);
 		} else
 			return super.commit();
 		clear();
 		return result;
 	}
+
 	@Override
 	public boolean abort() throws LoginException {
 		super.abort();
 		clear();
 		return true;
 	}
+
 	@Override
 	public boolean logout() throws LoginException {
 		super.logout();
@@ -125,6 +142,7 @@ public class CustomLoginModule extends PropertiesLoginModule {
 		clear();
 		return true;
 	}
+
 	private void clear() {
 		user = null;
 		loginSucceeded = false;

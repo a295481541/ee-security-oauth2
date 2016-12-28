@@ -1,5 +1,11 @@
 package com.eenet.security;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +24,7 @@ import com.eenet.authen.AdminUserLoginAccount;
 import com.eenet.authen.EndUserCredential;
 import com.eenet.authen.EndUserLoginAccount;
 import com.eenet.authen.IdentityAuthenticationBizService;
+import com.eenet.authen.LoginAccountType;
 import com.eenet.authen.identifier.CallerIdentityInfo;
 import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.authen.response.UserAccessTokenAuthenResponse;
@@ -30,6 +37,8 @@ import com.eenet.common.code.SystemCode;
 import com.eenet.model.EndUserLoginAccountListModel;
 import com.eenet.security.RegistNewUserBizService;
 import com.eenet.util.EEBeanUtils;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 @Controller
 public class RegistNewUserController {
@@ -129,9 +138,20 @@ public class RegistNewUserController {
 		return EEBeanUtils.object2Json(token);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/regist/endUserWithMulAccountAndLogin", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
-	public String registEndUserWithMulAccountAndLogin(@ModelAttribute("user")EndUserInfo user, @ModelAttribute("account")EndUserLoginAccountListModel account, @ModelAttribute("credential")EndUserCredential credential) {
+	public String registEndUserWithMulAccountAndLogin(@ModelAttribute("user")String user, @ModelAttribute("account")String account, @ModelAttribute("credential")String credential) {
+		
+		EndUserInfo info  = EEBeanUtils.json2Object(user, EndUserInfo.class);
+		
+		List<EndUserLoginAccount> list =  EEBeanUtils.json2List(account, new TypeToken<List<EndUserLoginAccount>>() { }.getType());
+		
+		EEBeanUtils.json2Object(user, EndUserInfo.class);
+		
+		
+		EndUserCredential endUserCredential = EEBeanUtils.json2Object(credential, EndUserCredential .class);
+		
 		SimpleResponse response = new SimpleResponse();
 		response.setSuccessful(false);
 		
@@ -144,10 +164,11 @@ public class RegistNewUserController {
 		
 		log.error("CurrentSys : "+OPOwner.getCurrentSys());
 		
-		AccessToken token = registNewUserBizService.registEndUserWithMulAccountAndLogin(user, account.getM(), credential);
+		AccessToken token = registNewUserBizService.registEndUserWithMulAccountAndLogin(info, list, endUserCredential);
 		return EEBeanUtils.object2Json(token);
 	}
 	
+		
 	@RequestMapping(value = "/registAdminUserWithoutLogin", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String registAdminUserWithoutLogin(APIRequestIdentity identity, @ModelAttribute("user")AdminUserInfo adminUser, @ModelAttribute("account")AdminUserLoginAccount account, @ModelAttribute("credential")AdminUserCredential credential){

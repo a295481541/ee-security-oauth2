@@ -60,6 +60,15 @@ public interface EndUserLoginAccountBizService {
 	 */
 	public SimpleResultSet<EndUserLoginAccount> query (QueryCondition condition);
 	
+	
+	
+	/**
+	 * 保存用户账户
+	 * @param m
+	 * @return
+	 */
+	public EndUserLoginAccount save(EndUserLoginAccount m);
+	
 	/**
 	 * 不应该再考虑维护账号的私有密码
 	 */

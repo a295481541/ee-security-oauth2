@@ -48,14 +48,14 @@ public class GatherAppNUserIdentifierFilter implements Filter {
 		/* 尝试从cookie中获得当前用户和当前应用信息（应用标识、应用秘钥、应用跳转地址、当前用户标识、当前用户访问令牌、用户类型） */
 		if (cookies!=null && cookies.length>0) {
 			for (Cookie c : cookies) {
-				if ( AppID_PARAM_TAG.equals(c.getName()) ) //应用标识
-					OPOwner.setCurrentSys(c.getValue());
-				
-				if ( AppSecretKey_PARAM_TAG.equals(c.getName()) ) //应用秘钥
-					CallerIdentityInfo.setAppsecretkey(c.getValue());
-				
-				if ( RedirectURI_PARAM_TAG.equals(c.getName()) ) //应用跳转地址
-					CallerIdentityInfo.setRedirecturi(c.getValue());
+//				if ( AppID_PARAM_TAG.equals(c.getName()) ) //应用标识
+//					OPOwner.setCurrentSys(c.getValue());
+//				
+//				if ( AppSecretKey_PARAM_TAG.equals(c.getName()) ) //应用秘钥
+//					CallerIdentityInfo.setAppsecretkey(c.getValue());
+//				
+//				if ( RedirectURI_PARAM_TAG.equals(c.getName()) ) //应用跳转地址
+//					CallerIdentityInfo.setRedirecturi(c.getValue());
 				
 				if ( UserId_PARAM_TAG.equals(c.getName()) ) //当前用户标识
 					OPOwner.setCurrentUser(c.getValue());

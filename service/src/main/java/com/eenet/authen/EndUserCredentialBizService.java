@@ -29,6 +29,20 @@ public interface EndUserCredentialBizService {
 	 */
 	public SimpleResponse changeEndUserLoginPassword(EndUserCredential curCredential, String newSecretKey);
 	
+	
+	
+	
+	/**
+	 * 修改用户主登录密码
+	 * @param curCredential 登录密码属性必须是：带时间戳加密的形式
+	 * @param account 登陆账户
+	 * @param newSecretKey 新密码：明文直接加密的形式（不带时间戳）
+	 * @return
+	 * 2016年12月9日
+	 * @author Orion
+	 */
+	public SimpleResponse changeEndUserLoginPassword(EndUserCredential curCredential,EndUserLoginAccount account, String newSecretKey);
+	
 	/**
 	 * 重置用户登录密码（适合忘记密码）
 	 * @param endUserId 用户标识

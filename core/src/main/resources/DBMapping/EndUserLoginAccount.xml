@@ -69,21 +69,23 @@
 			UPDATED_BY = #{mdps,jdbcType=VARCHAR},
 			UPDATED_SID = #{mdss,jdbcType=VARCHAR},
 			REMARK = #{dataDescription,jdbcType=VARCHAR},
-			ADMIN_ID = #{userInfo.atid,jdbcType=VARCHAR},
+			USER_ID = #{userInfo.atid,jdbcType=VARCHAR},
 			LOGIN_ACCOUNT = #{loginAccount,jdbcType=VARCHAR},
+			ACCOUNT_PASSWORD =  #{accountLoginPassword,jdbcType=VARCHAR},
 			ACCOUNT_TYPE = #{accountType,jdbcType=VARCHAR},
 			ENCRYPTION_TYPE = #{encryptionType,jdbcType=VARCHAR}
 		WHERE ENDUSER_LOGIN_ACCOUNT_ID = #{atid,jdbcType=VARCHAR}
 		]]>
 	</update>
 	<select id="selectByPrimaryKey" resultMap="default" parameterType="java.lang.String" >
-		<![CDATA[
-  		select 
-		    ENDUSER_LOGIN_ACCOUNT_ID, CREATED_DT, CREATED_BY, CREATED_SID, UPDATED_DT, UPDATED_BY, UPDATED_SID, REMARK,
-		    ACCOUNT_PASSWORD, ]]><include refid="biz_columns" /><![CDATA[, V.*
-		    from AUTHEN_ENDUSER_LOGIN_ACCOUNT T LEFT JOIN V_USER_AUTH V ON T.USER_ACCOUNT=V.ACCOUNT
-	    where ENDUSER_LOGIN_ACCOUNT_ID = #{atid,jdbcType=VARCHAR}
-	  	]]>
+	  	
+	  	<![CDATA[
+		SELECT * FROM (
+			]]><include refid="base_select" /><![CDATA[
+		) TB WHERE 1=1 
+		]]>
+		 AND ENDUSER_LOGIN_ACCOUNT_ID = #{atid,jdbcType=VARCHAR}
+	  	
 	</select>
 	<delete id="delete">
 		<![CDATA[
