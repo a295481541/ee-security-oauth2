@@ -60,7 +60,7 @@
 		<dependency>
 			<groupId>com.eenet.framework</groupId>
 			<artifactId>base-FrontEnd</artifactId>
-			<version>${dev-framework.version}</version>
+			<version>${dev-frw.FrontEnd.version}</version>
 		</dependency>
 		
 		<!-- servlet -->

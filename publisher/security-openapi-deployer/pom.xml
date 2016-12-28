@@ -62,7 +62,7 @@
 		<dependency>
 			<groupId>com.eenet.framework</groupId>
 			<artifactId>base-FrontEnd</artifactId>
-			<version>${dev-framework.version}</version>
+			<version>${dev-frw.FrontEnd.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>eenet.security.oauth2.plugins</groupId>

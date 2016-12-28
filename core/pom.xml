@@ -22,7 +22,7 @@
 		<dependency>
 			<groupId>com.eenet.framework</groupId>
 			<artifactId>base-biz</artifactId>
-			<version>${dev-framework.version}</version>
+			<version>${dev-frw.biz.version}</version>
 		</dependency>
 		
 		<!-- baseinfo -->

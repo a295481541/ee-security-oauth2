@@ -16,12 +16,12 @@
 		<dependency>
 			<groupId>com.eenet.framework</groupId>
 			<artifactId>util</artifactId>
-			<version>${dev-framework.version}</version>
+			<version>${dev-frw.util.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.eenet.framework</groupId>
 			<artifactId>base-pojo</artifactId>
-			<version>${dev-framework.version}</version>
+			<version>${dev-frw.pojo.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>eenet.public.baseinfo</groupId>

@@ -22,7 +22,7 @@
 		<dependency>
 			<groupId>com.eenet.framework</groupId>
 			<artifactId>util</artifactId>
-			<version>${dev-framework.version}</version>
+			<version>${dev-frw.util.version}</version>
 		</dependency>
 	</dependencies>
 </project>
