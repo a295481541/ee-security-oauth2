@@ -50,6 +50,7 @@ public class RegistNewUserController {
 	@Autowired
 	private PreRegistEndUserBizService preRegistEndUserBizService;
 	
+	
 	@RequestMapping(value = "/endUserExistMEID", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String existMobileEmailId(APIRequestIdentity identity,String mobile, String email, String idCard) {
