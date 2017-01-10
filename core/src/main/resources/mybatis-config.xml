@@ -10,6 +10,7 @@
 		<typeAlias alias="com.eenet.authen.AdminUserCredential" type="com.eenet.authen.AdminUserCredential" />
 		<typeAlias alias="com.eenet.authen.EndUserCredential" type="com.eenet.authen.EndUserCredential" />
 		<typeAlias alias="com.eenet.sms.eesms.EeSmsTemplate" type="com.eenet.sms.eesms.EeSmsTemplate" />
+		<typeAlias alias="com.eenet.authen.BusinessSeries" type="com.eenet.authen.BusinessSeries" />
 	</typeAliases>
 	<mappers>
 		<!--公共SQL配置-->
@@ -25,5 +26,6 @@
 		<mapper resource="DBMapping/AdminUserCredential.xml"/>
 		<mapper resource="DBMapping/EndUserCredential.xml"/>
 		<mapper resource="DBMapping/EeSmsTemplate.xml"/>
+		<mapper resource="DBMapping/BusinessSeries.xml" />
 	</mappers>
 </configuration>

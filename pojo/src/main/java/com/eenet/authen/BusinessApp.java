@@ -13,6 +13,7 @@ public class BusinessApp extends BaseEntity implements BackupDeletedData,BackupU
 	private String secretKey;//应用接入秘钥
 	private String appName;//应用中文名称
 	private BusinessAppType appType;//应用类型
+	private BusinessSeries businessSeries;//业务体系
 	/**
 	 * @return the 应用标识
 	 */
@@ -74,4 +75,18 @@ public class BusinessApp extends BaseEntity implements BackupDeletedData,BackupU
 	public void setAppType(BusinessAppType appType) {
 		this.appType = appType;
 	}
+	
+	/**
+	 * @return the 业务体系
+	 */
+	public BusinessSeries getBusinessSeries() {
+		return businessSeries;
+	}
+	/**
+	 * @param appType the 业务体系 to set
+	 */
+	public void setBusinessSeries(BusinessSeries businessSeries) {
+		this.businessSeries = businessSeries;
+	}
+	
 }

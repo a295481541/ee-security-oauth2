@@ -15,9 +15,11 @@
 	    <result column="APP_TYPE" property="appType" jdbcType="VARCHAR" typeHandler="org.apache.ibatis.type.EnumTypeHandler" />
 	    <result column="SECRT_KEY" property="secretKey" jdbcType="VARCHAR" />
 	    <result column="REDIRECT_URI_PREFIX" property="redirectURIPrefix" jdbcType="VARCHAR" />
+	    <association column="BIZ_SERIES_ID" property="businessSeries" javaType="com.eenet.authen.BusinessSeries" 
+	    			resultMap="com.eenet.authen.BusinessSeries.default"/>
 	</resultMap>
 	<sql id="biz_columns" >
-		APP_NAME, APP_TYPE, SECRT_KEY, REDIRECT_URI_PREFIX
+		BIZ_SERIES_ID,APP_NAME, APP_TYPE, SECRT_KEY, REDIRECT_URI_PREFIX
 	</sql>
 	
 	<select id="query_count" resultType="java.lang.Integer" parameterType="com.eenet.base.dao.SQLCondition">
@@ -48,7 +50,7 @@
 			]]><include refid="biz_columns" /><![CDATA[
 		) VALUES (
 			#{atid,jdbcType=VARCHAR}, #{crps,jdbcType=VARCHAR}, #{crss,jdbcType=VARCHAR}, #{dataDescription,jdbcType=VARCHAR},
-			#{appName,jdbcType=VARCHAR}, #{appType,jdbcType=VARCHAR}, #{secretKey,jdbcType=VARCHAR}, #{redirectURIPrefix,jdbcType=VARCHAR}
+			#{businessSeries.atid,jdbcType=VARCHAR},#{appName,jdbcType=VARCHAR}, #{appType,jdbcType=VARCHAR}, #{secretKey,jdbcType=VARCHAR}, #{redirectURIPrefix,jdbcType=VARCHAR}
 		)
 		]]>
 	</insert>
@@ -62,7 +64,8 @@
 			APP_NAME = #{appName,jdbcType=VARCHAR},
 			APP_TYPE = #{appType,jdbcType=VARCHAR},
 			SECRT_KEY = #{secretKey,jdbcType=VARCHAR},
-			REDIRECT_URI_PREFIX = #{redirectURIPrefix,jdbcType=VARCHAR}
+			REDIRECT_URI_PREFIX = #{redirectURIPrefix,jdbcType=VARCHAR},
+			BIZ_SERIES_ID = #{businessSeries.atid,jdbcType=VARCHAR}
 		WHERE BIZ_APP_ID = #{atid,jdbcType=VARCHAR}
 		]]>
 	</update>

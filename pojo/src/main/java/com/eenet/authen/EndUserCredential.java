@@ -15,6 +15,7 @@ public class EndUserCredential extends BaseEntity implements BackupDeletedData,B
 	private EndUserInfo endUser;//最终用户信息
 	private String password;//用户登录密码（区别于账号登录密码）
 	private String encryptionType = "RSA";//加密方式，RSA或MD5，默认RSA
+	private BusinessSeries businessSeries;//业务体系
 	/**
 	 * @return the 最终用户信息
 	 */
@@ -51,4 +52,20 @@ public class EndUserCredential extends BaseEntity implements BackupDeletedData,B
 	public void setEncryptionType(String encryptionType) {
 		this.encryptionType = encryptionType;
 	}
+	
+	/**
+	 * @return the 业务体系
+	 */
+	public BusinessSeries getBusinessSeries() {
+		return businessSeries;
+	}
+	
+	/**
+	 * @param encryptionType the 业务体系 to set
+	 */
+	public void setBusinessSeries(BusinessSeries businessSeries) {
+		this.businessSeries = businessSeries;
+	}
+	
+	
 }
