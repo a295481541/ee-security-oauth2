@@ -230,7 +230,7 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 		
 		log.info("判断该用户是否有该账号 start");
 		/* 判断该用户是否有该账号 */
-		EndUserLoginAccount existLoginAccount = endUserLoginAccountBizService.retrieveEndUserLoginAccountInfo(account.getLoginAccount());
+		EndUserLoginAccount existLoginAccount = endUserLoginAccountBizService.retrieveEndUserLoginAccountInfo(curCredential.getBusinessSeries().getAtid() ,account.getLoginAccount());
 		
 		if (existLoginAccount == null ) {
 			result.setSuccessful(false);

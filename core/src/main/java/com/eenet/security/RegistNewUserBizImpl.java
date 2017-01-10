@@ -60,7 +60,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 			return result;
 		}
 		/* 检查该账号是否已被使用 */
-		EndUserLoginAccount existAccount = getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(account.getLoginAccount());
+		EndUserLoginAccount existAccount = getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(null ,account.getLoginAccount());//TODO
 		if (existAccount.isSuccessful()) {
 			result.addMessage("该账号已被使用("+this.getClass().getName()+")");
 			result.setRSBizCode(ABBizCode.AB0002);
@@ -154,7 +154,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		
 		/* 检查该账号是否已被使用 */
 		for (EndUserLoginAccount account : accounts) {
-			EndUserLoginAccount existAccount = getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(account.getLoginAccount());
+			EndUserLoginAccount existAccount = getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(null ,account.getLoginAccount());//TODO
 			if (existAccount.isSuccessful()) {
 				result.addMessage("该账号已被使用("+this.getClass().getName()+")");
 				result.setRSBizCode(ABBizCode.AB0002);

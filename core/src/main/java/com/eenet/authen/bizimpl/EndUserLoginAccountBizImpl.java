@@ -53,7 +53,7 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 		log.error("[registeEndUserLoginAccount("+Thread.currentThread().getId()+")] check over");
 		
 		/* 检查要注册的账号是否存在 */
-		EndUserLoginAccount existAccount = this.retrieveEndUserLoginAccountInfo(account.getLoginAccount());
+		EndUserLoginAccount existAccount = this.retrieveEndUserLoginAccountInfo(account.getBusinessSeries().getAtid() ,account.getLoginAccount());
 		log.error("[registeEndUserLoginAccount("+Thread.currentThread().getId()+")] exist account check: "+EEBeanUtils.object2Json(account));
 		log.error("[registeEndUserLoginAccount("+Thread.currentThread().getId()+")] exist account check: "+EEBeanUtils.object2Json(existAccount));
 		if ( existAccount.isSuccessful() && account.getUserInfo().getAtid().equals(existAccount.getUserInfo().getAtid()) ) {//账号存在并且指向同一个用户
@@ -75,7 +75,7 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 	}
 
 	@Override
-	public SimpleResponse removeEndUserLoginAccount(String... loginAccounts) {
+	public SimpleResponse removeEndUserLoginAccount(String seriesId, String... loginAccounts) {
 		SimpleResponse result = null;
 		/* 参数检查 */
 		if (loginAccounts==null || loginAccounts.length==0) {
@@ -131,7 +131,7 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 	}
 	
 	@Override
-	public EndUserLoginAccount retrieveEndUserLoginAccountInfo(String loginAccount) {
+	public EndUserLoginAccount retrieveEndUserLoginAccountInfo(String seriesId, String loginAccount) {
 		EndUserLoginAccount err = new EndUserLoginAccount();
 		err.setSuccessful(false);
 		/* 参数检查 */
@@ -164,8 +164,8 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 	}
 
 	@Override
-	public EndUserInfo retrieveEndUserInfo(String loginAccount) {
-		EndUserLoginAccount account = this.retrieveEndUserLoginAccountInfo(loginAccount);
+	public EndUserInfo retrieveEndUserInfo(String seriesId,String loginAccount) {
+		EndUserLoginAccount account = this.retrieveEndUserLoginAccountInfo(seriesId ,loginAccount);
 		if (account.isSuccessful())
 			return account.getUserInfo();
 		else {
@@ -177,9 +177,9 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 	}
 
 	@Override
-	public EndUserLoginAccount retrieveEndUserAccountPassword(String loginAccount, RSADecrypt StorageRSAEncrypt) {
+	public EndUserLoginAccount retrieveEndUserAccountPassword(String seriesId, String loginAccount, RSADecrypt StorageRSAEncrypt) {
 		/* 取秘钥密文（未取到或不是RSA密文都直接返回结果） */
-		EndUserLoginAccount result = this.retrieveEndUserLoginAccountInfo(loginAccount);
+		EndUserLoginAccount result = this.retrieveEndUserLoginAccountInfo(seriesId ,loginAccount);
 		if (!result.isSuccessful() || !"RSA".equals(result.getEncryptionType()))
 			return result;
 		

@@ -78,7 +78,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		
 		/* 获得最终用户当前登录账号信息、统一登录秘钥信息 */
 		EndUserLoginAccount loginAccountInfo = 
-				getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(loginAccount);
+				getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(null , loginAccount); //TODO
 		
 			
 		if (!loginAccountInfo.isSuccessful()) {
@@ -110,8 +110,8 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 			return grant;
 		}
 		if (!passwordEqual) {//获得账号私有密码加密类型
-			encryptionType = getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(loginAccount).getEncryptionType();
-			EndUserLoginAccount accountPassword = getEndUserLoginAccountBizService().retrieveEndUserAccountPassword(loginAccount, getStorageRSADecrypt());
+			encryptionType = getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(null ,loginAccount).getEncryptionType();//TODO
+			EndUserLoginAccount accountPassword = getEndUserLoginAccountBizService().retrieveEndUserAccountPassword(null ,loginAccount, getStorageRSADecrypt());//TODO
 			if ( !passwordEqual && accountPassword.isSuccessful() && encryptionType.equals("RSA") && passwordPlaintext.equals(accountPassword.getAccountLoginPassword()) )
 				passwordEqual = true;
 			//私有密码标识为MD5并且密文与传入的密文（明文经MD5加密）一致
@@ -475,5 +475,10 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 	 */
 	public void setIdentityUtil(IdentityUtil identityUtil) {
 		this.identityUtil = identityUtil;
+	}
+
+	@Override
+	public SignOnGrant getSignOnGrant(String appId, String seriesId, String redirectURI, String loginAccount, String password) {
+		return null;
 	}
 }

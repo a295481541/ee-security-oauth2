@@ -298,4 +298,10 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 		this.businessAppBizService = businessAppBizService;
 	}
 
+	@Override
+	public SimpleResponse sendSMSCode4Login(String appId, String seriesId, long mobile) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

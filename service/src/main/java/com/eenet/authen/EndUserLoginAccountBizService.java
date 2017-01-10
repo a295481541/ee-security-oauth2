@@ -11,7 +11,7 @@ import com.eenet.util.cryptography.RSADecrypt;
  * 2016年4月7日
  * @author Orion
  */
-public interface EndUserLoginAccountBizService {
+public interface EndUserLoginAccountBizService {//TODO
 	/**
 	 * 最终用户登录账号注册
 	 * @param user
@@ -25,7 +25,7 @@ public interface EndUserLoginAccountBizService {
 	 * 2016年3月30日
 	 * @author Orion
 	 */
-	public SimpleResponse removeEndUserLoginAccount(String... loginAccounts);
+	public SimpleResponse removeEndUserLoginAccount(String seriesId, String... loginAccounts);
 	/**
 	 * 根据登录账号获得人员基本信息（返回信息不包含登录账号的私有密码）
 	 * @param loginAccount 登录账号
@@ -33,7 +33,7 @@ public interface EndUserLoginAccountBizService {
 	 * 2016年4月7日
 	 * @author Orion
 	 */
-	public EndUserInfo retrieveEndUserInfo(String loginAccount);
+	public EndUserInfo retrieveEndUserInfo(String seriesId, String loginAccount);
 	/**
 	 * 根据登录账号获得最终用户登陆账号其他信息
 	 * @param loginAccount
@@ -41,7 +41,7 @@ public interface EndUserLoginAccountBizService {
 	 * 2016年6月8日
 	 * @author Orion
 	 */
-	public EndUserLoginAccount retrieveEndUserLoginAccountInfo(String loginAccount);
+	public EndUserLoginAccount retrieveEndUserLoginAccountInfo(String seriesId, String loginAccount);
 	
 	/**
 	 * 获得登录账号私有密码（明文）
@@ -49,7 +49,7 @@ public interface EndUserLoginAccountBizService {
 	 * @param StorageRSAEncrypt 
 	 * @return 如果是RSA加密形式则返回明文，否则返回密文。返回对象只包含加密方式和密码明文（或密文）
 	 */
-	public EndUserLoginAccount retrieveEndUserAccountPassword(String loginAccount, RSADecrypt StorageRSAEncrypt);
+	public EndUserLoginAccount retrieveEndUserAccountPassword(String seriesId, String loginAccount, RSADecrypt StorageRSAEncrypt);
 	
 	/**
 	 * 登录账号综合查询（单表）

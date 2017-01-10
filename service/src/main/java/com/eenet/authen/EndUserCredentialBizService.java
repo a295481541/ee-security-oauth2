@@ -9,7 +9,7 @@ import com.eenet.util.cryptography.RSADecrypt;
  * 2016年4月7日
  * @author Orion
  */
-public interface EndUserCredentialBizService {
+public interface EndUserCredentialBizService {//TODO
 	/**
 	 * 初始化用户登录密码
 	 * @param credential 登录密码属性必须是：带时间戳加密的形式

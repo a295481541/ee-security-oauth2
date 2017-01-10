@@ -15,11 +15,11 @@ public class PreRegistEndUserBizImpl implements PreRegistEndUserBizService {
 		
 		/* 检查是否存在登录账号 */
 		if ( !loginAccountExist )
-			loginAccountExist = getEndUserLoginAccountBizService().retrieveEndUserInfo(mobile).isSuccessful();
+			loginAccountExist = getEndUserLoginAccountBizService().retrieveEndUserInfo(null ,mobile).isSuccessful();//TODO
 		if ( !loginAccountExist )
-			loginAccountExist = getEndUserLoginAccountBizService().retrieveEndUserInfo(email).isSuccessful();
+			loginAccountExist = getEndUserLoginAccountBizService().retrieveEndUserInfo(null ,email).isSuccessful();//TODO
 		if ( !loginAccountExist )
-			loginAccountExist = getEndUserLoginAccountBizService().retrieveEndUserInfo(idCard).isSuccessful();
+			loginAccountExist = getEndUserLoginAccountBizService().retrieveEndUserInfo(null ,idCard).isSuccessful();//TODO
 		
 		if (loginAccountExist) {
 			BooleanResponse result = new BooleanResponse();
@@ -39,11 +39,11 @@ public class PreRegistEndUserBizImpl implements PreRegistEndUserBizService {
 		
 		/* 根据登录账号获得人员基本信息 */
 		if ( !endUser.isSuccessful() )
-			endUser = getEndUserLoginAccountBizService().retrieveEndUserInfo(mobile);
+			endUser = getEndUserLoginAccountBizService().retrieveEndUserInfo(null ,mobile);//TODO
 		if ( !endUser.isSuccessful() )
-			endUser = getEndUserLoginAccountBizService().retrieveEndUserInfo(email);
+			endUser = getEndUserLoginAccountBizService().retrieveEndUserInfo(null ,email);//TODO
 		if ( !endUser.isSuccessful() )
-			endUser = getEndUserLoginAccountBizService().retrieveEndUserInfo(idCard);
+			endUser = getEndUserLoginAccountBizService().retrieveEndUserInfo(null ,idCard);//TODO
 		
 		if (endUser.isSuccessful())
 			return endUser;

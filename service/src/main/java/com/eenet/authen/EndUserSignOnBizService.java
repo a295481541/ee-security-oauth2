@@ -7,7 +7,7 @@ package com.eenet.authen;
  * 
  * @author Orion
  */
-public interface EndUserSignOnBizService {
+public interface EndUserSignOnBizService {//TODO
 	
 	/**
 	 * 获得认证授权码，授权码仅可使用一次
@@ -18,6 +18,20 @@ public interface EndUserSignOnBizService {
 	 * @return 授权码
 	 */
 	public SignOnGrant getSignOnGrant(String appId, String redirectURI, String loginAccount, String password);
+	
+	
+	/**
+	 * 获得认证授权码，授权码仅可使用一次
+	 * @param appId 应用标识
+	 * @param seriesId 业务体系标记
+	 * @param redirectURI 跳转地址（非web系统可空）
+	 * @param loginAccount 登录账号
+	 * @param password 最终用户登录密码，带时间戳加密的形式。可以是最终用户统一密码，也可以是账单账号私有密码
+	 * @return 授权码
+	 */
+	public SignOnGrant getSignOnGrant(String appId, String seriesId,String redirectURI, String loginAccount, String password);
+	
+	
 	
 	/**
 	 * 获得访问授权码
