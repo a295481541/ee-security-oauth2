@@ -2,8 +2,8 @@ package com.eenet.authen;
 
 import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.authen.request.UserAccessTokenAuthenRequest;
+import com.eenet.authen.response.AppAuthenResponse;
 import com.eenet.authen.response.UserAccessTokenAuthenResponse;
-import com.eenet.base.SimpleResponse;
 
 /**
  * 身份认证服务，含：服务消费者、最终用户、业务应用系统
@@ -15,16 +15,16 @@ public interface IdentityAuthenticationBizService {
 	/**
 	 * 业务应用认证
 	 * @param request 应用接入秘钥属性，以带时间戳形式加密
-	 * @return
+	 * @return appIdentityConfirm认证是否成功，bizSeriesId属性为null表示无体系系统
 	 */
-	public SimpleResponse appAuthen(AppAuthenRequest request);
+	public AppAuthenResponse appAuthen(AppAuthenRequest request);
 	
 	/**
 	 * 业务应用认证
 	 * @param request 应用接入秘钥属性，以不带带时间戳形式加密
-	 * @return
+	 * @return appIdentityConfirm认证是否成功，bizSeriesId属性为null表示无体系系统
 	 */
-	public SimpleResponse appAuthenWithoutTimeMillis(AppAuthenRequest request);
+	public AppAuthenResponse appAuthenWithoutTimeMillis(AppAuthenRequest request);
 	
 	/**
 	 * 最终用户认证
