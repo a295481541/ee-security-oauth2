@@ -13,6 +13,12 @@ public final class AuthenCacheKey {
 	 */
 	public final static String BIZ_APP = "BIZ_APP";
 	
+	/**
+	 * 业务体系
+	 * redisKey:BIZ_APP, mapKey:appId，value:序列化的BusinessSeries对象
+	 */
+	public final static String BIZ_SERIES = "BIZ_SERIES";
+	
 	
 	/**
 	 * 服务人员登录账号

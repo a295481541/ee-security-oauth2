@@ -1,7 +1,9 @@
 package com.eenet.authen.bizimpl;
 
 import com.eenet.authen.AccessToken;
+import com.eenet.authen.BusinessApp;
 import com.eenet.authen.BusinessAppBizService;
+import com.eenet.authen.BusinessSeriesBizService;
 import com.eenet.authen.EndUserCredential;
 import com.eenet.authen.EndUserCredentialBizService;
 import com.eenet.authen.EndUserLoginAccount;
@@ -36,6 +38,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 	private RSADecrypt StorageRSADecrypt;//数据存储解密私钥
 	private RSADecrypt TransferRSADecrypt;//数据传输解密私钥
 	private BusinessAppBizService businessAppBizService;//业务系统服务
+	private BusinessSeriesBizService businessSeriesBizService;//业务体系服务
 	private EndUserCredentialBizService endUserCredentialBizService;//最终用户登录秘钥服务
 	private EndUserLoginAccountBizService endUserLoginAccountBizService;//最终用户登录账号服务
 	private EndUserInfoBizService endUserInfoBizService;//最终用户管理服务
@@ -44,106 +47,15 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 	
 	@Override
 	public SignOnGrant getSignOnGrant(String appId, String redirectURI, String loginAccount, String password) {
-		SignOnGrant grant = new SignOnGrant();
-		grant.setSuccessful(false);
-		/* 参数检查 */
-		if (EEBeanUtils.isNULL(appId) || EEBeanUtils.isNULL(loginAccount) || EEBeanUtils.isNULL(password)) {
-			grant.setRSBizCode(ABBizCode.AB0006);
-			grant.addMessage("参数不完整("+this.getClass().getName()+")");
-			return grant;
-		}
-		
-		/* 计算传入的最终用户登录密码明文 */
-		String passwordPlaintext = null;
-		try {
-			passwordPlaintext = RSAUtil.decryptWithTimeMillis(getTransferRSADecrypt(), password, 5);
-			if (EEBeanUtils.isNULL(passwordPlaintext)) {
-				grant.setRSBizCode(ABBizCode.AB0006);
-				grant.addMessage("无法解密提供的最终用户登录密码("+this.getClass().getName()+")");
-				return grant;
-			}
-		} catch (EncryptException e) {
-			grant.setRSBizCode(ABBizCode.AB0006);
-			grant.addMessage(e.toString());
-			return grant;
-		}
-		
-		/* 检查业务应用app是否存在，跳转地址是否合法(仅web应用) */
-		SimpleResponse existApp = getSignOnUtil().existAPP(appId, redirectURI, getBusinessAppBizService());
-		if (!existApp.isSuccessful()) {
-			grant.setRSBizCode(ABBizCode.AB0006);
-			grant.addMessage(existApp.getStrMessage());
-			return grant;
-		}
-		
-		/* 获得最终用户当前登录账号信息、统一登录秘钥信息 */
-		EndUserLoginAccount loginAccountInfo = 
-				getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(null , loginAccount); //TODO
-		
-			
-		if (!loginAccountInfo.isSuccessful()) {
-			grant.setRSBizCode(ABBizCode.AB0007);
-			grant.addMessage(loginAccountInfo.getStrMessage());
-			return grant;
-		}
-		EndUserInfo endUser = loginAccountInfo.getUserInfo();
-		EndUserCredential credential = getEndUserCredentialBizService().retrieveEndUserSecretKey(endUser.getAtid(), getStorageRSADecrypt());
-		
-		/*
-		 * 用户可能使用账号私有密码登录，所以取统一密码失败也应该继续
-		 * 最终用户身份认证（提供的密码能匹配统一密码或私有密码任意一个即可）
-		 * 判断密码是否能匹配，不对则返回错误信息
-		 * 根据加密方式进行不同的密码匹配
-		 */
-		boolean passwordEqual = false;//passwordPlaintext.equals(credential.getResult());
-		String encryptionType = credential.getEncryptionType();
-		//统一密码标识为RSA并且解密后的明文与传入的明文一致
-		if (!passwordEqual && encryptionType.equals("RSA") && passwordPlaintext.equals(credential.getPassword()) )
-			passwordEqual = true;
-		//统一密码标识为MD5并且密文与传入的密文（明文经MD5加密）一致
-		try {
-			if (!passwordEqual && encryptionType.equals("MD5") && MD5Util.encrypt(passwordPlaintext).equals(credential.getPassword()) )
-				passwordEqual = true;
-		} catch (EncryptException e) {
-			grant.setRSBizCode(ABBizCode.AB0006);
-			grant.addMessage(e.toString());
-			return grant;
-		}
-		if (!passwordEqual) {//获得账号私有密码加密类型
-			encryptionType = getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(null ,loginAccount).getEncryptionType();//TODO
-			EndUserLoginAccount accountPassword = getEndUserLoginAccountBizService().retrieveEndUserAccountPassword(null ,loginAccount, getStorageRSADecrypt());//TODO
-			if ( !passwordEqual && accountPassword.isSuccessful() && encryptionType.equals("RSA") && passwordPlaintext.equals(accountPassword.getAccountLoginPassword()) )
-				passwordEqual = true;
-			//私有密码标识为MD5并且密文与传入的密文（明文经MD5加密）一致
-			try {
-				if ( !passwordEqual && accountPassword.isSuccessful() && encryptionType.equals("MD5") && MD5Util.encrypt(passwordPlaintext).equals(accountPassword.getAccountLoginPassword()) )
-					passwordEqual = true;
-			} catch (EncryptException e) {
-				grant.setRSBizCode(ABBizCode.AB0006);
-				grant.addMessage(e.toString());
-				return grant;
-			}
-			
-		}
-		if (!passwordEqual) {
-			grant.setRSBizCode(ABBizCode.AB0007);
-			grant.addMessage("最终用户登录账号或密码错误("+this.getClass().getName()+")");
-			return grant;
-		}
-		
-		/* 生成并缓存code */
-		StringResponse makeCodeResult = 
-				getSignOnUtil().makeGrantCode(AuthenCacheKey.ENDUSER_GRANTCODE_PREFIX, appId, endUser.getAtid());
-		grant.setSuccessful(makeCodeResult.isSuccessful());
-		if (makeCodeResult.isSuccessful())
-			grant.setGrantCode(makeCodeResult.getResult());
-		else {
-			grant.setRSBizCode(ABBizCode.AB0006);
-			grant.addMessage(makeCodeResult.getStrMessage());
-		}
-		
-		return grant;
+		return getSignOnGrant(appId, null, redirectURI, loginAccount, password);
 	}
+	
+	
+	
+	
+	
+	
+	
 
 	@Override
 	public AccessToken getAccessToken(String appId, String secretKey, String grantCode) {
@@ -479,6 +391,120 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 
 	@Override
 	public SignOnGrant getSignOnGrant(String appId, String seriesId, String redirectURI, String loginAccount, String password) {
-		return null;
+		SignOnGrant grant = new SignOnGrant();
+		grant.setSuccessful(false);
+		/* 参数检查 */
+		if (EEBeanUtils.isNULL(appId) || EEBeanUtils.isNULL(loginAccount) || EEBeanUtils.isNULL(password)) {
+			grant.setRSBizCode(ABBizCode.AB0006);
+			grant.addMessage("参数不完整("+this.getClass().getName()+")");
+			return grant;
+		}
+		
+		/* 计算传入的最终用户登录密码明文 */
+		String passwordPlaintext = null;
+		try {
+			passwordPlaintext = RSAUtil.decryptWithTimeMillis(getTransferRSADecrypt(), password, 5);
+			if (EEBeanUtils.isNULL(passwordPlaintext)) {
+				grant.setRSBizCode(ABBizCode.AB0006);
+				grant.addMessage("无法解密提供的最终用户登录密码("+this.getClass().getName()+")");
+				return grant;
+			}
+		} catch (EncryptException e) {
+			grant.setRSBizCode(ABBizCode.AB0006);
+			grant.addMessage(e.toString());
+			return grant;
+		}
+		
+		/* 检查业务应用app是否存在，跳转地址是否合法(仅web应用) */
+		SimpleResponse existApp = getSignOnUtil().existAPP(appId, redirectURI, getBusinessAppBizService());
+		if (!existApp.isSuccessful()) {
+			grant.setRSBizCode(ABBizCode.AB0006);
+			grant.addMessage(existApp.getStrMessage());
+			return grant;
+		}
+		
+		BusinessApp app = null;
+		if (EEBeanUtils.isNULL(seriesId)) {
+			app =  businessAppBizService.retrieveApp(appId);
+		}else{
+			app=new BusinessApp();
+			app.setSuccessful(true);
+			app.setBusinessSeries(businessSeriesBizService.retrieveBusinessSeries(seriesId, appId));
+		}
+		
+		
+		if (!app.isSuccessful() ||app.getBusinessSeries()== null  ) {
+			grant.addMessage("无体系系统必须指定体系id("+this.getClass().getName()+")");
+			return grant;
+		}
+		
+		
+		/* 获得最终用户当前登录账号信息、统一登录秘钥信息 */
+		EndUserLoginAccount loginAccountInfo = 
+				getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(null , loginAccount); //TODO
+		
+			
+		if (!loginAccountInfo.isSuccessful()) {
+			grant.setRSBizCode(ABBizCode.AB0007);
+			grant.addMessage(loginAccountInfo.getStrMessage());
+			return grant;
+		}
+		EndUserInfo endUser = loginAccountInfo.getUserInfo();
+		EndUserCredential credential = getEndUserCredentialBizService().retrieveEndUserSecretKey(app.getBusinessSeries().getAtid(),endUser.getAtid(), getStorageRSADecrypt());
+		
+		/*
+		 * 用户可能使用账号私有密码登录，所以取统一密码失败也应该继续
+		 * 最终用户身份认证（提供的密码能匹配统一密码或私有密码任意一个即可）
+		 * 判断密码是否能匹配，不对则返回错误信息
+		 * 根据加密方式进行不同的密码匹配
+		 */
+		boolean passwordEqual = false;//passwordPlaintext.equals(credential.getResult());
+		String encryptionType = credential.getEncryptionType();
+		//统一密码标识为RSA并且解密后的明文与传入的明文一致
+		if (!passwordEqual && encryptionType.equals("RSA") && passwordPlaintext.equals(credential.getPassword()) )
+			passwordEqual = true;
+		//统一密码标识为MD5并且密文与传入的密文（明文经MD5加密）一致
+		try {
+			if (!passwordEqual && encryptionType.equals("MD5") && MD5Util.encrypt(passwordPlaintext).equals(credential.getPassword()) )
+				passwordEqual = true;
+		} catch (EncryptException e) {
+			grant.setRSBizCode(ABBizCode.AB0006);
+			grant.addMessage(e.toString());
+			return grant;
+		}
+		if (!passwordEqual) {//获得账号私有密码加密类型
+			encryptionType = getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(app.getBusinessSeries().getAtid() ,loginAccount).getEncryptionType();//TODO
+			EndUserLoginAccount accountPassword = getEndUserLoginAccountBizService().retrieveEndUserAccountPassword(app.getBusinessSeries().getAtid() ,loginAccount, getStorageRSADecrypt());//TODO
+			if ( !passwordEqual && accountPassword.isSuccessful() && encryptionType.equals("RSA") && passwordPlaintext.equals(accountPassword.getAccountLoginPassword()) )
+				passwordEqual = true;
+			//私有密码标识为MD5并且密文与传入的密文（明文经MD5加密）一致
+			try {
+				if ( !passwordEqual && accountPassword.isSuccessful() && encryptionType.equals("MD5") && MD5Util.encrypt(passwordPlaintext).equals(accountPassword.getAccountLoginPassword()) )
+					passwordEqual = true;
+			} catch (EncryptException e) {
+				grant.setRSBizCode(ABBizCode.AB0006);
+				grant.addMessage(e.toString());
+				return grant;
+			}
+			
+		}
+		if (!passwordEqual) {
+			grant.setRSBizCode(ABBizCode.AB0007);
+			grant.addMessage("最终用户登录账号或密码错误("+this.getClass().getName()+")");
+			return grant;
+		}
+		
+		/* 生成并缓存code */
+		StringResponse makeCodeResult = 
+				getSignOnUtil().makeGrantCode(AuthenCacheKey.ENDUSER_GRANTCODE_PREFIX, appId, endUser.getAtid()+":"+app.getBusinessSeries().getAtid());
+		grant.setSuccessful(makeCodeResult.isSuccessful());
+		if (makeCodeResult.isSuccessful())
+			grant.setGrantCode(makeCodeResult.getResult());
+		else {
+			grant.setRSBizCode(ABBizCode.AB0006);
+			grant.addMessage(makeCodeResult.getStrMessage());
+		}
+		
+		return grant;
 	}
 }

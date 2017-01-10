@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import com.eenet.authen.BusinessApp;
 import com.eenet.authen.BusinessAppBizService;
 import com.eenet.authen.BusinessAppType;
+import com.eenet.authen.cacheSyn.SynBusinessApp2Redis;
 import com.eenet.base.SimpleResponse;
 import com.eenet.base.StringResponse;
 import com.eenet.common.cache.RedisClient;
@@ -43,6 +44,8 @@ public class SignOnUtil {
 		if (!app.isSuccessful()){
 			result.addMessage("不存在指定的业务系统("+this.getClass().getName()+")");
 			return result;
+		}else{
+			SynBusinessApp2Redis.syn(getRedisClient(), app);
 		}
 		
 		if (app.getAppType().equals(BusinessAppType.WEBAPP)) {

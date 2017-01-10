@@ -6,6 +6,8 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.eenet.authen.BusinessSeries;
+import com.eenet.authen.BusinessSeriesBizService;
 import com.eenet.authen.EndUserCredential;
 import com.eenet.authen.EndUserCredentialBizService;
 import com.eenet.authen.EndUserLoginAccount;
@@ -42,6 +44,7 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 	private EndUserInfoBizService endUserInfoBizService;//最终用户信息服务
 	private ReSetLoginPasswordCom reSetLoginPasswordCom;//重置密码业务组件
 	private EndUserLoginAccountBizService endUserLoginAccountBizService;//最终用户账户服务
+	private BusinessSeriesBizService businessSeriesBizService;//业务体系服务
 	
 	@Override
 	public SimpleResponse initEndUserLoginPassword(EndUserCredential credential) {
@@ -51,7 +54,10 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 			result.setSuccessful(false);
 			result.addMessage("要初始化的最终用户登录秘钥未知("+this.getClass().getName()+")");
 			return result;
-		} else if (EEBeanUtils.isNULL(credential.getPassword()) || credential.getEndUser()==null || EEBeanUtils.isNULL(credential.getEndUser().getAtid())) {
+		} else if (credential.getBusinessSeries() == null ||EEBeanUtils.isNULL(credential.getBusinessSeries().getAtid())){
+			result.setSuccessful(false);
+			result.addMessage("要初始化的最终用户登录秘钥参数不全，业务体系必须指定("+this.getClass().getName()+")");
+		}else if (EEBeanUtils.isNULL(credential.getPassword()) || credential.getEndUser()==null || EEBeanUtils.isNULL(credential.getEndUser().getAtid())) {
 			result.setSuccessful(false);
 			result.addMessage("要初始化的最终用户登录秘钥参数不全，END USER标识、登录秘钥均不可为空("+this.getClass().getName()+")");
 		}
@@ -59,7 +65,7 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 			return result;
 		
 		/* 判断最终用户是否已设置过密码，有则返回错误信息 */
-		EndUserCredential existCredential = this.retrieveEndUserCredentialInfo(credential.getEndUser().getAtid());
+		EndUserCredential existCredential = this.retrieveEndUserCredentialInfo(credential.getBusinessSeries().getAtid() ,credential.getEndUser().getAtid());
 		if (existCredential.isSuccessful()) {
 			result.setSuccessful(false);
 			result.addMessage("该最终用户已经设置过统一登录密码");
@@ -73,6 +79,16 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 			result.addMessage("未找到指定要设置登录密码对应的最终用户("+existEndUser.getStrMessage()+")");
 			return result;
 		}
+		
+		/* 判断指定的业务体系是否存在 */
+		BusinessSeries  businessSeries= businessSeriesBizService.retrieveBusinessSeries(credential.getBusinessSeries().getAtid(), null);
+		
+		if (businessSeries.isSuccessful() ) {
+			result.setSuccessful(false);
+			result.addMessage("未找到指定要设置登录密码对应的业务体系("+existEndUser.getStrMessage()+")");
+			return result;
+		}
+		
 		
 		/* 秘钥加密 */
 		try {
@@ -106,7 +122,10 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 			result.setSuccessful(false);
 			result.addMessage("要修改的最终用户登录密码未知("+this.getClass().getName()+")");
 			return result;
-		} else if (EEBeanUtils.isNULL(curCredential.getPassword()) || curCredential.getEndUser()==null || EEBeanUtils.isNULL(curCredential.getEndUser().getAtid())) {
+		}  else if (curCredential.getBusinessSeries() == null ||EEBeanUtils.isNULL(curCredential.getBusinessSeries().getAtid())){
+			result.setSuccessful(false);
+			result.addMessage("要初始化的最终用户登录秘钥参数不全，业务体系必须指定("+this.getClass().getName()+")");
+		}else if (EEBeanUtils.isNULL(curCredential.getPassword()) || curCredential.getEndUser()==null || EEBeanUtils.isNULL(curCredential.getEndUser().getAtid())) {
 			result.setSuccessful(false);
 			result.addMessage("要修改的最终用户登录秘钥参数不全，END USER标识、当前登录密码均不可为空("+this.getClass().getName()+")");
 		}
@@ -114,7 +133,7 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 			return result;
 		
 		/* 判断最终用户是否已设置过密码，没有则返回错误信息 */
-		EndUserCredential existCredential = this.retrieveEndUserCredentialInfo(curCredential.getEndUser().getAtid());
+		EndUserCredential existCredential = this.retrieveEndUserCredentialInfo(curCredential.getBusinessSeries().getAtid() , curCredential.getEndUser().getAtid());
 		if (!existCredential.isSuccessful()) {
 			result.setSuccessful(false);
 			result.addMessage(existCredential.getStrMessage());
@@ -131,6 +150,17 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 				return result;
 			}
 		}
+		
+		
+		/* 判断指定的业务体系是否存在 */
+		BusinessSeries  businessSeries= businessSeriesBizService.retrieveBusinessSeries(curCredential.getBusinessSeries().getAtid(), null);
+		
+		if (businessSeries.isSuccessful() ) {
+			result.setSuccessful(false);
+			result.addMessage("未找到指定要设置登录密码对应的业务体系("+existEndUser.getStrMessage()+")");
+			return result;
+		}
+		
 		
 		/* 获得传入原密码明文 */
 		String passwordPlainText = null;//传入原密码明文
@@ -198,6 +228,9 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 			result.setSuccessful(false);
 			result.addMessage("要修改的最终用户登录密码未知("+this.getClass().getName()+")");
 			return result;
+		} else if (curCredential.getBusinessSeries() == null ||EEBeanUtils.isNULL(curCredential.getBusinessSeries().getAtid())){
+			result.setSuccessful(false);
+			result.addMessage("要初始化的最终用户登录秘钥参数不全，业务体系必须指定("+this.getClass().getName()+")");
 		} else if (EEBeanUtils.isNULL(curCredential.getPassword()) || curCredential.getEndUser()==null || EEBeanUtils.isNULL(curCredential.getEndUser().getAtid())) {
 			result.setSuccessful(false);
 			result.addMessage("要修改的最终用户登录秘钥参数不全，END USER标识、当前登录密码均不可为空("+this.getClass().getName()+")");
@@ -216,6 +249,18 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 			}
 		}
 		
+		
+		/* 判断指定的业务体系是否存在 */
+		BusinessSeries  businessSeries= businessSeriesBizService.retrieveBusinessSeries(curCredential.getBusinessSeries().getAtid(), null);
+		
+		if (businessSeries.isSuccessful() ) {
+			result.setSuccessful(false);
+			result.addMessage("未找到指定要设置登录密码对应的业务体系("+existEndUser.getStrMessage()+")");
+			return result;
+		}
+		
+		
+		
 		/* 获得传入原密码明文 */
 		String passwordPlainText = null;//传入原密码明文
 		try {
@@ -229,20 +274,20 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 		}
 		
 		log.info("判断该用户是否有该账号 start");
-		/* 判断该用户是否有该账号 */
+		/* 判断该用户在该体系中是否有该账号 */
 		EndUserLoginAccount existLoginAccount = endUserLoginAccountBizService.retrieveEndUserLoginAccountInfo(curCredential.getBusinessSeries().getAtid() ,account.getLoginAccount());
 		
 		if (existLoginAccount == null ) {
 			result.setSuccessful(false);
-			result.addMessage("未找到该账户："+account.getLoginAccount());
+			result.addMessage("未在体系中找到该账户："+account.getLoginAccount());
 			return result;
 		}
 		
 		log.info("判断该用户是否有该账号 end" +existLoginAccount);
 		
 		log.info("判断该用户是否有最终用户登录密码 start");
-		/* 判断该用户是否有最终用户登录密码 */
-		EndUserCredential existCredential = getExistCredential(existEndUser.getAtid());
+		/* 判断该用户在该体系中是否有最终用户登录密码 */
+		EndUserCredential existCredential = getExistCredential(curCredential.getBusinessSeries().getAtid(),existEndUser.getAtid());
 		log.info("判断该用户是否有最终用户登录密码 end"+existCredential);
 		
 		boolean isAccountMatch = false;
@@ -307,6 +352,7 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 			
 			if (existCredential == null) { //不存在登陆密码时创建登陆密码
 				existCredential = new EndUserCredential();
+				existCredential.setBusinessSeries(businessSeries);
 				existCredential.setEndUser(existEndUser);
 				existCredential.setPassword(newPasswordCipherText);
 				/* 保存到数据库，再根据保存结果写缓存或返回错误信息 */
@@ -333,9 +379,10 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 	
 	
 	
-	private EndUserCredential getExistCredential (String userId){
+	private EndUserCredential getExistCredential (String seriesId,String userId){
 		QueryCondition query = new QueryCondition();
 		query.addCondition(new ConditionItem("endUser.atid",RangeType.EQUAL,userId,null));
+		query.addCondition(new ConditionItem("businessSeries.atid",RangeType.EQUAL,seriesId,null));
 		SimpleResultSet<EndUserCredential> existCredential = super.query(query, EndUserCredential.class);
 		if (existCredential.isSuccessful() &&existCredential.getResultSet().size()>0) {
 			return existCredential.getResultSet().get(0);
@@ -365,14 +412,15 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 	
 
 	@Override
-	public SimpleResponse resetEndUserLoginPassword(String endUserId) {
+	public SimpleResponse resetEndUserLoginPassword(String seriesId, String endUserId) {
+		
 		String newPasswordPlainText = new SimpleDateFormat("YYYYMMdd").format(new Date());//重置的密码
-		return getReSetLoginPasswordCom().resetEndUserLoginPassword(endUserId, newPasswordPlainText,
+		return getReSetLoginPasswordCom().resetEndUserLoginPassword(seriesId,endUserId, newPasswordPlainText,
 				getStorageRSAEncrypt());
 	}
 	
 	@Override
-	public EndUserCredential retrieveEndUserCredentialInfo (String endUserId) {
+	public EndUserCredential retrieveEndUserCredentialInfo (String seriesId, String endUserId) {
 		EndUserCredential result = new EndUserCredential();
 		/* 参数检查 */
 		if (EEBeanUtils.isNULL(endUserId)) {
@@ -383,6 +431,7 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 		/* 从数据库取秘钥对象 */
 		QueryCondition query = new QueryCondition();
 		query.addCondition(new ConditionItem("endUser.atid",RangeType.EQUAL,endUserId,null));
+		query.addCondition(new ConditionItem("businessSeries.atid",RangeType.EQUAL,seriesId,null));
 		SimpleResultSet<EndUserCredential> existCredential = super.query(query, EndUserCredential.class);
 		if (!existCredential.isSuccessful()) {
 			result.setSuccessful(false);
@@ -395,13 +444,13 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 			result = existCredential.getResultSet().get(0);
 		} else {
 			result.setSuccessful(false);
-			result.addMessage("匹配到该最终用户设置了个"+existCredential.getResultSet().size()+"统一登录密码");
+			result.addMessage("匹配到该最终用户在该体系中设置了个"+existCredential.getResultSet().size()+"统一登录密码");
 		}
 		return result;
 	}
 
 	@Override
-	public EndUserCredential retrieveEndUserSecretKey(String endUserId) {
+	public EndUserCredential retrieveEndUserSecretKey(String seriesId, String endUserId) {
 		EndUserCredential result = new EndUserCredential();
 		result.setSuccessful(false);
 		/* 参数检查 */
@@ -411,13 +460,13 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 		}
 		
 		/* 从缓存取数据 */
-		String ciphertext = SynEndUserCredential2Redis.get(getRedisClient(), endUserId);
+		String ciphertext = SynEndUserCredential2Redis.get(getRedisClient(), endUserId+":"+seriesId);
 		
 		
 		
 		/* 从数据库取数据 */
 		if (EEBeanUtils.isNULL(ciphertext)) {
-			result = this.retrieveEndUserCredentialInfo(endUserId);
+			result = this.retrieveEndUserCredentialInfo(seriesId ,endUserId);
 			if (result.isSuccessful())
 				SynEndUserCredential2Redis.syn(getRedisClient(), result);
 			return result;
@@ -440,12 +489,12 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 	}
 
 	@Override
-	public EndUserCredential retrieveEndUserSecretKey(String endUserId, RSADecrypt decrypt) {
+	public EndUserCredential retrieveEndUserSecretKey(String seriesId, String endUserId, RSADecrypt decrypt) {
 		
 		/* 取秘钥密文（未取到或不是RSA密文都直接返回结果） */
 		
 //		EndUserCredential result = this.retrieveEndUserCredentialInfo(endUserId);
-		EndUserCredential result = this.retrieveEndUserSecretKey(endUserId);
+		EndUserCredential result = this.retrieveEndUserSecretKey(seriesId ,endUserId);
 		
 		if (!result.isSuccessful() || !"RSA".equals(result.getEncryptionType()))
 			return result;

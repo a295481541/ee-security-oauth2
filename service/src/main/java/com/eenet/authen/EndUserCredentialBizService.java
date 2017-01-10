@@ -50,32 +50,35 @@ public interface EndUserCredentialBizService {//TODO
 	 * 2016年3月31日
 	 * @author Orion
 	 */
-	public SimpleResponse resetEndUserLoginPassword(String endUserId);
+	public SimpleResponse resetEndUserLoginPassword(String seriesId, String endUserId);
 	
 	/**
 	 * 获得最终用户秘钥信息
+	 * @param seriesId  业务体系标识
 	 * @param endUserId 最终用户标识
 	 * @return
 	 * 2016年6月9日
 	 * @author Orion
 	 */
-	public EndUserCredential retrieveEndUserCredentialInfo (String endUserId);
+	public EndUserCredential retrieveEndUserCredentialInfo (String seriesId, String endUserId);
 	/**
 	 * 获得用户登录密码（密文）
+	 * @param seriesId  业务体系标识
 	 * @param endUserId 用户标识
 	 * @return 返回对象只包含加密方式和密码密文
 	 * 2016年4月7日
 	 * @author Orion
 	 */
-	public EndUserCredential retrieveEndUserSecretKey(String endUserId);
+	public EndUserCredential retrieveEndUserSecretKey(String seriesId, String endUserId);
 	
 	/**
 	 * 获得用户登录密码（明文）
+	 * @param seriesId  业务体系标识
 	 * @param endUserId 用户标识
 	 * @param redisRSADecrypt 解密参数（如果确定不是RSA加密则可空，否则不为空）
 	 * @return 如果是RSA加密形式则返回明文，否则返回密文。返回对象只包含加密方式和密码明文（或密文）
 	 * 2016年4月7日
 	 * @author Orion
 	 */
-	public EndUserCredential retrieveEndUserSecretKey(String endUserId, RSADecrypt decrypt);
+	public EndUserCredential retrieveEndUserSecretKey(String seriesId, String endUserId, RSADecrypt decrypt);
 }

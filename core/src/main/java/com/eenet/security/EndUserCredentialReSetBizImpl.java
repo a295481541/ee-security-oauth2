@@ -200,6 +200,10 @@ public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizS
 			result.addMessage("要重置密码的用户标识、新密码和短信验证码均不可为空("+this.getClass().getName()+")");
 			return result;
 		}
+		if (credential.getBusinessSeries() ==null || EEBeanUtils.isNULL(credential.getBusinessSeries().getAtid())) {
+			result.addMessage("要重置密码的业务系统未指定("+this.getClass().getName()+")");
+			return result;
+		}
 		
 		/* 校验并删除短信验证码 */
 		SimpleResponse smsCodeCorrect = validateSMSCode4ResetPassword(credential.getEndUser().getAtid(), smsCode, true);
@@ -252,7 +256,7 @@ public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizS
 			result.addMessage(e.toString());
 			return result;
 		}
-		result = getResetLoginPasswordCom().resetEndUserLoginPassword(credential.getEndUser().getAtid(),
+		result = getResetLoginPasswordCom().resetEndUserLoginPassword(credential.getBusinessSeries().getAtid(),credential.getEndUser().getAtid(),
 				newPasswordPlainText, getStorageRSAEncrypt());
 		
 		return result;

@@ -43,6 +43,11 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 			log.error("[registeEndUserLoginAccount("+Thread.currentThread().getId()+")] account null ");
 			result.setSuccessful(false);
 			result.addMessage("要注册的用户登录账号未知("+this.getClass().getName()+")");
+		} else if (account.getBusinessSeries() == null || EEBeanUtils.isNULL(account.getBusinessSeries().getAtid())){
+			log.error("[registeEndUserLoginAccount("+Thread.currentThread().getId()+")] BusinessSeries not nul or BusinessSeries id null");
+			result.setSuccessful(false);
+			result.addMessage("要注册的用户登录账号参数不全，业务体系不可为空("+this.getClass().getName()+")");
+			
 		} else if (account.getUserInfo()==null || EEBeanUtils.isNULL(account.getUserInfo().getAtid()) || EEBeanUtils.isNULL(account.getLoginAccount()) || account.getAccountType()==null ) {
 			log.error("[registeEndUserLoginAccount("+Thread.currentThread().getId()+")] atid not nul or account null");
 			result.setSuccessful(false);
@@ -84,12 +89,18 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 			result.addMessage("要废弃的最终用户登录账号未知("+this.getClass().getName()+")");
 			return result;
 		}
+		if (EEBeanUtils.isNULL(seriesId)) {
+			result = new SimpleResponse();
+			result.setSuccessful(false);
+			result.addMessage("要废弃的最终用户登录账号未指定业务体系未知("+this.getClass().getName()+")");
+			return result;
+		}
 		
 		/* （1/2）从缓存中取得要删除登录账号的对象 */
 		List<EndUserLoginAccount> accountInCacheObj = new ArrayList<EndUserLoginAccount>();//已经在缓存中的登录账号对象(list中放对象)
 		List<String> accountNoInCache = new ArrayList<String>();//未在缓存中的登录账号对象(list中放登录账号字符串)
 		for (String account : loginAccounts) {
-			EndUserLoginAccount accountObj = SynEndUserLoginAccount2Redis.get(getRedisClient(), account);
+			EndUserLoginAccount accountObj = SynEndUserLoginAccount2Redis.get(getRedisClient(), account+":"+seriesId);
 			if (accountObj == null)
 				accountNoInCache.add(account);
 			else
@@ -104,6 +115,7 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 			for (String account : accountNoInCache) {
 				query.cleanAllCondition();
 				query.addCondition(new ConditionItem("loginAccount",RangeType.EQUAL,account,null));
+				query.addCondition(new ConditionItem("businessSeries.atid",RangeType.EQUAL,seriesId,null));
 				queryResult = super.query(query, EndUserLoginAccount.class);
 				accountNoInCacheObj.addAll(queryResult.getResultSet());
 			}
@@ -124,6 +136,9 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 		System.arraycopy(accountNoInCacheIds, 0, loginAccountIDs, accountInCacheIds.length, accountNoInCacheIds.length);
 		
 		/* 从缓存和数据库中删除存在的对象 */
+		for (int i = 0; i < loginAccounts.length; i++) 
+			loginAccounts[i]=  loginAccounts[i]+":" +seriesId;
+		
 		SynEndUserLoginAccount2Redis.remove(getRedisClient(), loginAccounts);
 		result = super.delete(EndUserLoginAccount.class, loginAccountIDs);
 		
@@ -141,7 +156,7 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 		}
 		
 		/* 从缓存取数据 */
-		EndUserLoginAccount account = SynEndUserLoginAccount2Redis.get(getRedisClient(), loginAccount);
+		EndUserLoginAccount account = SynEndUserLoginAccount2Redis.get(getRedisClient(), loginAccount+":"+seriesId);
 		if (account!=null) {
 			return account;
 		}
@@ -149,6 +164,7 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 		/* 从数据库取数据 */
 		QueryCondition query = new QueryCondition();
 		query.addCondition(new ConditionItem("loginAccount",RangeType.EQUAL,loginAccount,null));
+		query.addCondition(new ConditionItem("businessSeries.atid",RangeType.EQUAL,seriesId,null));
 		SimpleResultSet<EndUserLoginAccount> queryResult = super.query(query, EndUserLoginAccount.class);
 		if (!queryResult.isSuccessful()){
 			err.addMessage(queryResult.getStrMessage());

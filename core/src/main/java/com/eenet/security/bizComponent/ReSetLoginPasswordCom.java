@@ -1,5 +1,8 @@
 package com.eenet.security.bizComponent;
 
+import com.eenet.authen.BusinessAppBizService;
+import com.eenet.authen.BusinessSeries;
+import com.eenet.authen.BusinessSeriesBizService;
 import com.eenet.authen.EndUserCredential;
 import com.eenet.authen.cacheSyn.SynEndUserCredential2Redis;
 import com.eenet.base.SimpleResponse;
@@ -26,6 +29,7 @@ public class ReSetLoginPasswordCom {
 	/**
 	 * 重置用户登录密码
 	 * 该方法已进行必要的参数检查
+	 * @param seriesId 业务体系标识
 	 * @param endUserId 最终用户标识
 	 * @param newPasswordPlainText 新密码明文
 	 * @param storageRSAEncrypt 密码数据存储加密公钥
@@ -33,12 +37,17 @@ public class ReSetLoginPasswordCom {
 	 * 2016年7月20日
 	 * @author Orion
 	 */
-	public SimpleResponse resetEndUserLoginPassword(String endUserId,String newPasswordPlainText,RSAEncrypt storageRSAEncrypt) {
+	public SimpleResponse resetEndUserLoginPassword(String seriesId,String endUserId,String newPasswordPlainText,RSAEncrypt storageRSAEncrypt) {
 		SimpleResponse result = new SimpleResponse();
 		/* 参数检查 */
 		if (EEBeanUtils.isNULL(endUserId) || EEBeanUtils.isNULL(newPasswordPlainText)) {
 			result.setSuccessful(false);
 			result.addMessage("未指定要重置密码的最终用户标识或要设置的新密码("+this.getClass().getName()+")");
+			return result;
+		}
+		if (EEBeanUtils.isNULL(seriesId)) {
+			result.setSuccessful(false);
+			result.addMessage("未指定要重置密码的业务体系("+this.getClass().getName()+")");
 			return result;
 		}
 		if (storageRSAEncrypt == null) {
@@ -53,12 +62,25 @@ public class ReSetLoginPasswordCom {
 			result.addMessage("未找到指定要重置登录密码对应的最终用户");
 			return result;
 		}
+		
+		/*判断指定的业务系统是否存在*/
+		BusinessSeries businessSeries = businessSeriesBizService.retrieveBusinessSeries(seriesId, null);
+		
+		if (businessSeries.isSuccessful()) {
+			result.setSuccessful(false);
+			result.addMessage("未找到指定要重置登录密码对应的业务体系");
+			return result;
+		}
+		
+		
+		
 		EndUserInfo existEndUser = new EndUserInfo();
 		existEndUser.setAtid(endUserId);
 		
 		/* 从数据库取秘钥对象 */
 		QueryCondition query = new QueryCondition();
 		query.addCondition(new ConditionItem("endUser.atid",RangeType.EQUAL,endUserId,null));
+		query.addCondition(new ConditionItem("businessSeries.atid",RangeType.EQUAL,seriesId,null));
 		SimpleResultSet<EndUserCredential> queryResult = getGenericBiz().query(query, EndUserCredential.class);
 		if (!queryResult.isSuccessful()) {
 			result.setSuccessful(false);
@@ -75,7 +97,7 @@ public class ReSetLoginPasswordCom {
 			newCredential = queryResult.getResultSet().get(0);
 		} else {
 			result.setSuccessful(false);
-			result.addMessage("匹配到该最终用户设置了个"+queryResult.getResultSet().size()+"统一登录密码");
+			result.addMessage("匹配到该最终用户在该体系中设置了个"+queryResult.getResultSet().size()+"统一登录密码");
 			return result;
 		}
 		
@@ -105,7 +127,9 @@ public class ReSetLoginPasswordCom {
 	
 	private GenericSimpleBizImpl genericBiz;//通用业务操作实现类
 	private EndUserInfoBizService endUserInfoBizService;//最终用户信息服务
+	private BusinessSeriesBizService businessSeriesBizService;//业务体系服务
 	private RedisClient RedisClient;//Redis客户端
+	
 	/**
 	 * @return the 最终用户信息服务
 	 */
@@ -147,4 +171,22 @@ public class ReSetLoginPasswordCom {
 	public void setRedisClient(RedisClient redisClient) {
 		RedisClient = redisClient;
 	}
+
+	/**
+	 * @return the 业务体系
+	 */
+	public BusinessSeriesBizService getBusinessSeriesBizService() {
+		return businessSeriesBizService;
+	}
+
+	/**
+	 * @param businessSeriesBizService the 业务体系to set
+	 */
+	public void setBusinessSeriesBizService(BusinessSeriesBizService businessSeriesBizService) {
+		this.businessSeriesBizService = businessSeriesBizService;
+	}
+
+	
+	
+	
 }
