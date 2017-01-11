@@ -12,6 +12,7 @@ public class AppAuthenRequest implements Serializable {
 	private String appId;//应用标识
 	private String appSecretKey;//应用接入秘钥（密文）
 	private String redirectURI;//跳转地址（非web系统可空）
+	private String bizSeriesId;//业务体系ID
 	/**
 	 * @return the 应用标识
 	 */
@@ -53,4 +54,17 @@ public class AppAuthenRequest implements Serializable {
 	public void setRedirectURI(String redirectURI) {
 		this.redirectURI = redirectURI;
 	}
+	/**
+	 * @return the 业务体系ID
+	 */
+	public String getBizSeriesId() {
+		return bizSeriesId;
+	}
+	/**
+	 * @param bizSeriesId the 业务体系ID to set
+	 */
+	public void setBizSeriesId(String bizSeriesId) {
+		this.bizSeriesId = bizSeriesId;
+	}
+	
 }
