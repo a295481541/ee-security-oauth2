@@ -15,7 +15,7 @@ public interface BusinessSeriesBizService {
 	 * 2016年3月30日
 	 * @author Orion
 	 */
-	public BusinessSeries retrieveBusinessSeries(String seriesId,String appid);
+	public BusinessSeries retrieveBusinessSeries(String seriesId,String appId);
 	
 	
 }

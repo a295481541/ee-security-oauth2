@@ -1,13 +1,13 @@
 package com.eenet.authen.response;
 
-import java.io.Serializable;
+import com.eenet.base.BaseEntity;
 
 /**
  * 应用系统校验结果
  * 2017年1月10日
  * @author Orion
  */
-public class AppAuthenResponse implements Serializable {
+public class AppAuthenResponse extends BaseEntity  {
 	private static final long serialVersionUID = -1805313524940128660L;
 	private boolean appIdentityConfirm = false;//业务系统身份认证结果
 	private String bizSeriesId;//业务体系ID

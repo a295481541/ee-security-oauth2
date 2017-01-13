@@ -7,7 +7,6 @@ import com.eenet.authen.AdminUserCredential;
 import com.eenet.authen.AdminUserLoginAccount;
 import com.eenet.authen.EndUserCredential;
 import com.eenet.authen.EndUserLoginAccount;
-import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.base.SimpleResponse;
 import com.eenet.baseinfo.user.AdminUserInfo;
 import com.eenet.baseinfo.user.EndUserInfo;
