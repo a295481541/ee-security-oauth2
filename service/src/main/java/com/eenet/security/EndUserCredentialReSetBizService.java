@@ -15,6 +15,7 @@ public interface EndUserCredentialReSetBizService {
 	
 	/**
 	 * 发送重置密码短信验证码
+	 * 仅限已知业务体系的系统使用
 	 * @param appId
 	 * @param mobile
 	 * @return 手机所属用户标识（enduser id）
@@ -22,6 +23,20 @@ public interface EndUserCredentialReSetBizService {
 	 * @author Orion
 	 */
 	public StringResponse sendSMSCode4ResetPassword(String appId, long mobile);
+	
+	/**
+	 * 发送重置密码短信验证码
+	 * 业务系统可以是已知业务体系的系统，也可以是未知业务体系的系统。
+	 * 未知业务体系的系统，手机号码（已作为账号的手机号码）依据是业务体系id；
+	 * 已知业务体系的系统，校验业务体系id与业务系统所属业务体系id是否一致，除非业务体系id(bizSeriesId)为空
+	 * @param appId 业务系统id
+	 * @param bizSeriesId 业务体系id。当appId是已知业务体系的系统，可空
+	 * @param mobile 手机号码（已作为账号的手机号码）
+	 * @return
+	 * 2017年1月13日
+	 * @author Orion
+	 */
+	public StringResponse sendSMSCode4ResetPassword(String appId, String bizSeriesId, long mobile);
 	
 	/**
 	 * 校验重置密码短信验证码
