@@ -16,7 +16,7 @@ import com.eenet.baseinfo.user.EndUserInfo;
  * 2016年7月8日
  * @author Orion
  */
-public interface RegistNewUserBizService {//TODO
+public interface RegistNewUserBizService {
 	/**
 	 * 注册最终用户（含账号和密码）并登陆
 	 * @param endUser 最终用户对象

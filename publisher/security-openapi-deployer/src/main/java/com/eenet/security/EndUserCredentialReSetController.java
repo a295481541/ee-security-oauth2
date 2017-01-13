@@ -11,6 +11,7 @@ import com.eenet.authen.AccessToken;
 import com.eenet.authen.EndUserCredential;
 import com.eenet.authen.IdentityAuthenticationBizService;
 import com.eenet.authen.request.AppAuthenRequest;
+import com.eenet.authen.response.AppAuthenResponse;
 import com.eenet.base.SimpleResponse;
 import com.eenet.base.StringResponse;
 import com.eenet.common.code.SystemCode;
@@ -40,8 +41,8 @@ public class EndUserCredentialReSetController {
 		appAttribute.setAppId(identity.getAppId());
 		appAttribute.setAppSecretKey(identity.getAppSecretKey());
 		
-		SimpleResponse appAuthen = identityAuthenticationBizService.appAuthen(appAttribute);
-		if (!appAuthen.isSuccessful()) {
+		AppAuthenResponse appAuthen = identityAuthenticationBizService.appAuthen(appAttribute);
+		if (!appAuthen.isAppIdentityConfirm()) {
 			response.addMessage(appAuthen.getStrMessage());
 			return EEBeanUtils.object2Json(response);
 		}
@@ -67,8 +68,8 @@ public class EndUserCredentialReSetController {
 		appAttribute.setAppId(identity.getAppId());
 		appAttribute.setAppSecretKey(identity.getAppSecretKey());
 		
-		SimpleResponse appAuthen = identityAuthenticationBizService.appAuthen(appAttribute);
-		if (!appAuthen.isSuccessful()) {
+		AppAuthenResponse appAuthen = identityAuthenticationBizService.appAuthen(appAttribute);
+		if (!appAuthen.isAppIdentityConfirm()) {
 			response.addMessage(appAuthen.getStrMessage());
 			return EEBeanUtils.object2Json(response);
 		}
@@ -116,8 +117,8 @@ public class EndUserCredentialReSetController {
 		appAttribute.setAppId(identity.getAppId());
 		appAttribute.setAppSecretKey(identity.getAppSecretKey());
 		
-		SimpleResponse appAuthen = identityAuthenticationBizService.appAuthen(appAttribute);
-		if (!appAuthen.isSuccessful()) {
+		AppAuthenResponse appAuthen = identityAuthenticationBizService.appAuthen(appAttribute);
+		if (!appAuthen.isAppIdentityConfirm()) {
 			response.addMessage(appAuthen.getStrMessage());
 			return EEBeanUtils.object2Json(response);
 		}

@@ -386,7 +386,6 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 		SimpleResultSet<EndUserCredential> existCredential = super.query(query, EndUserCredential.class);
 		if (existCredential.isSuccessful() &&existCredential.getResultSet().size()>0) {
 			return existCredential.getResultSet().get(0);
-			
 		}
 		return null;
 	}
@@ -615,8 +614,6 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 	public void setReSetLoginPasswordCom(ReSetLoginPasswordCom reSetLoginPasswordCom) {
 		this.reSetLoginPasswordCom = reSetLoginPasswordCom;
 	}
-	
-	
 
 	public EndUserLoginAccountBizService getEndUserLoginAccountBizService() {
 		return endUserLoginAccountBizService;
@@ -625,7 +622,12 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 	public void setEndUserLoginAccountBizService(EndUserLoginAccountBizService endUserLoginAccountBizService) {
 		this.endUserLoginAccountBizService = endUserLoginAccountBizService;
 	}
-	
-	
-	
+
+	public BusinessSeriesBizService getBusinessSeriesBizService() {
+		return businessSeriesBizService;
+	}
+
+	public void setBusinessSeriesBizService(BusinessSeriesBizService businessSeriesBizService) {
+		this.businessSeriesBizService = businessSeriesBizService;
+	}
 }

@@ -27,6 +27,7 @@ import com.eenet.authen.IdentityAuthenticationBizService;
 import com.eenet.authen.LoginAccountType;
 import com.eenet.authen.identifier.CallerIdentityInfo;
 import com.eenet.authen.request.AppAuthenRequest;
+import com.eenet.authen.response.AppAuthenResponse;
 import com.eenet.authen.response.UserAccessTokenAuthenResponse;
 import com.eenet.base.BooleanResponse;
 import com.eenet.base.SimpleResponse;
@@ -61,14 +62,14 @@ public class RegistNewUserController {
 		AppAuthenRequest request = new AppAuthenRequest();
 		request.setAppId(identity.getAppId());
 		request.setAppSecretKey(identity.getAppSecretKey());
-		SimpleResponse appAuthen = identityAuthenticationBizService.appAuthen(request);
-		if (!appAuthen.isSuccessful()) {
+		AppAuthenResponse appAuthen = identityAuthenticationBizService.appAuthen(request);
+		if (!appAuthen.isAppIdentityConfirm()) {
 			response.addMessage(appAuthen.getStrMessage());
 			return EEBeanUtils.object2Json(response);
 		}
 		
 		/* 执行业务 */
-		BooleanResponse result = this.preRegistEndUserBizService.existMobileEmailId(mobile, email, idCard);
+		BooleanResponse result = this.preRegistEndUserBizService.existAccount(identity.getAppId(), null, mobile);//TODO
 		return EEBeanUtils.object2Json(result);
 	}
 	
@@ -91,8 +92,8 @@ public class RegistNewUserController {
 		AppAuthenRequest request = new AppAuthenRequest();
 		request.setAppId(identity.getAppId());
 		request.setAppSecretKey(identity.getAppSecretKey());
-		SimpleResponse appAuthen = identityAuthenticationBizService.appAuthen(request);
-		if (!appAuthen.isSuccessful()) {
+		AppAuthenResponse appAuthen = identityAuthenticationBizService.appAuthen(request);
+		if (!appAuthen.isAppIdentityConfirm()) {
 			response.addMessage(appAuthen.getStrMessage());
 			return EEBeanUtils.object2Json(response);
 		}
@@ -116,7 +117,7 @@ public class RegistNewUserController {
 		}
 		
 		/* 执行业务 */
-		EndUserInfo result = preRegistEndUserBizService.getByMobileEmailId(mobile, email, idCard);
+		EndUserInfo result = preRegistEndUserBizService.retrieveEndUserInfo(identity.getAppId(), null, mobile);//TODO
 		return EEBeanUtils.object2Json(result);
 	}
 	
@@ -184,8 +185,8 @@ public class RegistNewUserController {
 		AppAuthenRequest appAttribute = new AppAuthenRequest();
 		appAttribute.setAppId(identity.getAppId());
 		appAttribute.setAppSecretKey(identity.getAppSecretKey());
-		SimpleResponse appAuthen = identityAuthenticationBizService.appAuthen(appAttribute);
-		if (!appAuthen.isSuccessful()) {
+		AppAuthenResponse appAuthen = identityAuthenticationBizService.appAuthen(appAttribute);
+		if (!appAuthen.isAppIdentityConfirm()) {
 			response.addMessage(appAuthen.getStrMessage());
 			return EEBeanUtils.object2Json(response);
 		}

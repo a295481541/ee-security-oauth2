@@ -20,16 +20,12 @@ import com.eenet.authen.SignOnGrant;
 import com.eenet.authen.identifier.CallerIdentityInfo;
 import com.eenet.authen.util.ABBizCode;
 import com.eenet.base.SimpleResponse;
-import com.eenet.base.query.ConditionItem;
-import com.eenet.base.query.QueryCondition;
-import com.eenet.base.query.RangeType;
 import com.eenet.baseinfo.user.AdminUserInfo;
 import com.eenet.baseinfo.user.AdminUserInfoBizService;
 import com.eenet.baseinfo.user.EndUserInfo;
 import com.eenet.baseinfo.user.EndUserInfoBizService;
 import com.eenet.common.OPOwner;
 import com.eenet.common.code.SystemCode;
-import com.eenet.security.RegistNewUserBizService;
 import com.eenet.util.EEBeanUtils;
 import com.eenet.util.cryptography.EncryptException;
 import com.eenet.util.cryptography.RSADecrypt;
@@ -72,14 +68,12 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 			return result;
 		}
 		/* 检查该账号在该体系中是否已被使用 */
-		EndUserLoginAccount existAccount = getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(account.getBusinessSeries().getAtid() ,account.getLoginAccount());//TODO
+		EndUserLoginAccount existAccount = getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(account.getBusinessSeries().getAtid() ,account.getLoginAccount());
 		if (existAccount.isSuccessful()) {
 			result.addMessage("该账号已被使用("+this.getClass().getName()+")");
 			result.setRSBizCode(ABBizCode.AB0002);
 			return result;
 		}
-		
-		
 		
 		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] check over, current app :"+OPOwner.getCurrentSys()+", current user :" + OPOwner.getCurrentUser() + ", current userType :" + OPOwner.getUsertype());
 		
@@ -169,7 +163,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		
 		/* 检查该账号是否已被使用 */
 		for (EndUserLoginAccount account : accounts) {
-			EndUserLoginAccount existAccount = getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(account.getBusinessSeries().getAtid() ,account.getLoginAccount());//TODO
+			EndUserLoginAccount existAccount = getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(account.getBusinessSeries().getAtid() ,account.getLoginAccount());
 			if (existAccount.isSuccessful()) {
 				result.addMessage("该账号已被该体系使用("+this.getClass().getName()+")");
 				result.setRSBizCode(ABBizCode.AB0002);

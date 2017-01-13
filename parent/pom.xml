@@ -18,12 +18,12 @@
 				<connection.user>cm_user_manager</connection.user>
 				<connection.password>password</connection.password>
 				<!-- Redis配置 --><!-- redis://:[PASSWORD]@[IP]:[PORT]/[DB] -->
-				<redis.server.1><![CDATA[redis://:REDIS@172.16.165.222:6379/1]]></redis.server.1>
-				<redis.server.2><![CDATA[redis://:REDIS@172.16.165.222:6379/2]]></redis.server.2>
-				<redis.server.3><![CDATA[redis://:REDIS@172.16.165.222:6379/3]]></redis.server.3>
-				<redis.server.4><![CDATA[redis://:REDIS@172.16.165.222:6379/4]]></redis.server.4>
-				<redis.server.5><![CDATA[redis://:REDIS@172.16.165.222:6379/5]]></redis.server.5>
-				<redis.server.6><![CDATA[redis://:REDIS@172.16.165.222:6379/6]]></redis.server.6>
+				<redis.server.1><![CDATA[redis://:REDIS@172.16.146.152:6379/1]]></redis.server.1>
+				<redis.server.2><![CDATA[redis://:REDIS@172.16.146.152:6379/2]]></redis.server.2>
+				<redis.server.3><![CDATA[redis://:REDIS@172.16.146.152:6379/3]]></redis.server.3>
+				<redis.server.4><![CDATA[redis://:REDIS@172.16.146.152:6379/4]]></redis.server.4>
+				<redis.server.5><![CDATA[redis://:REDIS@172.16.146.152:6379/5]]></redis.server.5>
+				<redis.server.6><![CDATA[redis://:REDIS@172.16.146.152:6379/6]]></redis.server.6>
 				<!-- zookeeper配置 -->
 				<zookeeper.address>127.0.0.1:2181</zookeeper.address>
 				<dubbo.port>20881</dubbo.port>

@@ -7,7 +7,7 @@ package com.eenet.authen;
  * 
  * @author Orion
  */
-public interface EndUserSignOnBizService {//TODO
+public interface EndUserSignOnBizService {
 	
 	/**
 	 * 获得认证授权码，授权码仅可使用一次

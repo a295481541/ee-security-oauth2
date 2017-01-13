@@ -17,6 +17,7 @@ import com.alibaba.dubbo.config.ReferenceConfig;
 import com.alibaba.dubbo.config.RegistryConfig;
 import com.eenet.authen.IdentityAuthenticationBizService;
 import com.eenet.authen.request.AppAuthenRequest;
+import com.eenet.authen.response.AppAuthenResponse;
 import com.eenet.base.SimpleResponse;
 
 public class DubboUtil {
@@ -87,11 +88,11 @@ public class DubboUtil {
 
 		request.setAppSecretKey(password);
 		System.out.println("=======");
-		SimpleResponse response = null;
+		AppAuthenResponse response = null;
 		for (int i = 0; i < 10; i++) {
 			service = getService();
 			response = service.appAuthen(request);
-			System.out.println(response.isSuccessful());
+			System.out.println(response.isAppIdentityConfirm());
 		}
 		System.out.println("=======");
 

@@ -163,8 +163,15 @@ public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizS
 	@Override
 	public AccessToken resetPasswordBySMSCodeWithLogin(AppAuthenRequest appRequest, EndUserCredential credential,
 			String smsCode, String mobile) {
+		
+		
+		
 		AccessToken result = new AccessToken();
 		result.setSuccessful(false);
+		if (EEBeanUtils.isNULL(appRequest.getBizSeriesId())) {
+			result.addMessage("业务体系未指定("+this.getClass().getName()+")");
+			return result;
+		}
 		
 		/* 业务应用认证 */
 		 AppAuthenResponse appAuthenRS = getAuthenService().appAuthen(appRequest);
@@ -234,7 +241,7 @@ public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizS
 		/* 检查指定的用户标识和手机所属用户是否一致 */
 		EndUserInfo user = getEndUserInfoBizService().getByMobileEmailId(String.valueOf(mobile), null, null);
 		if (!user.isSuccessful())
-			user = getEndUserLoginAccountBizService().retrieveEndUserInfo(null ,String.valueOf(mobile));////TODO
+			user = getEndUserLoginAccountBizService().retrieveEndUserInfo(credential.getBusinessSeries().getAtid() ,String.valueOf(mobile));
 		if (!user.isSuccessful()) {
 			result.addMessage(user.getStrMessage());
 			return result;

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.eenet.authen.request.AppAuthenRequest;
+import com.eenet.authen.response.AppAuthenResponse;
 import com.eenet.base.SimpleResponse;
 import com.eenet.common.code.SystemCode;
 import com.eenet.util.EEBeanUtils;
@@ -35,8 +36,8 @@ public class EndUserSMSSignOnController {
 		appAttribute.setAppId(identity.getAppId());
 		appAttribute.setAppSecretKey(identity.getAppSecretKey());
 		
-		SimpleResponse appAuthen = identityAuthenticationBizService.appAuthen(appAttribute);
-		if (!appAuthen.isSuccessful()) {
+		AppAuthenResponse appAuthen = identityAuthenticationBizService.appAuthen(appAttribute);
+		if (!appAuthen.isAppIdentityConfirm()) {
 			response.addMessage(appAuthen.getStrMessage());
 			return EEBeanUtils.object2Json(response);
 		}

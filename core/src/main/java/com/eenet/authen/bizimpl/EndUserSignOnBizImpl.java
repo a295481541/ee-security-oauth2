@@ -437,7 +437,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		
 		/* 获得最终用户当前登录账号信息、统一登录秘钥信息 */
 		EndUserLoginAccount loginAccountInfo = 
-				getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(app.getBusinessSeries().getAtid() , loginAccount); //TODO
+				getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(app.getBusinessSeries().getAtid() , loginAccount);
 		
 			
 		if (!loginAccountInfo.isSuccessful()) {
@@ -469,8 +469,8 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 			return grant;
 		}
 		if (!passwordEqual) {//获得账号私有密码加密类型
-			encryptionType = getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(app.getBusinessSeries().getAtid() ,loginAccount).getEncryptionType();//TODO
-			EndUserLoginAccount accountPassword = getEndUserLoginAccountBizService().retrieveEndUserAccountPassword(app.getBusinessSeries().getAtid() ,loginAccount, getStorageRSADecrypt());//TODO
+			encryptionType = getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(app.getBusinessSeries().getAtid() ,loginAccount).getEncryptionType();
+			EndUserLoginAccount accountPassword = getEndUserLoginAccountBizService().retrieveEndUserAccountPassword(app.getBusinessSeries().getAtid() ,loginAccount, getStorageRSADecrypt());
 			if ( !passwordEqual && accountPassword.isSuccessful() && encryptionType.equals("RSA") && passwordPlaintext.equals(accountPassword.getAccountLoginPassword()) )
 				passwordEqual = true;
 			//私有密码标识为MD5并且密文与传入的密文（明文经MD5加密）一致

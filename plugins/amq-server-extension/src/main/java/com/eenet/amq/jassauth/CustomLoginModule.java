@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import com.eenet.authen.IdentityAuthenticationBizService;
 import com.eenet.authen.request.AppAuthenRequest;
+import com.eenet.authen.response.AppAuthenResponse;
 import com.eenet.base.SimpleResponse;
 
 /**
@@ -78,14 +79,14 @@ public class CustomLoginModule extends PropertiesLoginModule {
 		// LOG.info("password : " +password );
 		// LOG.info("request : " +request );
 
-		SimpleResponse response = null;
+		AppAuthenResponse response = null;
 		try {
 
 			IdentityAuthenticationBizService service = DubboUtil.getService();
 			// LOG.info("service : " +service );
 			// response = service.appAuthen(request);
 			response = service.appAuthenWithoutTimeMillis(request);
-			LOG.info("response result: " + response.isSuccessful());
+			LOG.info("response result: " + response.isAppIdentityConfirm());
 		} catch (Exception e) {
 			LOG.info(e.getMessage());
 			throw new FailedLoginException("Connect to center auth system error!   " + response.getStrMessage());

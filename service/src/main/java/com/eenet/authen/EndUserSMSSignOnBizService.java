@@ -8,7 +8,7 @@ import com.eenet.base.SimpleResponse;
  * 2016年8月1日
  * @author Orion
  */
-public interface EndUserSMSSignOnBizService {//TODO
+public interface EndUserSMSSignOnBizService {
 	
 	/**
 	 * 发送短信获得快速登录验证码

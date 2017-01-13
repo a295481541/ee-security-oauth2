@@ -11,7 +11,7 @@ import com.eenet.util.cryptography.RSADecrypt;
  * 2016年4月7日
  * @author Orion
  */
-public interface EndUserLoginAccountBizService {//TODO
+public interface EndUserLoginAccountBizService {
 	/**
 	 * 最终用户登录账号注册
 	 * @param user

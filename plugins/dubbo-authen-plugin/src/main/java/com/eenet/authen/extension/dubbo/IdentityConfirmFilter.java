@@ -18,6 +18,7 @@ import com.eenet.authen.identifier.CallerIdentityInfo;
 import com.eenet.authen.identifier.RPCAuthenParamKey;
 import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.authen.request.UserAccessTokenAuthenRequest;
+import com.eenet.authen.response.AppAuthenResponse;
 import com.eenet.authen.response.UserAccessTokenAuthenResponse;
 import com.eenet.base.SimpleResponse;
 import com.eenet.common.OPOwner;
@@ -91,8 +92,8 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 				AppAuthenRequest appAuthenReq = new AppAuthenRequest();
 				appAuthenReq.setAppId(userAuthenReq.getAppId());
 				appAuthenReq.setAppSecretKey(userAuthenReq.getAppSecretKey());
-				SimpleResponse authenResponse = this.appAuthen(appAuthenReq);
-				authenConfirm = authenResponse.isSuccessful();
+				AppAuthenResponse authenResponse = this.appAuthen(appAuthenReq);
+				authenConfirm = authenResponse.isAppIdentityConfirm();
 				if ( !authenConfirm )
 					authenFailReason = authenResponse.getStrMessage();
 			}
@@ -131,7 +132,7 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 		return authenService.adminUserAuthen(autenRequest);
 	}
 	
-	private SimpleResponse appAuthen(AppAuthenRequest appAuthenRequest) {
+	private AppAuthenResponse appAuthen(AppAuthenRequest appAuthenRequest) {
 		IdentityAuthenticationBizService authenService = (IdentityAuthenticationBizService) applicationContext.getBean(AuthenServiceBeanId);
 		return authenService.appAuthen(appAuthenRequest);
 	}

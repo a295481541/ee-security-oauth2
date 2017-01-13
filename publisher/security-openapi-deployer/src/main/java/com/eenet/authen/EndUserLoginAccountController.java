@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.eenet.authen.request.AppAuthenRequest;
+import com.eenet.authen.response.AppAuthenResponse;
 import com.eenet.authen.response.UserAccessTokenAuthenResponse;
 import com.eenet.base.SimpleResponse;
 import com.eenet.util.EEBeanUtils;
@@ -38,8 +39,8 @@ public class EndUserLoginAccountController {
 			AppAuthenRequest request = new AppAuthenRequest();
 			request.setAppId(identity.getAppId());
 			request.setAppSecretKey(identity.getAppSecretKey());
-			SimpleResponse appAuthen = identityAuthenticationBizService.appAuthen(request);
-			if (!appAuthen.isSuccessful()) {
+			AppAuthenResponse appAuthen = identityAuthenticationBizService.appAuthen(request);
+			if (!appAuthen.isAppIdentityConfirm()) {
 				response.addMessage(appAuthen.getStrMessage());
 				return EEBeanUtils.object2Json(response);
 			}
@@ -207,7 +208,7 @@ public class EndUserLoginAccountController {
 		}
 		
 		/* 执行业务 */
-		SimpleResponse result = endUserCredentialBizService.resetEndUserLoginPassword(endUserId);
+		SimpleResponse result = endUserCredentialBizService.resetEndUserLoginPassword(null,endUserId);//TODO
 		return EEBeanUtils.object2Json(result);
 	}
 }
