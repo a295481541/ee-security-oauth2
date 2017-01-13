@@ -34,6 +34,7 @@
 		<property name="authenService" ref="IdentityAuthenticationBizImpl"/>
 		<property name="genericBiz" ref="GenericSimpleBizImpl"/>
 		<property name="endUserSignOnBizService" ref="EndUserSignOnBizImpl"/>
+		<property name="businessSeriesBizService" ref="BusinessSeriesBizImpl"/>
 	</bean>
 	
 	<!-- 重置密码业务组件 -->
@@ -41,11 +42,13 @@
 		<property name="genericBiz" ref="GenericSimpleBizImpl"/>
 		<property name="endUserInfoBizService" ref="EndUserInfoBizService"/>
 		<property name="RedisClient" ref="RedisClient"/>
+		<property name="businessSeriesBizService" ref="BusinessSeriesBizImpl"/>
 	</bean>
 	
 	<!-- 注册新用户服务预先检查服务 -->
 	<bean id="PreRegistEndUserBizImpl" class="com.eenet.security.PreRegistEndUserBizImpl">
 		<property name="endUserInfoBizService" ref="EndUserInfoBizService"/>
 		<property name="endUserLoginAccountBizService" ref="EndUserLoginAccountBizImpl"/>
+		<property name="businessSeriesBizService" ref="BusinessSeriesBizImpl"/>
 	</bean>
 </beans>

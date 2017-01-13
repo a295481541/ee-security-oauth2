@@ -437,7 +437,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		
 		/* 获得最终用户当前登录账号信息、统一登录秘钥信息 */
 		EndUserLoginAccount loginAccountInfo = 
-				getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(null , loginAccount); //TODO
+				getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(app.getBusinessSeries().getAtid() , loginAccount); //TODO
 		
 			
 		if (!loginAccountInfo.isSuccessful()) {

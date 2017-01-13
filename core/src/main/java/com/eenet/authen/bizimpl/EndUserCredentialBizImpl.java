@@ -615,6 +615,8 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 	public void setReSetLoginPasswordCom(ReSetLoginPasswordCom reSetLoginPasswordCom) {
 		this.reSetLoginPasswordCom = reSetLoginPasswordCom;
 	}
+	
+	
 
 	public EndUserLoginAccountBizService getEndUserLoginAccountBizService() {
 		return endUserLoginAccountBizService;

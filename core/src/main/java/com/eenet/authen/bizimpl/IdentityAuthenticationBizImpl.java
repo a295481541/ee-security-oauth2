@@ -275,4 +275,5 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 	public void setIdentityUtil(IdentityUtil identityUtil) {
 		this.identityUtil = identityUtil;
 	}
+	
 }

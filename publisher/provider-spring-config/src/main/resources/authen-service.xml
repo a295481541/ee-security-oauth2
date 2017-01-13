@@ -14,6 +14,11 @@
 		<property name="RedisClient" ref="RedisClient"/>
 		<property name="StorageRSAEncrypt" ref="StorageRSAEncrypt"/>
 	</bean>
+	<!-- 业务体系服务 -->
+	<bean id="BusinessSeriesBizImpl" class="com.eenet.authen.bizimpl.BusinessSeriesBizImpl">
+		<property name="baseDAOService" ref="GenericDAO" />
+		<property name="RedisClient" ref="RedisClient"/>
+	</bean>
 	<!-- 服务人员登录账号服务 -->
 	<bean id="AdminUserLoginAccountBizImpl" class="com.eenet.authen.bizimpl.AdminUserLoginAccountBizImpl">
 		<property name="baseDAOService" ref="GenericDAO" />
@@ -43,7 +48,7 @@
 		<property name="endUserInfoBizService" ref="EndUserInfoBizService"/>
 		<property name="reSetLoginPasswordCom" ref="ReSetLoginPasswordCom"/>
 		<property name="endUserLoginAccountBizService" ref="EndUserLoginAccountBizImpl"/>
-		
+		<property name="businessSeriesBizService" ref="BusinessSeriesBizImpl"/>
 	</bean>
 	
 	<!-- 服务人员登录服务 -->
@@ -88,5 +93,6 @@
 		<property name="authenService" ref="IdentityAuthenticationBizImpl"/>
 		<property name="signOnUtil" ref="SignOnUtil"/>
 		<property name="businessAppBizService" ref="BusinessAppBizImpl"/>
+		<property name="businessSeriesBizService" ref="BusinessSeriesBizImpl"/>
 	</bean>
 </beans>

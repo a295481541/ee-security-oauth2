@@ -339,4 +339,5 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 	public void setStorageRSAEncrypt(RSAEncrypt storageRSAEncrypt) {
 		StorageRSAEncrypt = storageRSAEncrypt;
 	}
+	
 }

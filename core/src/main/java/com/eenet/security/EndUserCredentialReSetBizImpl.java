@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.eenet.authen.AccessToken;
+import com.eenet.authen.BusinessAppBizService;
+import com.eenet.authen.BusinessSeries;
+import com.eenet.authen.BusinessSeriesBizService;
 import com.eenet.authen.EndUserCredential;
 import com.eenet.authen.EndUserLoginAccount;
 import com.eenet.authen.EndUserLoginAccountBizService;
@@ -38,9 +41,9 @@ import com.eenet.util.cryptography.RSAEncrypt;
 import com.eenet.util.cryptography.RSAUtil;
 
 public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizService {
-
+	
 	@Override
-	public StringResponse sendSMSCode4ResetPassword(String appId, long mobile) {
+	public StringResponse sendSMSCode4ResetPassword(String appId, String bizSeriesId, long mobile) {
 		StringResponse result = new StringResponse();
 		result.setSuccessful(false);
 		/* 参数检查 */
@@ -61,15 +64,24 @@ public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizS
 			return result;
 		}
 		
+		
+		BusinessSeries businessSeries = businessSeriesBizService.retrieveBusinessSeries(bizSeriesId, appId);
+		if (businessSeries == null || EEBeanUtils.isNULL(businessSeries.getAtid())) {
+			result.addMessage("业务系统未指定("+this.getClass().getName()+")");
+			return result;
+		}
+		
 		/* 获得该手机所属用户信息 */
 		EndUserInfo user = getEndUserInfoBizService().getByMobileEmailId(String.valueOf(mobile), null, null);
 		if (!user.isSuccessful())
-			user = getEndUserLoginAccountBizService().retrieveEndUserInfo(null ,String.valueOf(mobile));//TODO
+			user = getEndUserLoginAccountBizService().retrieveEndUserInfo(businessSeries.getAtid() ,String.valueOf(mobile));
 		if (!user.isSuccessful()) {
 			result.addMessage("from : "+this.getClass().getName());
 			result.addMessage(user.getStrMessage());
 			return result;
 		}
+		
+		
 		
 		/* 生成短信验证码并缓存 */
 		String smsCode = EEBeanUtils.randomSixNum();
@@ -102,6 +114,12 @@ public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizS
 		result.setResult(user.getAtid());
 		
 		return result;
+	}
+	
+
+	@Override
+	public StringResponse sendSMSCode4ResetPassword(String appId, long mobile) {
+		return this.sendSMSCode4ResetPassword(appId, null, mobile);
 	}
 
 	@Override
@@ -273,6 +291,7 @@ public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizS
 	private IdentityAuthenticationBizService authenService;//身份认证服务
 	private GenericSimpleBizImpl genericBiz;//通用业务操作实现类
 	private EndUserSignOnBizService endUserSignOnBizService;//最终用户登录服务
+	private BusinessSeriesBizService businessSeriesBizService;//业务体系服务
 	public EndUserInfoBizService getEndUserInfoBizService() {
 		return endUserInfoBizService;
 	}
@@ -400,4 +419,16 @@ public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizS
 	public void setEndUserSignOnBizService(EndUserSignOnBizService endUserSignOnBizService) {
 		this.endUserSignOnBizService = endUserSignOnBizService;
 	}
+
+
+	public BusinessSeriesBizService getBusinessSeriesBizService() {
+		return businessSeriesBizService;
+	}
+
+
+	public void setBusinessSeriesBizService(BusinessSeriesBizService businessSeriesBizService) {
+		this.businessSeriesBizService = businessSeriesBizService;
+	}
+	
+
 }

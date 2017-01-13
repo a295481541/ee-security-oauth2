@@ -32,12 +32,12 @@ public final class AuthenCacheKey {
 	public final static String ADMINUSER_CREDENTIAL = "ADMINUSER_CREDENTIAL";
 	/**
 	 * 最终用户登录账号
-	 * redisKey:ENDUSER_LOGIN_ACCOUNT, mapKey:登录账号，value:最终用户对象(@see com.eenet.authen.EndUserLoginAccount)
+	 * redisKey:ENDUSER_LOGIN_ACCOUNT, mapKey:登录账号:业务体系标识(String)，value:最终用户对象(@see com.eenet.authen.EndUserLoginAccount)
 	 */
 	public final static String ENDUSER_LOGIN_ACCOUNT = "ENDUSER_LOGIN_ACCOUNT";
 	/**
 	 * 最终用户登录密码
-	 * redisKey:ENDUSER_CREDENTIAL, mapKey:对应最终用户ID，value:最终用户登录密码(String)
+	 * redisKey:ENDUSER_CREDENTIAL, mapKey:对应最终用户ID:业务体系标识(String)，value:最终用户登录密码(String)
 	 */
 	public final static String ENDUSER_CREDENTIAL = "ENDUSER_CREDENTIAL";
 	
@@ -76,7 +76,7 @@ public final class AuthenCacheKey {
 	public final static String ENDUSER_ACCESSTOKEN_PREFIX = "ENDUSER_ACCESSTOKEN";
 	/**
 	 * 最终用户刷新令牌前缀
-	 * key: ENDUSER_REFRESHTOKEN:[appid]:[refresh token], value: 服务人员标识(String)
+	 * key: ENDUSER_REFRESHTOKEN:[appid]:[refresh token], value: 服务人员标识(String):业务体系标识(String)
 	 */
 	public final static String ENDUSER_REFRESHTOKEN_PREFIX = "ENDUSER_REFRESHTOKEN";
 	/**
