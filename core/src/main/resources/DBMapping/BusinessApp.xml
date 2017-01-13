@@ -53,7 +53,7 @@
 			#{businessSeries.atid,jdbcType=VARCHAR},#{appName,jdbcType=VARCHAR}, #{appType,jdbcType=VARCHAR}, #{secretKey,jdbcType=VARCHAR}, #{redirectURIPrefix,jdbcType=VARCHAR}
 		)
 		]]>
-	</insert>
+	</insert> 
 	<update id="update" parameterType="com.eenet.authen.BusinessApp" >
 		<![CDATA[
 		UPDATE AUTHEN_BIZ_APP SET

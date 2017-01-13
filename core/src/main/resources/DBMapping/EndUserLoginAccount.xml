@@ -17,9 +17,11 @@
 	    <result column="ACCOUNT_PASSWORD" property="accountLoginPassword" jdbcType="VARCHAR" />
 	    <association column="USER_ID" property="userInfo" javaType="com.eenet.baseinfo.user.EndUserInfo" 
 	    			resultMap="com.eenet.baseinfo.user.EndUserInfo.default"/>
+	     <association column="BIZ_SERIES_ID" property="businessSeries" javaType="com.eenet.authen.BusinessSeries" 
+	    			resultMap="com.eenet.authen.BusinessSeries.default"/>
 	</resultMap>
 	<sql id="biz_columns" >
-		USER_ID, LOGIN_ACCOUNT, ACCOUNT_TYPE, ENCRYPTION_TYPE
+		BIZ_SERIES_ID,USER_ID, LOGIN_ACCOUNT, ACCOUNT_TYPE, ENCRYPTION_TYPE
 	</sql>
 	<sql id="base_select" >
 		<![CDATA[
@@ -57,7 +59,7 @@
 			]]><include refid="biz_columns" /><![CDATA[, ACCOUNT_PASSWORD
 		) VALUES (
 			#{atid,jdbcType=VARCHAR}, #{crps,jdbcType=VARCHAR}, #{crss,jdbcType=VARCHAR}, #{dataDescription,jdbcType=VARCHAR},
-			#{userInfo.atid,jdbcType=VARCHAR}, #{loginAccount,jdbcType=VARCHAR}, #{accountType,jdbcType=VARCHAR}, #{encryptionType,jdbcType=VARCHAR},
+			#{businessSeries.atid,jdbcType=VARCHAR},#{userInfo.atid,jdbcType=VARCHAR}, #{loginAccount,jdbcType=VARCHAR}, #{accountType,jdbcType=VARCHAR}, #{encryptionType,jdbcType=VARCHAR},
 			#{accountLoginPassword,jdbcType=VARCHAR}
 		)
 		]]>
@@ -73,7 +75,8 @@
 			LOGIN_ACCOUNT = #{loginAccount,jdbcType=VARCHAR},
 			ACCOUNT_PASSWORD =  #{accountLoginPassword,jdbcType=VARCHAR},
 			ACCOUNT_TYPE = #{accountType,jdbcType=VARCHAR},
-			ENCRYPTION_TYPE = #{encryptionType,jdbcType=VARCHAR}
+			ENCRYPTION_TYPE = #{encryptionType,jdbcType=VARCHAR},
+			BIZ_SERIES_ID = #{businessSeries.atid,jdbcType=VARCHAR}
 		WHERE ENDUSER_LOGIN_ACCOUNT_ID = #{atid,jdbcType=VARCHAR}
 		]]>
 	</update>
@@ -98,9 +101,9 @@
 	<insert id="backup" parameterType="com.eenet.base.biz.BackupData">
 		<![CDATA[
 		INSERT INTO LOG_AUTHEN_EUSER_LOGIN_ACCOUNT (
-			ENDUSER_LOGIN_ACCOUNT_ID, CREATED_DT, CREATED_BY, CREATED_SID, UPDATED_DT, UPDATED_BY, UPDATED_SID, REMARK, ACCOUNT_PASSWORD,]]><include refid="biz_columns" /><![CDATA[, BACKUP4
+			BIZ_APP_ID,ENDUSER_LOGIN_ACCOUNT_ID, CREATED_DT, CREATED_BY, CREATED_SID, UPDATED_DT, UPDATED_BY, UPDATED_SID, REMARK, ACCOUNT_PASSWORD,]]><include refid="biz_columns" /><![CDATA[, BACKUP4
 		) SELECT
-			ENDUSER_LOGIN_ACCOUNT_ID, CREATED_DT, CREATED_BY, CREATED_SID, UPDATED_DT, UPDATED_BY, UPDATED_SID, REMARK, ACCOUNT_PASSWORD,]]><include refid="biz_columns" /><![CDATA[, #{backup4,jdbcType=VARCHAR}
+			BIZ_APP_ID,ENDUSER_LOGIN_ACCOUNT_ID, CREATED_DT, CREATED_BY, CREATED_SID, UPDATED_DT, UPDATED_BY, UPDATED_SID, REMARK, ACCOUNT_PASSWORD,]]><include refid="biz_columns" /><![CDATA[, #{backup4,jdbcType=VARCHAR}
 		FROM AUTHEN_ENDUSER_LOGIN_ACCOUNT WHERE ENDUSER_LOGIN_ACCOUNT_ID IN
 		]]>
 		<foreach item="atid" index="index" collection="atids" open="(" separator="," close=")">

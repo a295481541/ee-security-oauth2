@@ -50,13 +50,6 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		return getSignOnGrant(appId, null, redirectURI, loginAccount, password);
 	}
 	
-	
-	
-	
-	
-	
-	
-
 	@Override
 	public AccessToken getAccessToken(String appId, String secretKey, String grantCode) {
 		AccessToken token = new AccessToken();
@@ -100,6 +93,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 			return token;
 		}
 		
+		
 		/* 删除授权码（授权码只能用一次） */
 		SimpleResponse rmCodeResult = 
 				getSignOnUtil().removeCodeOrToken(AuthenCacheKey.ENDUSER_GRANTCODE_PREFIX, grantCode, appId);
@@ -123,9 +117,11 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 			return token;
 		}
 		
+		
+		
 		/* 生成并记录刷新令牌 */
 		StringResponse mkFreshTokenResult = 
-				getSignOnUtil().makeRefreshToken(AuthenCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appId, getUserIdResult.getResult());
+				getSignOnUtil().makeRefreshToken(AuthenCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appId, getUserIdResult.getResult());//用户标识：业务体系id
 		if (!mkFreshTokenResult.isSuccessful()) {
 			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(mkFreshTokenResult.getStrMessage());
@@ -207,7 +203,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 			return token;
 		}
 		
-		/* 验证刷新令牌是否属于传入的人员标识 */
+		/* 验证刷新令牌是否属于传入的人员标识:业务体系id */
 		if (!endUserId.equals(getUserIdResult.getResult())) {
 			token.addMessage("最终用户刷新令牌错误("+this.getClass().getName()+")");
 			return token;

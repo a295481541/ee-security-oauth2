@@ -7,6 +7,7 @@ import com.eenet.authen.IdentityAuthenticationBizService;
 import com.eenet.authen.cacheSyn.AuthenCacheKey;
 import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.authen.request.UserAccessTokenAuthenRequest;
+import com.eenet.authen.response.AppAuthenResponse;
 import com.eenet.authen.response.UserAccessTokenAuthenResponse;
 import com.eenet.authen.util.IdentityUtil;
 import com.eenet.base.SimpleResponse;
@@ -28,9 +29,9 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 	private IdentityUtil identityUtil;//身份认证工具
 	
 	@Override
-	public SimpleResponse appAuthen(AppAuthenRequest request) {
-		SimpleResponse result = new SimpleResponse();
-		result.setSuccessful(false);
+	public AppAuthenResponse appAuthen(AppAuthenRequest request) {
+		AppAuthenResponse result = new AppAuthenResponse();
+		result.setAppIdentityConfirm(false);
 		/* 参数检查 */
 		if (request==null || EEBeanUtils.isNULL(request.getAppId()) || EEBeanUtils.isNULL(request.getAppSecretKey())) {
 			result.addMessage("参数不完整("+this.getClass().getName()+"("+this.getClass().getName()+")");
@@ -57,14 +58,14 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 			return result;
 		}
 		
-		result.setSuccessful(true);
+		result.setAppIdentityConfirm(true);
 		return result;
 	}
 	
 	@Override
-	public SimpleResponse appAuthenWithoutTimeMillis(AppAuthenRequest request) {
-		SimpleResponse result = new SimpleResponse();
-		result.setSuccessful(false);
+	public AppAuthenResponse appAuthenWithoutTimeMillis(AppAuthenRequest request) {
+		AppAuthenResponse result = new AppAuthenResponse();
+		result.setAppIdentityConfirm(false);
 		/* 参数检查 */
 		if (request==null || EEBeanUtils.isNULL(request.getAppId()) || EEBeanUtils.isNULL(request.getAppSecretKey())) {
 			result.addMessage("参数不完整("+this.getClass().getName()+"("+this.getClass().getName()+")");
@@ -93,7 +94,7 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 			return result;
 		}
 		
-		result.setSuccessful(true);
+		result.setAppIdentityConfirm(true);
 		return result;
 	}
 
@@ -152,7 +153,7 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 		}
 		
 		/* 验证业务应用系统 */
-		SimpleResponse appAuthenResult = null;
+		AppAuthenResponse appAuthenResult = null;
 		try {
 			AppAuthenRequest appAuthenRequest = new AppAuthenRequest();
 			EEBeanUtils.coverProperties(appAuthenRequest, request);
@@ -160,7 +161,7 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			result.addMessage(e.getMessage()+"("+this.getClass().getName()+")");
 		}
-		if (request==null || !appAuthenResult.isSuccessful()) {
+		if (request==null || !appAuthenResult.isAppIdentityConfirm()) {
 			result.addMessage("业务应用系统验证失败("+this.getClass().getName()+")");
 			return result;
 		}

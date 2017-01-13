@@ -1,56 +1,62 @@
 package com.eenet.security;
 
+import com.eenet.authen.BusinessSeries;
+import com.eenet.authen.BusinessSeriesBizService;
 import com.eenet.authen.EndUserLoginAccountBizService;
 import com.eenet.base.BooleanResponse;
 import com.eenet.baseinfo.user.EndUserInfo;
 import com.eenet.baseinfo.user.EndUserInfoBizService;
+import com.eenet.util.EEBeanUtils;
 
 public class PreRegistEndUserBizImpl implements PreRegistEndUserBizService {
 	private EndUserInfoBizService endUserInfoBizService;
 	private EndUserLoginAccountBizService endUserLoginAccountBizService;
+	private BusinessSeriesBizService businessSeriesBizService;
+	
 	
 	@Override
-	public BooleanResponse existMobileEmailId(String mobile, String email, String idCard) {
-		boolean loginAccountExist = false;
-		
-		/* 检查是否存在登录账号 */
-		if ( !loginAccountExist )
-			loginAccountExist = getEndUserLoginAccountBizService().retrieveEndUserInfo(null ,mobile).isSuccessful();//TODO
-		if ( !loginAccountExist )
-			loginAccountExist = getEndUserLoginAccountBizService().retrieveEndUserInfo(null ,email).isSuccessful();//TODO
-		if ( !loginAccountExist )
-			loginAccountExist = getEndUserLoginAccountBizService().retrieveEndUserInfo(null ,idCard).isSuccessful();//TODO
-		
-		if (loginAccountExist) {
-			BooleanResponse result = new BooleanResponse();
-			result.setResult(true);
+	public BooleanResponse existAccount(String appId, String seriesId, String... accounts) {
+		BooleanResponse result =new BooleanResponse();
+		BusinessSeries businessSeries =  businessSeriesBizService.retrieveBusinessSeries(seriesId, appId);
+		if (businessSeries == null ||  EEBeanUtils.isNULL(businessSeries.getAtid())) {
+			result.setSuccessful(false);
+			result.setResult(false);
+			result.addMessage("业务体系不存在或者未指定("+this.getClass().getName()+")");
 			return result;
 		}
-			
 		
-		/* 账号不存在，检查人员信息中的手机、邮箱、身份证是否存在 */
-		return getEndUserInfoBizService().existMobileEmailId(mobile, email, idCard);
+		EndUserInfo endUserInfo = null;
+		for(String account : accounts){
+			endUserInfo = endUserLoginAccountBizService.retrieveEndUserInfo(businessSeries.getAtid(), account);
+			if (endUserInfo == null ||!endUserInfo.isSuccessful()) {
+				result.setSuccessful(true);
+				result.setResult(true);
+				result.addMessage("账户"+account+"已存在("+this.getClass().getName()+")");
+				return result;
+			}
+		}
+		result.setSuccessful(false);
+		result.setResult(false);
+		return result;
 	}
 
 	@Override
-	public EndUserInfo getByMobileEmailId(String mobile, String email, String idCard) {
-		EndUserInfo endUser = new EndUserInfo();
-		endUser.setSuccessful(false);
+	public EndUserInfo retrieveEndUserInfo(String appId, String seriesId, String account) {
 		
-		/* 根据登录账号获得人员基本信息 */
-		if ( !endUser.isSuccessful() )
-			endUser = getEndUserLoginAccountBizService().retrieveEndUserInfo(null ,mobile);//TODO
-		if ( !endUser.isSuccessful() )
-			endUser = getEndUserLoginAccountBizService().retrieveEndUserInfo(null ,email);//TODO
-		if ( !endUser.isSuccessful() )
-			endUser = getEndUserLoginAccountBizService().retrieveEndUserInfo(null ,idCard);//TODO
+		EndUserInfo  result  = new EndUserInfo();
 		
-		if (endUser.isSuccessful())
-			return endUser;
+		BusinessSeries businessSeries =  businessSeriesBizService.retrieveBusinessSeries(seriesId, appId);
 		
-		/* 账号不存在，恩局人员信息中的手机、邮箱、身份证获取个人信息 */
-		return getEndUserInfoBizService().getByMobileEmailId(mobile, email, idCard);
+		if (businessSeries == null ||  EEBeanUtils.isNULL(businessSeries.getAtid())) {
+			result.setSuccessful(false);
+			result.addMessage("业务体系不存在或者未指定("+this.getClass().getName()+")");
+			return result;
+		}
+		
+		return endUserLoginAccountBizService.retrieveEndUserInfo(businessSeries.getAtid(), account);
 	}
+	
+	
 
 	/**
 	 * @return the endUserInfoBizService
@@ -79,4 +85,22 @@ public class PreRegistEndUserBizImpl implements PreRegistEndUserBizService {
 	public void setEndUserLoginAccountBizService(EndUserLoginAccountBizService endUserLoginAccountBizService) {
 		this.endUserLoginAccountBizService = endUserLoginAccountBizService;
 	}
+	
+	/**
+	 * @return the businessSeriesBizService
+	 */
+	public BusinessSeriesBizService getBusinessSeriesBizService() {
+		return businessSeriesBizService;
+	}
+
+	/**
+	 * @param businessSeriesBizService the businessSeriesBizService to set
+	 */
+	public void setBusinessSeriesBizService(BusinessSeriesBizService businessSeriesBizService) {
+		this.businessSeriesBizService = businessSeriesBizService;
+	}
+	
+	
+
+	
 }

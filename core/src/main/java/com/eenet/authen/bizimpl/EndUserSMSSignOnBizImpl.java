@@ -7,10 +7,12 @@ import java.util.Map;
 
 import com.eenet.authen.AccessToken;
 import com.eenet.authen.BusinessAppBizService;
+import com.eenet.authen.BusinessSeriesBizService;
 import com.eenet.authen.EndUserSMSSignOnBizService;
 import com.eenet.authen.IdentityAuthenticationBizService;
 import com.eenet.authen.cacheSyn.AuthenCacheKey;
 import com.eenet.authen.request.AppAuthenRequest;
+import com.eenet.authen.response.AppAuthenResponse;
 import com.eenet.authen.util.SignOnUtil;
 import com.eenet.base.BooleanResponse;
 import com.eenet.base.SimpleResponse;
@@ -27,9 +29,17 @@ import com.eenet.sms.ShortMessageBody;
 import com.eenet.util.EEBeanUtils;
 
 public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
+	
+
 
 	@Override
 	public SimpleResponse sendSMSCode4Login(String appId, long mobile) {
+		 return sendSMSCode4Login(appId, null, mobile);
+	}
+	
+	
+	@Override
+	public SimpleResponse sendSMSCode4Login(String appId, String seriesId, long mobile) {
 		SimpleResponse result = new SimpleResponse();
 		result.setSuccessful(false);
 		/* 参数检查 */
@@ -50,8 +60,16 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 			return result;
 		}
 		
+		seriesId =  businessSeriesBizService.retrieveBusinessSeries(seriesId, appId).getAtid();
+		
+		if (EEBeanUtils.isNULL(seriesId)) {
+			result.addMessage("未指定业务体系编号或者业务系统与业务体系指定错误("+this.getClass().getName()+")");
+			return result;
+		}
+		
+		
 		/* 检查该手机所属用户信息 */
-		BooleanResponse existUser = getPreRegistEndUserBizService().existMobileEmailId(String.valueOf(mobile), null, null);
+		BooleanResponse existUser = getPreRegistEndUserBizService().existAccount(appId, seriesId, String.valueOf(mobile));
 		if ( !existUser.isResult() ) {
 			result.addMessage("未找到该手机所属用户");
 			return result;
@@ -102,9 +120,9 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 		}
 		
 		/* 业务应用认证 */
-		SimpleResponse appAuthenRS = getAuthenService().appAuthen(appRequest);
-		if (!appAuthenRS.isSuccessful()) {
-			result.addMessage(appAuthenRS.getStrMessage());
+		AppAuthenResponse appAuthenRS = getAuthenService().appAuthen(appRequest);
+		if (!appAuthenRS.isAppIdentityConfirm()) {
+			result.addMessage("业务应用认证失败("+this.getClass().getName()+")");
 			return result;
 		}
 		
@@ -116,7 +134,7 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 		}
 		
 		/* 获取手机所属用户个人信息 */
-		EndUserInfo user = getPreRegistEndUserBizService().getByMobileEmailId(String.valueOf(mobile), null, null);
+		EndUserInfo user = getPreRegistEndUserBizService().retrieveEndUserInfo(appRequest.getAppId(), appAuthenRS.getBizSeriesId(), String.valueOf(mobile));
 		if ( !user.isSuccessful() ) {
 			result.addMessage(user.getStrMessage());
 			return result;
@@ -137,7 +155,7 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 		
 		/* 生成并记录刷新令牌 */
 		StringResponse mkFreshTokenResult = 
-				getSignOnUtil().makeRefreshToken(AuthenCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appRequest.getAppId(), user.getAtid());
+				getSignOnUtil().makeRefreshToken(AuthenCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appRequest.getAppId(), user.getAtid()+":"+appAuthenRS.getBizSeriesId());
 		if (!mkFreshTokenResult.isSuccessful()) {
 			result.addMessage(mkFreshTokenResult.getStrMessage());
 			return result;
@@ -200,6 +218,7 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 	private IdentityAuthenticationBizService authenService;//身份认证服务
 	private SignOnUtil signOnUtil;//登录工具
 	private BusinessAppBizService businessAppBizService;//业务系统服务
+	private BusinessSeriesBizService businessSeriesBizService;//业务体系服务
 	/**
 	 * @return the 用户基本信息服务
 	 */
@@ -297,11 +316,22 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 	public void setBusinessAppBizService(BusinessAppBizService businessAppBizService) {
 		this.businessAppBizService = businessAppBizService;
 	}
-
-	@Override
-	public SimpleResponse sendSMSCode4Login(String appId, String seriesId, long mobile) {
-		// TODO Auto-generated method stub
-		return null;
+	
+	
+	/**
+	 * @return the 业务体系服务
+	 */
+	public BusinessSeriesBizService getBusinessSeriesBizService() {
+		return businessSeriesBizService;
 	}
+
+	/**
+	 * @param businessSeriesBizService the 业务体系服务to set
+	 */
+	public void setBusinessSeriesBizService(BusinessSeriesBizService businessSeriesBizService) {
+		this.businessSeriesBizService = businessSeriesBizService;
+	}
+
+	
 
 }

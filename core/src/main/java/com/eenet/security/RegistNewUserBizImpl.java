@@ -53,19 +53,34 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 			result.setRSBizCode(SystemCode.AA0002);
 			return result;
 		}
+		if (account.getBusinessSeries()== null || EEBeanUtils.isNULL(account.getBusinessSeries().getAtid())) {
+			log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] 账户未指定业务体系");
+			result.addMessage("账户未指定业务体系("+this.getClass().getName()+")");
+			return result;
+		}
+		
+		if (credential.getBusinessSeries()== null || EEBeanUtils.isNULL(credential.getBusinessSeries().getAtid())) {
+			log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] 最终用户登录密码未指定业务体系");
+			result.addMessage("最终用户登录密码未指定业务体系("+this.getClass().getName()+")");
+			return result;
+		}
+		
 		if (!EEBeanUtils.isNULL(endUser.getAtid())) {
 			log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] 定义了已存在的最终用户");
 			result.addMessage("定义了已存在的最终用户("+this.getClass().getName()+")");
 			result.setRSBizCode(SystemCode.AA0003);
 			return result;
 		}
-		/* 检查该账号是否已被使用 */
-		EndUserLoginAccount existAccount = getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(null ,account.getLoginAccount());//TODO
+		/* 检查该账号在该体系中是否已被使用 */
+		EndUserLoginAccount existAccount = getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(account.getBusinessSeries().getAtid() ,account.getLoginAccount());//TODO
 		if (existAccount.isSuccessful()) {
 			result.addMessage("该账号已被使用("+this.getClass().getName()+")");
 			result.setRSBizCode(ABBizCode.AB0002);
 			return result;
 		}
+		
+		
+		
 		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] check over, current app :"+OPOwner.getCurrentSys()+", current user :" + OPOwner.getCurrentUser() + ", current userType :" + OPOwner.getUsertype());
 		
 		/* 新增用户 */
@@ -154,9 +169,9 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		
 		/* 检查该账号是否已被使用 */
 		for (EndUserLoginAccount account : accounts) {
-			EndUserLoginAccount existAccount = getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(null ,account.getLoginAccount());//TODO
+			EndUserLoginAccount existAccount = getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(account.getBusinessSeries().getAtid() ,account.getLoginAccount());//TODO
 			if (existAccount.isSuccessful()) {
-				result.addMessage("该账号已被使用("+this.getClass().getName()+")");
+				result.addMessage("该账号已被该体系使用("+this.getClass().getName()+")");
 				result.setRSBizCode(ABBizCode.AB0002);
 				log.info(EEBeanUtils.object2Json(result));
 				return result;
@@ -189,6 +204,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		log.info("end! result: " + EEBeanUtils.object2Json(result));
 		return result;
 	}
+	
 
 	@Override
 	public SimpleResponse registAdminUserWithoutLogin(AdminUserInfo adminUser, AdminUserLoginAccount account,

@@ -14,6 +14,7 @@ import com.eenet.authen.IdentityAuthenticationBizService;
 import com.eenet.authen.LoginAccountType;
 import com.eenet.authen.SignOnGrant;
 import com.eenet.authen.request.AppAuthenRequest;
+import com.eenet.authen.response.AppAuthenResponse;
 import com.eenet.base.SimpleResponse;
 import com.eenet.base.SimpleResultSet;
 import com.eenet.base.StringResponse;
@@ -148,8 +149,8 @@ public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizS
 		result.setSuccessful(false);
 		
 		/* 业务应用认证 */
-		SimpleResponse appAuthenRS = getAuthenService().appAuthen(appRequest);
-		if (!appAuthenRS.isSuccessful()) {
+		 AppAuthenResponse appAuthenRS = getAuthenService().appAuthen(appRequest);
+		if (!appAuthenRS.isAppIdentityConfirm()) {
 			result.addMessage(appAuthenRS.getStrMessage());
 			return result;
 		}
