@@ -72,9 +72,7 @@ public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizS
 		}
 		
 		/* 获得该手机所属用户信息 */
-		EndUserInfo user = getEndUserInfoBizService().getByMobileEmailId(String.valueOf(mobile), null, null);
-		if (!user.isSuccessful())
-			user = getEndUserLoginAccountBizService().retrieveEndUserInfo(businessSeries.getAtid() ,String.valueOf(mobile));
+		EndUserInfo user = getEndUserLoginAccountBizService().retrieveEndUserInfo(businessSeries.getAtid() ,String.valueOf(mobile));
 		if (!user.isSuccessful()) {
 			result.addMessage("from : "+this.getClass().getName());
 			result.addMessage(user.getStrMessage());
@@ -239,9 +237,7 @@ public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizS
 		}
 		
 		/* 检查指定的用户标识和手机所属用户是否一致 */
-		EndUserInfo user = getEndUserInfoBizService().getByMobileEmailId(String.valueOf(mobile), null, null);
-		if (!user.isSuccessful())
-			user = getEndUserLoginAccountBizService().retrieveEndUserInfo(credential.getBusinessSeries().getAtid() ,String.valueOf(mobile));
+		EndUserInfo user = getEndUserLoginAccountBizService().retrieveEndUserInfo(credential.getBusinessSeries().getAtid() ,String.valueOf(mobile));
 		if (!user.isSuccessful()) {
 			result.addMessage(user.getStrMessage());
 			return result;

@@ -73,7 +73,7 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 		}
 		
 		/* 判断指定的最终用户是否存在 */
-		SimpleResponse existEndUser = getEndUserInfoBizService().exist(credential.getEndUser().getAtid());
+		EndUserInfo existEndUser = endUserInfoBizService.get(credential.getEndUser().getAtid());//TODO
 		if ( !existEndUser.isSuccessful() ) {
 			result.setSuccessful(false);
 			result.addMessage("未找到指定要设置登录密码对应的最终用户("+existEndUser.getStrMessage()+")");
