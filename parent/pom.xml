@@ -127,7 +127,7 @@
 		<dev-frw.biz.version>1.13</dev-frw.biz.version>
 		<dev-frw.FrontEnd.version>1.13</dev-frw.FrontEnd.version>
 	
-		<eenet.baseinfo.version>1.06</eenet.baseinfo.version>
+		<eenet.baseinfo.version>1.30</eenet.baseinfo.version>
 		<spring.version>4.2.2.RELEASE</spring.version>
 		<spring-data-redis.version>1.6.2.RELEASE</spring-data-redis.version>
 		<slf4j-log4j12.version>1.7.9</slf4j-log4j12.version>
