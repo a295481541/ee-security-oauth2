@@ -163,6 +163,7 @@ public class SignOnUtil {
 			int expire = 60 * 60 * 24 * 30;
 			//记录令牌
 			boolean cached = getRedisClient().setObject(prefix + ":" + appId + ":" + refreshToken, userId, expire);
+			System.out.println("makeRefreshToken:　　key:" +prefix + ":" + appId + ":" + refreshToken +"   value ："+userId);
 			result.setSuccessful(cached);
 			if (cached)
 				result.setResult(refreshToken);

@@ -92,7 +92,10 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 			token.addMessage(getUserIdResult.getStrMessage());
 			return token;
 		}
-		
+		String userIdResult =  getUserIdResult.getResult();
+		System.out.println("/* 验证授权码 */ :" +userIdResult);
+		String seriesId = userIdResult.substring(userIdResult.indexOf(":")+1, userIdResult.length());
+		String userId =  userIdResult.substring(0, userIdResult.indexOf(":"));
 		
 		/* 删除授权码（授权码只能用一次） */
 		SimpleResponse rmCodeResult = 
@@ -102,6 +105,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 			token.addMessage(rmCodeResult.getStrMessage());
 			return token;
 		}
+		
 		
 		/* 删除访问令牌（防止一个用户可以通过两个令牌登录） */
 		getSignOnUtil().removeUserTokenInApp(AuthenCacheKey.ENDUSER_CACHED_TOKEN,
@@ -137,7 +141,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		CallerIdentityInfo.setAccesstoken(mkAccessTokenResult.getResult());
 		
 		/* 获得最终用户基本信息 */
-		EndUserInfo getEndUserResult = getEndUserInfoBizService().get(getUserIdResult.getResult());
+		EndUserInfo getEndUserResult = getEndUserInfoBizService().get(userId);
 		if (!getEndUserResult.isSuccessful()) {
 			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(getEndUserResult.getStrMessage());
@@ -203,8 +207,11 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 			return token;
 		}
 		
+		String userIdResult =  getUserIdResult.getResult();
+		String userId =  userIdResult.substring(0, userIdResult.indexOf(":"));
+		
 		/* 验证刷新令牌是否属于传入的人员标识:业务体系id */
-		if (!endUserId.equals(getUserIdResult.getResult())) {
+		if (!endUserId.equals(userId)) {
 			token.addMessage("最终用户刷新令牌错误("+this.getClass().getName()+")");
 			return token;
 		}
@@ -221,6 +228,8 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 			token.addMessage(mkAccessTokenResult.getStrMessage());
 			return token;
 		}
+		
+		 
 		
 		/* 生成并记录新的刷新令牌 */
 		StringResponse mkFreshTokenResult = 
@@ -489,6 +498,10 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 			grant.addMessage("最终用户登录账号或密码错误("+this.getClass().getName()+")");
 			return grant;
 		}
+		
+		System.out.println("endUser atid :"+endUser.getAtid());
+		System.out.println("business atid:"+app.getBusinessSeries().getAtid());
+		
 		
 		/* 生成并缓存code */
 		StringResponse makeCodeResult = 

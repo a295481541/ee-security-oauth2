@@ -50,6 +50,8 @@ public final class SynBusinessSeries2Redis2 {
 		
 		BusinessSeries bizApp = null;
 		try {
+			System.out.println("SynBusinessApp2Redis get:  cacheKey" + AuthenCacheKey.BIZ_SERIES +"mapKey :"+seriesId +"value :" +EEBeanUtils.object2Json(client.getMapValue(AuthenCacheKey.BIZ_SERIES, seriesId)));
+
 			bizApp = BusinessSeries.class.cast(client.getMapValue(AuthenCacheKey.BIZ_SERIES, seriesId));
 		} catch (Exception e) {
 			e.printStackTrace();//此处应该有log
@@ -94,6 +96,8 @@ public final class SynBusinessSeries2Redis2 {
 				for (BusinessSeries ssoapp : this.bizApp) {
 					map.put(ssoapp.getAtid(), ssoapp);
 					this.redisClient.addMapItem(AuthenCacheKey.BIZ_SERIES, map, -1);
+					System.out.println("SynBusinessSeries2Redis2 set:  cacheKey :" + AuthenCacheKey.BIZ_SERIES +"  value :" +EEBeanUtils.object2Json(map));
+
 				}
 			} catch (RedisOPException e) {
 				e.printStackTrace();// 缓存写入失败，do nothing

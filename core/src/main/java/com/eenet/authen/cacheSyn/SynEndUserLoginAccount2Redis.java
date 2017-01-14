@@ -49,6 +49,8 @@ public final class SynEndUserLoginAccount2Redis {
 		
 		EndUserLoginAccount account = null;
 		try {
+			System.out.println("SynEndUserLoginAccount2Redis get:  cacheKey" + AuthenCacheKey.ENDUSER_LOGIN_ACCOUNT +"mapKey :"+loginAccount +"value :" +EEBeanUtils.object2Json(client.getMapValue(AuthenCacheKey.ENDUSER_LOGIN_ACCOUNT, loginAccount)));
+
 			account = EndUserLoginAccount.class.cast(client.getMapValue(AuthenCacheKey.ENDUSER_LOGIN_ACCOUNT, loginAccount));
 		} catch (Exception e) {
 			e.printStackTrace();//此处应该有log
@@ -92,6 +94,8 @@ public final class SynEndUserLoginAccount2Redis {
 				for (EndUserLoginAccount account : this.accounts) {
 					map.put(account.getLoginAccount(), account);
 					this.redisClient.addMapItem(AuthenCacheKey.ENDUSER_LOGIN_ACCOUNT, map, -1);
+					System.out.println("SynEndUserLoginAccount2Redis set:  cacheKey :" + AuthenCacheKey.ENDUSER_LOGIN_ACCOUNT +"  value :" +EEBeanUtils.object2Json(map));
+
 				}
 			} catch (RedisOPException e) {
 				e.printStackTrace();// 缓存写入失败，do nothing

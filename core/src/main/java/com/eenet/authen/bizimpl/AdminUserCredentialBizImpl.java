@@ -339,7 +339,6 @@ public class AdminUserCredentialBizImpl extends SimpleBizImpl implements AdminUs
 	****************************************************************************/
 	@Override
 	public Class<?> getPojoCLS() {
-		// TODO Auto-generated method stub
 		return AdminUserCredential.class;
 	}
 

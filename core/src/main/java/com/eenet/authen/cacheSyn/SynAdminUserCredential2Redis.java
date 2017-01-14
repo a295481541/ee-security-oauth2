@@ -49,6 +49,7 @@ public final class SynAdminUserCredential2Redis {
 		
 		String password = null;
 		try {
+			System.out.println("SynAdminUserCredential2Redis get:  cacheKey" + AuthenCacheKey.ADMINUSER_CREDENTIAL +"mapKey :"+userId +"value :" +EEBeanUtils.object2Json(client.getMapValue(AuthenCacheKey.ADMINUSER_CREDENTIAL, userId)));
 			password = String.class.cast(client.getMapValue(AuthenCacheKey.ADMINUSER_CREDENTIAL, userId));
 		} catch (RedisOPException e) {
 			e.printStackTrace();//此处应该有log
@@ -94,6 +95,8 @@ public final class SynAdminUserCredential2Redis {
 				for (AdminUserCredential credential : this.credentials) {
 					map.put(credential.getAdminUser().getAtid(), credential.getEncryptionType()+"##"+credential.getPassword());
 					this.redisClient.addMapItem(AuthenCacheKey.ADMINUSER_CREDENTIAL, map, -1);
+					System.out.println("SynAdminUserCredential2Redis set:  cacheKey :" + AuthenCacheKey.ADMINUSER_CREDENTIAL +"  value :" +EEBeanUtils.object2Json(map));
+
 				}
 			} catch (RedisOPException e) {
 				e.printStackTrace();// 缓存写入失败，do nothing

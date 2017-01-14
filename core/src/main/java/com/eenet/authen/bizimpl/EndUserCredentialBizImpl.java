@@ -527,7 +527,6 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 	****************************************************************************/
 	@Override
 	public Class<?> getPojoCLS() {
-		// TODO Auto-generated method stub
 		return EndUserCredential.class;
 	}
 
