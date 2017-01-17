@@ -18,6 +18,7 @@
 	<bean id="BusinessSeriesBizImpl" class="com.eenet.authen.bizimpl.BusinessSeriesBizImpl">
 		<property name="baseDAOService" ref="GenericDAO" />
 		<property name="RedisClient" ref="RedisClient"/>
+		<property name="businessAppBizService" ref="BusinessAppBizImpl"/>
 	</bean>
 	<!-- 服务人员登录账号服务 -->
 	<bean id="AdminUserLoginAccountBizImpl" class="com.eenet.authen.bizimpl.AdminUserLoginAccountBizImpl">
@@ -74,6 +75,7 @@
 		<property name="endUserInfoBizService" ref="EndUserInfoBizService"/>
 		<property name="signOnUtil" ref="SignOnUtil"/>
 		<property name="identityUtil" ref="IdentityUtil"/>
+		<property name="businessSeriesBizService" ref="BusinessSeriesBizImpl"></property>
 	</bean>
 	
 	<!-- 身份认证服务 -->

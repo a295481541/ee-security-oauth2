@@ -21,83 +21,49 @@ public class BusinessSeriesBizImpl  extends SimpleBizImpl implements BusinessSer
 
 	@Override
 	public BusinessSeries retrieveBusinessSeries(String seriesId, String appId) {
+		System.out.println("retrieveBusinessSeries start :" );
 		
-		BusinessSeries result = new BusinessSeries();
-		result.setSuccessful(false);
 		
 		if (EEBeanUtils.isNULL(seriesId) && EEBeanUtils.isNULL(appId))  {
+			BusinessSeries result = new BusinessSeries();
 			result.setSuccessful(false);
 			result.addMessage("seriesId 或者 appid 必须指定("+this.getClass().getName()+")");
 			return result;
 		}
 		
-	
-		
-		if (EEBeanUtils.isNULL(appId)) {//是否有传业务系统标识
-			BusinessApp businessApp = SynBusinessApp2Redis.get(getRedisClient(), appId);//缓存中取数据
-			
-			if (businessApp != null && businessApp.getBusinessSeries()!= null  ) {
-				result =  businessApp.getBusinessSeries();
-				
-				if (result != null&& !EEBeanUtils.isNULL(seriesId) ){
-					if (!result.getAtid().equals(seriesId)) {
-						result.setSuccessful(false);
-						result.addMessage("系统"+appId+"不在该业务体系中:"+seriesId+"("+this.getClass().getName()+")" );
-						return result;
-					}
-				}
+		if (!EEBeanUtils.isNULL(appId)) {//是否有传业务系统标识
+			BusinessApp  businessApp = businessAppBizService.retrieveApp(appId); //数据库中取数据
+			System.out.println(businessApp);
+			System.out.println("businessApp retieApp :" +EEBeanUtils.object2Json(businessApp) );
+			if (businessApp !=null &&businessApp.getBusinessSeries() != null ) {
+				return businessApp.getBusinessSeries();
 			}
-			
-			businessApp = businessAppBizService.retrieveApp(appId); //数据库中取数据
-			
-			
-			if (businessApp ==null ) {
-				result.setSuccessful(false);
-				result.addMessage("改业务体系:"+seriesId+",不存在("+this.getClass().getName()+")");
-				return result;
-			}
-			
-			
-			SynBusinessApp2Redis.syn(getRedisClient(), businessApp);////同步到redis
-			if (businessApp.getBusinessSeries() == null) {
-				result.setSuccessful(false);
-				result.addMessage("该业务体系:"+seriesId+",不存在("+this.getClass().getName()+")");
-				return result;
-			}
-				
-			if (!EEBeanUtils.isNULL(seriesId) && ! businessApp.getBusinessSeries().getAtid() .equals(seriesId)) {
-				result.setSuccessful(false);
-				result.addMessage("系统"+appId+"不在该业务体系中:"+seriesId+"("+this.getClass().getName()+")" );
-				return result;
-			}
-				
-			return businessApp.getBusinessSeries();
 		}
 		
 		
-		if (EEBeanUtils.isNULL(seriesId)) {//是否有传业务体系标识
-			result = SynBusinessSeries2Redis2.get(getRedisClient(), seriesId);//缓存中取数据
+		if (!EEBeanUtils.isNULL(seriesId)) {//是否有传业务体系标识
+			BusinessSeries   result = SynBusinessSeries2Redis2.get(getRedisClient(), seriesId);//缓存中取数据
+			System.out.println(result);
+			System.out.println("businessSeries redis :" +EEBeanUtils.object2Json(result) );
 			if (result != null )
 				return result;
 			
-			BusinessSeries dbResult   = super.get(seriesId);//数据库中取数据
-			if (dbResult == null ){
-				result = new BusinessSeries();
-				result.setSuccessful(false);
-				result.addMessage("改业务系统:"+seriesId+",不存在("+this.getClass().getName()+")");
-				
+			result   = super.get(seriesId);//数据库中取数据
+			if (result != null ){
+				System.out.println(result);
+				System.out.println("businessSeries db :" +EEBeanUtils.object2Json(result) );
+				SynBusinessSeries2Redis2.syn(getRedisClient(), result);
+				return result;
 			}
-			SynBusinessSeries2Redis2.syn(getRedisClient(), dbResult);//同步到redis
-			return dbResult;
 		}
-		
-		return result;
+		return null;
+	
 	}
 
 
 	@Override
 	public Class<?> getPojoCLS() {
-		return BusinessApp.class;
+		return BusinessSeries.class;
 	}
 	
 	

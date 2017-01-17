@@ -29,6 +29,14 @@ public class SignOnController {
 		return EEBeanUtils.object2Json(getSignOnGrant);
 	}
 	
+	@RequestMapping(value = "/getCSEndUserSignOnGrant", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
+	@ResponseBody
+	public String getCSEndUserSignOnGrant(String appId, String seriesId, String redirectURI, String loginAccount,String password) {
+		SignOnGrant getSignOnGrant = 
+				endUserSignOnBizService.getSignOnGrant(appId, seriesId,redirectURI, loginAccount, password);
+		return EEBeanUtils.object2Json(getSignOnGrant);
+	}
+	
 	@RequestMapping(value = "/getAdminSignOnGrant", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String getAdminSignOnGrant(String appId, String redirectURI, String loginAccount,String password) {

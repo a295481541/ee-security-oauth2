@@ -47,23 +47,58 @@ comment on column AUTHEN_BIZ_SERIES.REMARK is
 '备注';
 
 
+
+/*==============================================================*/
+/* 修改业务体系id: AUTHEN_ENDUSER_LOGIN_ACCOUNT                                        */
+/*==============================================================*/
+UPDATE AUTHEN_ENDUSER_LOGIN_ACCOUNT A
+SET A .BIZ_SERIES_ID = (
+	SELECT
+		abss.BIZ_SERIES_ID
+	FROM
+		AUTHEN_BIZ_APP aba
+	INNER JOIN AUTHEN_BIZ_SERIES abss ON aba.BIZ_SERIES_ID = abss.BIZ_SERIES_ID
+	WHERE
+		A .CREATED_SID = aba.BIZ_APP_ID
+)
+
+UPDATE AUTHEN_ENDUSER_SECRET_KEY A SET A .BIZ_SERIES_ID = 'UNKNOW' where a.BIZ_SERIES_ID is null 
+
+
+/*==============================================================*/
+/* 修改业务体系id: AUTHEN_ENDUSER_SECRET_KEY                                        */
+/*==============================================================*/
+UPDATE AUTHEN_ENDUSER_SECRET_KEY A
+SET A .BIZ_SERIES_ID = (
+	SELECT
+		abss.BIZ_SERIES_ID
+	FROM
+		AUTHEN_BIZ_APP aba
+	INNER JOIN AUTHEN_BIZ_SERIES abss ON aba.BIZ_SERIES_ID = abss.BIZ_SERIES_ID
+	WHERE
+		A .CREATED_SID = aba.BIZ_APP_ID
+)
+
+UPDATE AUTHEN_ENDUSER_SECRET_KEY A SET A .BIZ_SERIES_ID = 'UNKNOW' where a.BIZ_SERIES_ID is null 
+
+
 /*==============================================================*/
 /* 扩字段: AUTHEN_BIZ_APP                                        */
 /*==============================================================*/
-ALTER TABLE AUTHEN_BIZ_APP ADD (BIZ_SERIES_ID VARCHAR2(32) );
+ALTER TABLE AUTHEN_BIZ_APP ADD BIZ_SERIES_ID VARCHAR2(32) DEFAULT 'UNKNOW' NOT NULL ENABLE;
 COMMENT ON COLUMN AUTHEN_BIZ_APP.BIZ_SERIES_ID IS '业务体系ID';
 
 /*==============================================================*/
 /* 扩字段: AUTHEN_ENDUSER_LOGIN_ACCOUNT                          */
 /*==============================================================*/
-ALTER TABLE AUTHEN_ENDUSER_LOGIN_ACCOUNT ADD (BIZ_SERIES_ID VARCHAR2(32) );
+ALTER TABLE AUTHEN_ENDUSER_LOGIN_ACCOUNT ADD BIZ_SERIES_ID VARCHAR2(32) DEFAULT 'UNKNOW' NOT NULL ENABLE;
 COMMENT ON COLUMN AUTHEN_ENDUSER_LOGIN_ACCOUNT.BIZ_SERIES_ID IS '业务体系ID';
 ALTER TABLE AUTHEN_ENDUSER_LOGIN_ACCOUNTN ADD CONSTRAINT UNIQUE_EU_LOGIN_ACCOUNT UNIQUE (LOGIN_ACCOUNT, BIZ_SERIES_ID) ENABLE;
 
 /*==============================================================*/
 /* 扩字段: AUTHEN_ENDUSER_SECRET_KEY                                        */
 /*==============================================================*/
-ALTER TABLE AUTHEN_ENDUSER_SECRET_KEY ADD (BIZ_SERIES_ID VARCHAR2(32) );
+ALTER TABLE AUTHEN_ENDUSER_SECRET_KEY ADD BIZ_SERIES_ID VARCHAR2(32) DEFAULT 'UNKNOW' NOT NULL ENABLE;
 COMMENT ON COLUMN AUTHEN_ENDUSER_SECRET_KEY.BIZ_SERIES_ID IS '业务体系ID';
 ALTER TABLE AUTHEN_ENDUSER_SECRET_KEY ADD CONSTRAINT UNIQUE_EU_SERIES_SECRT UNIQUE (USER_ID, BIZ_SERIES_ID) ENABLE;
 

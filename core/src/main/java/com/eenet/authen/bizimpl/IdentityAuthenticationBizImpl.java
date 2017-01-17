@@ -205,8 +205,21 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 			return result;
 		}
 		
+		String userIdResult  = getUserIdResult.getResult();
+		if (userIdResult.contains(":")) 
+			userIdResult =  userIdResult.substring(0, userIdResult.indexOf(":"));
+			
+		
+		String requestUserId = request.getUserId();
+		if (requestUserId.contains(":")) 
+			requestUserId = requestUserId.substring(0, requestUserId.indexOf(":"));
+		
 		/* 验证访问令牌（令牌所有者是否与传入的用户标识匹配） */
-		if (!request.getUserId().equals(getUserIdResult.getResult())) {
+		System.out.println(request.getUserId());
+		System.out.println(getUserIdResult.getResult());
+		System.out.println(userIdResult);
+		System.out.println(requestUserId);
+		if (!userIdResult.equals(requestUserId)) {
 			result.addMessage("访问令牌验证失败("+this.getClass().getName()+"("+this.getClass().getName()+")");
 			return result;
 		}
