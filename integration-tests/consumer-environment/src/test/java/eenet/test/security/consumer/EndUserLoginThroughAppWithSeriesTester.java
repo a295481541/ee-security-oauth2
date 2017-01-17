@@ -11,6 +11,7 @@ import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.base.SimpleResponse;
 import com.eenet.util.EEBeanUtils;
 
+import eenet.test.security.consumer.env.IdentityInfo;
 import eenet.test.security.consumer.env.SpringEnvironment;
 
 /**
@@ -19,21 +20,12 @@ import eenet.test.security.consumer.env.SpringEnvironment;
  * @author Orion
  */
 public class EndUserLoginThroughAppWithSeriesTester extends SpringEnvironment {
-	private EndUserSignOnBizService userSignOnService = (EndUserSignOnBizService)super.getContext().getBean("EndUserSignOnBizService");
-	private EndUserSMSSignOnBizService userSMSSignOnService = (EndUserSMSSignOnBizService)super.getContext().getBean("EndUserSMSSignOnBizService");
-	private final String appId = "5215065683F6418AA8202ED24C0D25C0";
-	private final String seriesId = "544A1FB8166D4E979E32DD87E346544D";
-	private final String redirectURI = "http://www.gdzgjy.com";
-	private final String appSecret = "pASS3#";
-	private final String loginAccount = "13922202252";
-	private final String password = "999999";
-	
 	/* ==============================================================================
 	 * 预期：用户登录成功
 	 ============================================================================= */
 	@Test
 	public void loginByAccount() {
-		SignOnGrant grantObj = userSignOnService.getSignOnGrant(appId, seriesId, redirectURI, loginAccount, password);
+		SignOnGrant grantObj = userSignOnService.getSignOnGrant(appId, redirectURI, loginAccount, password);
 		if ( grantObj==null || grantObj.isSuccessful()==false )
 			Assert.fail(grantObj.getStrMessage());
 		
@@ -46,7 +38,7 @@ public class EndUserLoginThroughAppWithSeriesTester extends SpringEnvironment {
 	
 //	@Test
 	public void sentSMS4Login() {
-		SimpleResponse result = userSMSSignOnService.sendSMSCode4Login(appId, seriesId, Long.parseLong(loginAccount));
+		SimpleResponse result = userSMSSignOnService.sendSMSCode4Login(appId, Long.parseLong(loginAccount));
 		if ( result==null || result.isSuccessful()==false )
 			Assert.fail(result.getStrMessage());
 		System.out.println(EEBeanUtils.object2Json(result));
@@ -66,6 +58,7 @@ public class EndUserLoginThroughAppWithSeriesTester extends SpringEnvironment {
 		System.out.println(EEBeanUtils.object2Json(tokenObj));
 	}
 	
+	
 	/* ==============================================================================
 	 * 预期：用户登录失败
 	 ============================================================================= */
@@ -77,7 +70,7 @@ public class EndUserLoginThroughAppWithSeriesTester extends SpringEnvironment {
 		System.out.println(EEBeanUtils.object2Json(grantObj_1));
 		
 		//失败原因二：密码错误
-		SignOnGrant grantObj_2 = userSignOnService.getSignOnGrant(appId, seriesId, redirectURI, loginAccount, password+"AAA");
+		SignOnGrant grantObj_2 = userSignOnService.getSignOnGrant(appId, redirectURI, loginAccount, password+"AAA");
 		Assert.assertFalse(grantObj_2.isSuccessful());
 		System.out.println(EEBeanUtils.object2Json(grantObj_2));
 	}
@@ -90,18 +83,30 @@ public class EndUserLoginThroughAppWithSeriesTester extends SpringEnvironment {
 		System.out.println(EEBeanUtils.object2Json(result_1));
 		
 		//失败原因二：手机号码不存在
-		SimpleResponse result_2 = userSMSSignOnService.sendSMSCode4Login(appId, seriesId, Long.parseLong("13812345678"));
+		SimpleResponse result_2 = userSMSSignOnService.sendSMSCode4Login(appId, Long.parseLong("13812345678"));
 		Assert.assertFalse(result_2.isSuccessful());
 		System.out.println(EEBeanUtils.object2Json(result_2));
 		
-		//失败原因三：短信验证码错误
-		SimpleResponse result_3 = userSMSSignOnService.sendSMSCode4Login(appId, seriesId, Long.parseLong(loginAccount));
+		//失败原因三：验证短信验证码时，体系ID错误
+		SimpleResponse result_3 = userSMSSignOnService.sendSMSCode4Login(appId, Long.parseLong(loginAccount));
 		if ( result_3==null || result_3.isSuccessful()==false )
 			Assert.fail(result_3.getStrMessage());
 		AppAuthenRequest appRequest = new AppAuthenRequest();
-		appRequest.setAppId(appId);appRequest.setAppSecretKey(appSecret);
+		appRequest.setAppId(appId);appRequest.setAppSecretKey(appSecret);appRequest.setBizSeriesId(seriesId2);
 		AccessToken tokenObj = userSMSSignOnService.getAccessToken(appRequest, Long.parseLong(loginAccount), "111111");
 		Assert.assertFalse(tokenObj.isSuccessful());
 		System.out.println(EEBeanUtils.object2Json(tokenObj));
 	}
+	
+	
+	private EndUserSignOnBizService userSignOnService = (EndUserSignOnBizService)super.getContext().getBean("EndUserSignOnBizService");
+	private EndUserSMSSignOnBizService userSMSSignOnService = (EndUserSMSSignOnBizService)super.getContext().getBean("EndUserSMSSignOnBizService");
+	private final String appId = IdentityInfo.seriesedAppId;
+	private final String seriesId = IdentityInfo.seriesId;
+	private final String redirectURI = IdentityInfo.seriesedRedirectURI;
+	private final String appSecret = IdentityInfo.seriesedAppSecret;
+	private final String loginAccount = IdentityInfo.userLoginAccount;
+	private final String password = IdentityInfo.userPassword;
+	
+	private final String seriesId2 = "B19E4873E1DD4750A3A584A8C0584AAA";//国家开放大学
 }

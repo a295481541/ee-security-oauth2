@@ -38,6 +38,7 @@ public interface EndUserSMSSignOnBizService {
 	
 	/**
 	 * 获得访问授权码（通过短信验证码）
+	 * 对于未知业务体系的系统，必须指定业务体系id
 	 * @param appRequest
 	 * @param mobile
 	 * @param smsCode
