@@ -11,12 +11,11 @@
 						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
 						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
 						http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
-	<!-- 服务提供者(consumer)信息，用于计算依赖关系 -->
-	<dubbo:application name="eenet.openapi.security" />
-	
-	<!-- 使用zookeeper注册中心进行注册 -->
-	<dubbo:registry protocol="zookeeper" address="172.16.165.222:2181" client="curator"/>
-	
-	<!-- 启动时检查所有服务的可用性 -->
-	<dubbo:consumer check="false" timeout="60000" retries="5" loadbalance="leastactive" actives="2000" filter="identityInjectFilter"/><!-- 任何服务不可以均会导致系统无法启动 -->
+							
+	<!-- 注册新用户服务 -->
+	<dubbo:reference id="RegistNewUserBizService" interface="com.eenet.security.RegistNewUserBizService"/>
+	<!-- 最终用户密码重置服务 -->
+	<dubbo:reference id="EndUserCredentialReSetBizService" interface="com.eenet.security.EndUserCredentialReSetBizService"/>
+	<!-- 注册新用户服务预先检查服务 -->
+	<dubbo:reference id="PreRegistEndUserBizService" interface="com.eenet.security.PreRegistEndUserBizService"/>
 </beans>

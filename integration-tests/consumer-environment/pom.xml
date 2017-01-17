@@ -7,7 +7,26 @@
 		<version>2.500</version>
 	</parent>
 	<artifactId>consumer-environment</artifactId>
-
+	
+	<profiles>
+		<profile>
+			<id>test</id>
+			<properties>
+				<!-- zookeeper配置 -->
+				<zookeeper.address>172.16.146.152:2181,172.16.146.155:2181</zookeeper.address>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+		<profile>
+			<id>dev</id>
+			<properties>
+				<zookeeper.address>172.16.165.222:2181</zookeeper.address>
+			</properties>
+		</profile>
+	</profiles>
+	
 	<build>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<testSourceDirectory>src/test/java</testSourceDirectory>
