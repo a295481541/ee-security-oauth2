@@ -27,7 +27,7 @@
 		<![CDATA[
 			SELECT T.*,
 		]]><include refid="com.eenet.baseinfo.user.EndUserInfo.biz_columns" /><![CDATA[
-			FROM AUTHEN_ENDUSER_LOGIN_ACCOUNTN T LEFT JOIN CM_USER_INFO V ON T.USER_ID=V.USER_ID
+			FROM AUTHEN_ENDUSER_LOGIN_ACCOUNT T LEFT JOIN CM_USER_INFO V ON T.USER_ID=V.USER_ID
 		]]>
 	</sql>
 	
@@ -54,7 +54,7 @@
 	
 	<insert id="insert" parameterType="com.eenet.authen.EndUserLoginAccount">
 		<![CDATA[
-		INSERT INTO AUTHEN_ENDUSER_LOGIN_ACCOUNTN(
+		INSERT INTO AUTHEN_ENDUSER_LOGIN_ACCOUNT(
 			ENDUSER_LOGIN_ACCOUNT_ID, CREATED_BY, CREATED_SID, REMARK,
 			]]><include refid="biz_columns" /><![CDATA[, ACCOUNT_PASSWORD
 		) VALUES (
@@ -66,7 +66,7 @@
 	</insert>
 	<update id="update" parameterType="com.eenet.authen.EndUserLoginAccount" >
 		<![CDATA[
-		UPDATE AUTHEN_ENDUSER_LOGIN_ACCOUNTN SET
+		UPDATE AUTHEN_ENDUSER_LOGIN_ACCOUNT SET
 			UPDATED_DT = ]]><include refid="com.eenet.base.${db.type}.current_function" /><![CDATA[,
 			UPDATED_BY = #{mdps,jdbcType=VARCHAR},
 			UPDATED_SID = #{mdss,jdbcType=VARCHAR},
@@ -92,7 +92,7 @@
 	</select>
 	<delete id="delete">
 		<![CDATA[
-		delete from AUTHEN_ENDUSER_LOGIN_ACCOUNTN WHERE ENDUSER_LOGIN_ACCOUNT_ID IN
+		delete from AUTHEN_ENDUSER_LOGIN_ACCOUNT WHERE ENDUSER_LOGIN_ACCOUNT_ID IN
   		]]>
   		<foreach item="atid" index="index" collection="array" open="(" separator="," close=")">
   			<![CDATA[#{atid,jdbcType=VARCHAR}]]>
@@ -101,10 +101,10 @@
 	<insert id="backup" parameterType="com.eenet.base.biz.BackupData">
 		<![CDATA[
 		INSERT INTO LOG_AUTHEN_EUSER_LOGIN_ACCOUNT (
-			BIZ_APP_ID,ENDUSER_LOGIN_ACCOUNT_ID, CREATED_DT, CREATED_BY, CREATED_SID, UPDATED_DT, UPDATED_BY, UPDATED_SID, REMARK, ACCOUNT_PASSWORD,]]><include refid="biz_columns" /><![CDATA[, BACKUP4
+			ENDUSER_LOGIN_ACCOUNT_ID, CREATED_DT, CREATED_BY, CREATED_SID, UPDATED_DT, UPDATED_BY, UPDATED_SID, REMARK, ACCOUNT_PASSWORD,]]><include refid="biz_columns" /><![CDATA[, BACKUP4
 		) SELECT
-			BIZ_APP_ID,ENDUSER_LOGIN_ACCOUNT_ID, CREATED_DT, CREATED_BY, CREATED_SID, UPDATED_DT, UPDATED_BY, UPDATED_SID, REMARK, ACCOUNT_PASSWORD,]]><include refid="biz_columns" /><![CDATA[, #{backup4,jdbcType=VARCHAR}
-		FROM AUTHEN_ENDUSER_LOGIN_ACCOUNTN WHERE ENDUSER_LOGIN_ACCOUNT_ID IN
+			ENDUSER_LOGIN_ACCOUNT_ID, CREATED_DT, CREATED_BY, CREATED_SID, UPDATED_DT, UPDATED_BY, UPDATED_SID, REMARK, ACCOUNT_PASSWORD,]]><include refid="biz_columns" /><![CDATA[, #{backup4,jdbcType=VARCHAR}
+		FROM AUTHEN_ENDUSER_LOGIN_ACCOUNT WHERE ENDUSER_LOGIN_ACCOUNT_ID IN
 		]]>
 		<foreach item="atid" index="index" collection="atids" open="(" separator="," close=")">
 			<![CDATA[#{atid,jdbcType=VARCHAR}]]>

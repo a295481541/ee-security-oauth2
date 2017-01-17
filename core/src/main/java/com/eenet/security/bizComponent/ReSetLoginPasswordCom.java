@@ -66,7 +66,7 @@ public class ReSetLoginPasswordCom {
 		/*判断指定的业务系统是否存在*/
 		BusinessSeries businessSeries = businessSeriesBizService.retrieveBusinessSeries(seriesId, null);
 		
-		if (businessSeries.isSuccessful()) {
+		if (!businessSeries.isSuccessful()) {
 			result.setSuccessful(false);
 			result.addMessage("未找到指定要重置登录密码对应的业务体系");
 			return result;

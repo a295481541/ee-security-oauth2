@@ -208,7 +208,9 @@ public class EndUserLoginAccountController {
 		}
 		
 		/* 执行业务 */
-		SimpleResponse result = endUserCredentialBizService.resetEndUserLoginPassword(null,endUserId);//TODO
+		System.out.println("series: "  +identity.getSeriesId());
+		System.out.println("endUserId: "  +endUserId);
+		SimpleResponse result = endUserCredentialBizService.resetEndUserLoginPassword(identity.getSeriesId(),endUserId);
 		return EEBeanUtils.object2Json(result);
 	}
 }

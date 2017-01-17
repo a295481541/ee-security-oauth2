@@ -69,7 +69,7 @@ public class RegistNewUserController {
 		}
 		
 		/* 执行业务 */
-		BooleanResponse result = this.preRegistEndUserBizService.existAccount(identity.getAppId(), null, mobile);//TODO
+		BooleanResponse result = this.preRegistEndUserBizService.existAccount(identity.getAppId(), identity.getSeriesId(), mobile);
 		return EEBeanUtils.object2Json(result);
 	}
 	
@@ -117,7 +117,7 @@ public class RegistNewUserController {
 		}
 		
 		/* 执行业务 */
-		EndUserInfo result = preRegistEndUserBizService.retrieveEndUserInfo(identity.getAppId(), null, mobile);//TODO
+		EndUserInfo result = preRegistEndUserBizService.retrieveEndUserInfo(identity.getAppId(), identity.getSeriesId(), mobile);
 		return EEBeanUtils.object2Json(result);
 	}
 	

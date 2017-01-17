@@ -73,7 +73,7 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 		}
 		
 		/* 判断指定的最终用户是否存在 */
-		EndUserInfo existEndUser = endUserInfoBizService.get(credential.getEndUser().getAtid());//TODO
+		EndUserInfo existEndUser = endUserInfoBizService.get(credential.getEndUser().getAtid());
 		if ( !existEndUser.isSuccessful() ) {
 			result.setSuccessful(false);
 			result.addMessage("未找到指定要设置登录密码对应的最终用户("+existEndUser.getStrMessage()+")");
@@ -154,6 +154,10 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 		
 		/* 判断指定的业务体系是否存在 */
 		BusinessSeries  businessSeries= businessSeriesBizService.retrieveBusinessSeries(curCredential.getBusinessSeries().getAtid(), null);
+		System.out.println("============="+businessSeries);
+		if (businessSeries !=null ) {
+			System.out.println(EEBeanUtils.object2Json(businessSeries));
+		}
 		
 		if (businessSeries.isSuccessful() ) {
 			result.setSuccessful(false);
@@ -253,7 +257,7 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 		/* 判断指定的业务体系是否存在 */
 		BusinessSeries  businessSeries= businessSeriesBizService.retrieveBusinessSeries(curCredential.getBusinessSeries().getAtid(), null);
 		
-		if (businessSeries.isSuccessful() ) {
+		if (!businessSeries.isSuccessful() ) {
 			result.setSuccessful(false);
 			result.addMessage("未找到指定要设置登录密码对应的业务体系("+existEndUser.getStrMessage()+")");
 			return result;

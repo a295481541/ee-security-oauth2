@@ -80,9 +80,9 @@
 	<insert id="backup" parameterType="com.eenet.base.biz.BackupData">
 		<![CDATA[
 		INSERT INTO LOG_AUTHEN_BIZ_SERIES (
-			BIZ_SERIES_ID, CREATED_DT, CREATED_BY, CREATED_SID, UPDATED_DT, UPDATED_BY, UPDATED_SID, REMARK,]]><include refid="biz_columns" /><![CDATA[, BACKUP4
+			CREATED_DT, CREATED_BY, CREATED_SID, UPDATED_DT, UPDATED_BY, UPDATED_SID, REMARK,]]><include refid="biz_columns" /><![CDATA[, BACKUP4
 		) SELECT
-			BIZ_SERIES_ID, CREATED_DT, CREATED_BY, CREATED_SID, UPDATED_DT, UPDATED_BY, UPDATED_SID, REMARK,]]><include refid="biz_columns" /><![CDATA[, #{backup4,jdbcType=VARCHAR}
+			CREATED_DT, CREATED_BY, CREATED_SID, UPDATED_DT, UPDATED_BY, UPDATED_SID, REMARK,]]><include refid="biz_columns" /><![CDATA[, #{backup4,jdbcType=VARCHAR}
 		FROM AUTHEN_BIZ_SERIES WHERE BIZ_SERIES_ID IN
 		]]>
 		<foreach item="atid" index="index" collection="atids" open="(" separator="," close=")">

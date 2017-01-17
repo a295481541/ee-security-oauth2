@@ -3,6 +3,7 @@ package com.eenet.authen.bizimpl;
 import com.eenet.authen.AccessToken;
 import com.eenet.authen.BusinessApp;
 import com.eenet.authen.BusinessAppBizService;
+import com.eenet.authen.BusinessSeries;
 import com.eenet.authen.BusinessSeriesBizService;
 import com.eenet.authen.EndUserCredential;
 import com.eenet.authen.EndUserCredentialBizService;
@@ -393,9 +394,19 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 	public void setIdentityUtil(IdentityUtil identityUtil) {
 		this.identityUtil = identityUtil;
 	}
+	
+
+	public BusinessSeriesBizService getBusinessSeriesBizService() {
+		return businessSeriesBizService;
+	}
+
+	public void setBusinessSeriesBizService(BusinessSeriesBizService businessSeriesBizService) {
+		this.businessSeriesBizService = businessSeriesBizService;
+	}
 
 	@Override
 	public SignOnGrant getSignOnGrant(String appId, String seriesId, String redirectURI, String loginAccount, String password) {
+		System.out.println("appId :" + appId +"  seriesId :" + seriesId +"  redirectURI:" +redirectURI + "loginAccount :"+loginAccount +" password ：" +password);
 		SignOnGrant grant = new SignOnGrant();
 		grant.setSuccessful(false);
 		/* 参数检查 */
@@ -428,21 +439,23 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 			return grant;
 		}
 		
-		BusinessApp app = null;
-		if (EEBeanUtils.isNULL(seriesId)) {
-			app =  businessAppBizService.retrieveApp(appId);
-		}else{
-			app=new BusinessApp();
-			app.setSuccessful(true);
-			app.setBusinessSeries(businessSeriesBizService.retrieveBusinessSeries(seriesId, appId));
-		}
+		System.out.println("传入的seriesId :"+seriesId +"  传入的appId：" +appId);
+		BusinessApp app = businessAppBizService.retrieveApp(appId);
+		
+		
+		if (app.getBusinessSeries() == null ) 
+			app.setBusinessSeries(businessSeriesBizService.retrieveBusinessSeries(seriesId, null));
 		
 		
 		if (!app.isSuccessful() ||app.getBusinessSeries()== null  ) {
-			grant.addMessage("无体系系统必须指定体系id("+this.getClass().getName()+")");
+			grant.addMessage("该体系系统不存在("+this.getClass().getName()+")");
 			return grant;
 		}
 		
+		if (!seriesId.equals(app.getBusinessSeries().getAtid())) {
+			grant.addMessage("体系系统与业务系统不匹配("+this.getClass().getName()+")");
+			return grant;
+		}
 		
 		/* 获得最终用户当前登录账号信息、统一登录秘钥信息 */
 		EndUserLoginAccount loginAccountInfo = 
@@ -480,6 +493,10 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		if (!passwordEqual) {//获得账号私有密码加密类型
 			encryptionType = getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(app.getBusinessSeries().getAtid() ,loginAccount).getEncryptionType();
 			EndUserLoginAccount accountPassword = getEndUserLoginAccountBizService().retrieveEndUserAccountPassword(app.getBusinessSeries().getAtid() ,loginAccount, getStorageRSADecrypt());
+			System.out.println(passwordPlaintext);
+			System.out.println(accountPassword.getAccountLoginPassword());
+			
+			
 			if ( !passwordEqual && accountPassword.isSuccessful() && encryptionType.equals("RSA") && passwordPlaintext.equals(accountPassword.getAccountLoginPassword()) )
 				passwordEqual = true;
 			//私有密码标识为MD5并且密文与传入的密文（明文经MD5加密）一致
