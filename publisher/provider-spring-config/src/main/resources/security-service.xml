@@ -50,5 +50,6 @@
 		<property name="endUserInfoBizService" ref="EndUserInfoBizService"/>
 		<property name="endUserLoginAccountBizService" ref="EndUserLoginAccountBizImpl"/>
 		<property name="businessSeriesBizService" ref="BusinessSeriesBizImpl"/>
+		<property name="businessAppBizService" ref="BusinessAppBizImpl"></property>
 	</bean>
 </beans>

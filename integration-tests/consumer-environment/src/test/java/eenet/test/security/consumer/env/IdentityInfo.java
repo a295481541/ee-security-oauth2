@@ -6,7 +6,7 @@ package eenet.test.security.consumer.env;
  * @author Orion
  */
 public class IdentityInfo {
-	public static final String userLoginAccount = "13922202252";
+	public static final String userLoginAccount = "13533594930";
 	public static final String userPassword = "999999";
 	
 	public static final String adminLoginAccount = "superman";
@@ -18,7 +18,9 @@ public class IdentityInfo {
 	public static final String seriesedRedirectURI = "http://www.gdzgjy.com";
 	public static final String seriesedAppSecret = "pASS3#";
 	
-	public static final String commonAppId = "";
-	public static final String commonRedirectURI = "";
-	public static final String commonAppSecret = "";
+	
+	//无体系系统
+	public static final String commonAppId = "0CC2921AB3264F29BA2C4DA68F152715";//EEIM
+	public static final String commonRedirectURI = "http://eechat.gzedu.com";
+	public static final String commonAppSecret = "pAsW3^";
 }

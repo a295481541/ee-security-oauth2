@@ -58,5 +58,5 @@ public interface EndUserSMSSignOnBizService {
 	 * 2016年8月2日
 	 * @author Orion
 	 */
-	public SimpleResponse validateSMSCode4Login(String appId, long mobile, String smsCode, boolean rmSmsCode);
+	public SimpleResponse validateSMSCode4Login(String appId,  String seriesId,long mobile, String smsCode, boolean rmSmsCode);
 }

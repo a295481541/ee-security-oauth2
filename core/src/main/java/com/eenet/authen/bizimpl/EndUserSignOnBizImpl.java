@@ -442,18 +442,18 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		System.out.println("传入的seriesId :"+seriesId +"  传入的appId：" +appId);
 		BusinessApp app = businessAppBizService.retrieveApp(appId);
 		
-		
-		if (app.getBusinessSeries() == null ) 
+		System.out.println("appp get " +EEBeanUtils.object2Json(app));
+		if ( (app.getBusinessSeries()==null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid())) && !EEBeanUtils.isNULL(seriesId) ) 
 			app.setBusinessSeries(businessSeriesBizService.retrieveBusinessSeries(seriesId, null));
 		
 		
-		if (!app.isSuccessful() ||app.getBusinessSeries()== null  ) {
-			grant.addMessage("该体系系统不存在("+this.getClass().getName()+")");
+		if (!app.isSuccessful() || app.getBusinessSeries()== null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
+			grant.addMessage("该业务体系不存在或未指定("+this.getClass().getName()+")");
 			return grant;
 		}
-		
-		if (!seriesId.equals(app.getBusinessSeries().getAtid())) {
-			grant.addMessage("体系系统与业务系统不匹配("+this.getClass().getName()+")");
+		System.out.println("seriesId:" +seriesId +"   " +app.getBusinessSeries().getAtid());
+		if (!EEBeanUtils.isNULL(seriesId)&&!seriesId.equals(app.getBusinessSeries().getAtid())) {
+			grant.addMessage("指定的业务体系与系统所隶属的业务体系不一致("+this.getClass().getName()+")");
 			return grant;
 		}
 		
@@ -479,6 +479,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		boolean passwordEqual = false;//passwordPlaintext.equals(credential.getResult());
 		String encryptionType = credential.getEncryptionType();
 		//统一密码标识为RSA并且解密后的明文与传入的明文一致
+		System.out.println("登录密码："+credential.getPassword());
 		if (!passwordEqual && encryptionType.equals("RSA") && passwordPlaintext.equals(credential.getPassword()) )
 			passwordEqual = true;
 		//统一密码标识为MD5并且密文与传入的密文（明文经MD5加密）一致
@@ -493,8 +494,8 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		if (!passwordEqual) {//获得账号私有密码加密类型
 			encryptionType = getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(app.getBusinessSeries().getAtid() ,loginAccount).getEncryptionType();
 			EndUserLoginAccount accountPassword = getEndUserLoginAccountBizService().retrieveEndUserAccountPassword(app.getBusinessSeries().getAtid() ,loginAccount, getStorageRSADecrypt());
-			System.out.println(passwordPlaintext);
-			System.out.println(accountPassword.getAccountLoginPassword());
+			System.out.println("输入登录密码："+passwordPlaintext);
+			System.out.println("账户登录密码："+accountPassword.getAccountLoginPassword());
 			
 			
 			if ( !passwordEqual && accountPassword.isSuccessful() && encryptionType.equals("RSA") && passwordPlaintext.equals(accountPassword.getAccountLoginPassword()) )

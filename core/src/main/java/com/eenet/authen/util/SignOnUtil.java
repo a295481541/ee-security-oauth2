@@ -98,6 +98,45 @@ public class SignOnUtil {
 		return result;
 	}
 	
+	
+	
+	/**
+	 * 生成并缓存登录授权码
+	 * 授权码存储格式：[prefix]:[appid]:[grant code]
+	 * @param prefix 授权码前缀
+	 * @param appId 应用标识
+	 * @param userId 用户标识（服务人员或最终用户）
+	 * @return
+	 * 2016年6月10日
+	 * @author Orion
+	 */
+	public StringResponse makeGrantCode(String prefix, String appId ,String userId , String seriesId) {
+		StringResponse result = new StringResponse();
+		result.setSuccessful(false);
+		if (EEBeanUtils.isNULL(prefix) || EEBeanUtils.isNULL(appId) || EEBeanUtils.isNULL(userId)){
+			result.addMessage("授权码前缀、应用标识、用户标识均不可为空("+this.getClass().getName()+")");
+			return result;
+		}
+		
+		try {
+			String code = EEBeanUtils.getUUID();
+			log.error("[makeGrantCode("+Thread.currentThread().getId()+")] make redis key : " + prefix+":"+appId+":"+code +", value : "+userId +":"+seriesId);
+			boolean cached = getRedisClient().setObject(prefix+":"+appId+":"+code, userId+":"+seriesId, 60 * 15);
+			log.error("[makeGrantCode("+Thread.currentThread().getId()+")] get redis result : " + getRedisClient().getObject(prefix+":"+appId+":"+code,String.class));
+			
+			result.setSuccessful(cached);
+			if (cached)
+				result.setResult(code);
+			else
+				result.addMessage("记录登录授权码失败("+this.getClass().getName()+")");
+		} catch (RedisOPException e) {
+			result.setSuccessful(false);
+			result.addMessage(e.toString());
+		}
+		return result;
+	}
+	
+	
 	/**
 	 * 生成并记录访问令牌
 	 * 访问令牌存储格式：[prefix]:[appid]:[access token]

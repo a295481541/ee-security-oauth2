@@ -60,7 +60,7 @@ public class EndUserSMSSignOnController {
 		}
 		
 		/* 校验快速登录验证码 */
-		response = endUserSMSSignOnBizService.validateSMSCode4Login(identity.getAppId(), mobile, smsCode, false);
+		response = endUserSMSSignOnBizService.validateSMSCode4Login(identity.getAppId(),identity.getSeriesId(), mobile, smsCode, false);
 		return EEBeanUtils.object2Json(response);
 	}
 	

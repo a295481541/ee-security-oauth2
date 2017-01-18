@@ -1,5 +1,7 @@
 package com.eenet.security;
 
+import com.eenet.authen.BusinessApp;
+import com.eenet.authen.BusinessAppBizService;
 import com.eenet.authen.BusinessSeries;
 import com.eenet.authen.BusinessSeriesBizService;
 import com.eenet.authen.EndUserLoginAccountBizService;
@@ -12,22 +14,37 @@ public class PreRegistEndUserBizImpl implements PreRegistEndUserBizService {
 	private EndUserInfoBizService endUserInfoBizService;
 	private EndUserLoginAccountBizService endUserLoginAccountBizService;
 	private BusinessSeriesBizService businessSeriesBizService;
+	private BusinessAppBizService businessAppBizService;
 	
 	
 	@Override
 	public BooleanResponse existAccount(String appId, String seriesId, String... accounts) {
+		System.out.println("传入的seriesId :"+seriesId +"  传入的appId：" +appId);
+		
 		BooleanResponse result =new BooleanResponse();
-		BusinessSeries businessSeries =  businessSeriesBizService.retrieveBusinessSeries(seriesId, appId);
-		if (businessSeries == null ||  EEBeanUtils.isNULL(businessSeries.getAtid())) {
-			result.setSuccessful(false);
-			result.setResult(false);
-			result.addMessage("业务体系不存在或者未指定("+this.getClass().getName()+")");
+		
+		BusinessApp app = businessAppBizService.retrieveApp(appId);
+		
+		System.out.println("appp get " +EEBeanUtils.object2Json(app));
+		if ( (app.getBusinessSeries()==null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid())) && !EEBeanUtils.isNULL(seriesId) ) 
+			app.setBusinessSeries(businessSeriesBizService.retrieveBusinessSeries(seriesId, null));
+		
+		
+		if (!app.isSuccessful() || app.getBusinessSeries()== null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
+			result.addMessage("该体系系统不存在("+this.getClass().getName()+")");
+			return result;
+		}
+		System.out.println("seriesId:" +seriesId +"   " +app.getBusinessSeries().getAtid());
+		if (!EEBeanUtils.isNULL(seriesId)&&!seriesId.equals(app.getBusinessSeries().getAtid())) {
+			result.addMessage("指定的业务体系与系统所隶属的业务体系不一致("+this.getClass().getName()+")");
 			return result;
 		}
 		
+		seriesId = app.getBusinessSeries().getAtid();
+		
 		EndUserInfo endUserInfo = null;
 		for(String account : accounts){
-			endUserInfo = endUserLoginAccountBizService.retrieveEndUserInfo(businessSeries.getAtid(), account);
+			endUserInfo = endUserLoginAccountBizService.retrieveEndUserInfo(seriesId, account);
 			if (endUserInfo == null ||!endUserInfo.isSuccessful()) {
 				result.setSuccessful(true);
 				result.setResult(true);
@@ -45,15 +62,29 @@ public class PreRegistEndUserBizImpl implements PreRegistEndUserBizService {
 		
 		EndUserInfo  result  = new EndUserInfo();
 		
-		BusinessSeries businessSeries =  businessSeriesBizService.retrieveBusinessSeries(seriesId, appId);
 		
-		if (businessSeries == null ||  EEBeanUtils.isNULL(businessSeries.getAtid())) {
-			result.setSuccessful(false);
-			result.addMessage("业务体系不存在或者未指定("+this.getClass().getName()+")");
+		System.out.println("传入的seriesId :"+seriesId +"  传入的appId：" +appId);
+		BusinessApp app = businessAppBizService.retrieveApp(appId);
+		
+		System.out.println("appp get " +EEBeanUtils.object2Json(app));
+		if ( (app.getBusinessSeries()==null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid())) && !EEBeanUtils.isNULL(seriesId) ) 
+			app.setBusinessSeries(businessSeriesBizService.retrieveBusinessSeries(seriesId, null));
+		
+		
+		if (!app.isSuccessful() || app.getBusinessSeries()== null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
+			result.addMessage("该体系系统不存在("+this.getClass().getName()+")");
+			return result;
+		}
+		System.out.println("seriesId:" +seriesId +"   " +app.getBusinessSeries().getAtid());
+		if (!EEBeanUtils.isNULL(seriesId)&&!seriesId.equals(app.getBusinessSeries().getAtid())) {
+			result.addMessage("指定的业务体系与系统所隶属的业务体系不一致("+this.getClass().getName()+")");
 			return result;
 		}
 		
-		return endUserLoginAccountBizService.retrieveEndUserInfo(businessSeries.getAtid(), account);
+		
+		
+		
+		return endUserLoginAccountBizService.retrieveEndUserInfo(app.getBusinessSeries().getAtid(), account);
 	}
 	
 	
@@ -98,6 +129,14 @@ public class PreRegistEndUserBizImpl implements PreRegistEndUserBizService {
 	 */
 	public void setBusinessSeriesBizService(BusinessSeriesBizService businessSeriesBizService) {
 		this.businessSeriesBizService = businessSeriesBizService;
+	}
+
+	public BusinessAppBizService getBusinessAppBizService() {
+		return businessAppBizService;
+	}
+
+	public void setBusinessAppBizService(BusinessAppBizService businessAppBizService) {
+		this.businessAppBizService = businessAppBizService;
 	}
 	
 	

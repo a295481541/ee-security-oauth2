@@ -62,7 +62,7 @@ SET A .BIZ_SERIES_ID = (
 		A .CREATED_SID = aba.BIZ_APP_ID
 )
 
-UPDATE AUTHEN_ENDUSER_SECRET_KEY A SET A .BIZ_SERIES_ID = 'UNKNOW' where a.BIZ_SERIES_ID is null 
+UPDATE AUTHEN_ENDUSER_LOGIN_ACCOUNT A SET A .BIZ_SERIES_ID = 'UNKNOW' where a.BIZ_SERIES_ID is null 
 
 
 /*==============================================================*/
