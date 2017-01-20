@@ -6,6 +6,8 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.eenet.authen.BusinessApp;
+import com.eenet.authen.BusinessAppBizService;
 import com.eenet.authen.BusinessSeries;
 import com.eenet.authen.BusinessSeriesBizService;
 import com.eenet.authen.EndUserCredential;
@@ -22,6 +24,7 @@ import com.eenet.base.query.QueryCondition;
 import com.eenet.base.query.RangeType;
 import com.eenet.baseinfo.user.EndUserInfo;
 import com.eenet.baseinfo.user.EndUserInfoBizService;
+import com.eenet.common.OPOwner;
 import com.eenet.common.cache.RedisClient;
 import com.eenet.security.bizComponent.ReSetLoginPasswordCom;
 import com.eenet.util.EEBeanUtils;
@@ -45,6 +48,7 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 	private ReSetLoginPasswordCom reSetLoginPasswordCom;//重置密码业务组件
 	private EndUserLoginAccountBizService endUserLoginAccountBizService;//最终用户账户服务
 	private BusinessSeriesBizService businessSeriesBizService;//业务体系服务
+	private BusinessAppBizService businessAppBizService;
 	
 	@Override
 	public SimpleResponse initEndUserLoginPassword(EndUserCredential credential) {
@@ -253,15 +257,30 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 			}
 		}
 		
+		String seriesId=null;
+		if (curCredential.getBusinessSeries() != null) {
+			seriesId = curCredential.getBusinessSeries().getAtid();
+		} 
+		System.out.println("传入的seriesId :"+seriesId +"  传入的appId：" +OPOwner.getCurrentSys());
 		
-		/* 判断指定的业务体系是否存在 */
-		BusinessSeries  businessSeries= businessSeriesBizService.retrieveBusinessSeries(curCredential.getBusinessSeries().getAtid(), null);
+		BusinessApp app = businessAppBizService.retrieveApp(OPOwner.getCurrentSys());
 		
-		if (!businessSeries.isSuccessful() ) {
-			result.setSuccessful(false);
-			result.addMessage("未找到指定要设置登录密码对应的业务体系("+existEndUser.getStrMessage()+")");
+		System.out.println("appp get " +EEBeanUtils.object2Json(app));
+		if ( (app.getBusinessSeries()==null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid())) && !EEBeanUtils.isNULL(seriesId) ) 
+			app.setBusinessSeries(businessSeriesBizService.retrieveBusinessSeries(seriesId, null));
+		
+		
+		if (!app.isSuccessful() || app.getBusinessSeries()== null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
+			result.addMessage("该体系系统不存在("+this.getClass().getName()+")");
 			return result;
 		}
+		System.out.println("seriesId:" +seriesId +"   " +app.getBusinessSeries().getAtid());
+		if (!EEBeanUtils.isNULL(seriesId)&&!seriesId.equals(app.getBusinessSeries().getAtid())) {
+			result.addMessage("指定的业务体系与系统所隶属的业务体系不一致("+this.getClass().getName()+")");
+			return result;
+		}
+		
+	
 		
 		
 		
@@ -356,7 +375,7 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 			
 			if (existCredential == null) { //不存在登陆密码时创建登陆密码
 				existCredential = new EndUserCredential();
-				existCredential.setBusinessSeries(businessSeries);
+				existCredential.setBusinessSeries(app.getBusinessSeries());
 				existCredential.setEndUser(existEndUser);
 				existCredential.setPassword(newPasswordCipherText);
 				/* 保存到数据库，再根据保存结果写缓存或返回错误信息 */
@@ -416,10 +435,33 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 
 	@Override
 	public SimpleResponse resetEndUserLoginPassword(String seriesId, String endUserId) {
+		SimpleResponse response = new SimpleResponse();
+		
+		System.out.println("传入的seriesId :"+seriesId +"  传入的appId：" +OPOwner.getCurrentSys());
+		
+		BusinessApp app = businessAppBizService.retrieveApp(OPOwner.getCurrentSys());
+		
+		System.out.println("appp get " +EEBeanUtils.object2Json(app));
+		if ( (app.getBusinessSeries()==null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid())) && !EEBeanUtils.isNULL(seriesId) ) 
+			app.setBusinessSeries(businessSeriesBizService.retrieveBusinessSeries(seriesId, null));
+		
+		
+		if (!app.isSuccessful() || app.getBusinessSeries()== null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
+			response.addMessage("该体系系统不存在("+this.getClass().getName()+")");
+			return response;
+		}
+		System.out.println("seriesId:" +seriesId +"   " +app.getBusinessSeries().getAtid());
+		if (!EEBeanUtils.isNULL(seriesId)&&!seriesId.equals(app.getBusinessSeries().getAtid())) {
+			response.addMessage("指定的业务体系与系统所隶属的业务体系不一致("+this.getClass().getName()+")");
+			return response;
+		}
 		
 		String newPasswordPlainText = new SimpleDateFormat("YYYYMMdd").format(new Date());//重置的密码
-		return getReSetLoginPasswordCom().resetEndUserLoginPassword(seriesId,endUserId, newPasswordPlainText,
+		
+		response = getReSetLoginPasswordCom().resetEndUserLoginPassword(seriesId,endUserId, newPasswordPlainText,
 				getStorageRSAEncrypt());
+		
+		return response;
 	}
 	
 	@Override
@@ -633,4 +675,13 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 	public void setBusinessSeriesBizService(BusinessSeriesBizService businessSeriesBizService) {
 		this.businessSeriesBizService = businessSeriesBizService;
 	}
+
+	public BusinessAppBizService getBusinessAppBizService() {
+		return businessAppBizService;
+	}
+
+	public void setBusinessAppBizService(BusinessAppBizService businessAppBizService) {
+		this.businessAppBizService = businessAppBizService;
+	}
+	
 }

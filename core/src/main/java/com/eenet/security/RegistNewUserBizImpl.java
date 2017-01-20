@@ -10,6 +10,9 @@ import com.eenet.authen.AdminUserCredential;
 import com.eenet.authen.AdminUserCredentialBizService;
 import com.eenet.authen.AdminUserLoginAccount;
 import com.eenet.authen.AdminUserLoginAccountBizService;
+import com.eenet.authen.BusinessApp;
+import com.eenet.authen.BusinessAppBizService;
+import com.eenet.authen.BusinessSeriesBizService;
 import com.eenet.authen.EndUserCredential;
 import com.eenet.authen.EndUserCredentialBizService;
 import com.eenet.authen.EndUserLoginAccount;
@@ -34,6 +37,7 @@ import com.eenet.util.cryptography.RSAUtil;
 
 public class RegistNewUserBizImpl implements RegistNewUserBizService {
 	private static final Logger log = LoggerFactory.getLogger("error");
+	
 
 	@Override
 	public AccessToken registEndUserWithLogin(EndUserInfo endUser, EndUserLoginAccount account,
@@ -67,6 +71,37 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 			result.setRSBizCode(SystemCode.AA0003);
 			return result;
 		}
+		
+		
+		
+		
+		String seriesId=null;
+		if (credential.getBusinessSeries() != null) {
+			seriesId = credential.getBusinessSeries().getAtid();
+		} 
+		System.out.println("传入的seriesId :"+seriesId +"  传入的appId：" +OPOwner.getCurrentSys());
+		
+		BusinessApp app = businessAppBizService.retrieveApp(OPOwner.getCurrentSys());
+		
+		System.out.println("appp get " +EEBeanUtils.object2Json(app));
+		if ( (app.getBusinessSeries()==null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid())) && !EEBeanUtils.isNULL(seriesId) ) 
+			app.setBusinessSeries(businessSeriesBizService.retrieveBusinessSeries(seriesId, null));
+		
+		
+		if (!app.isSuccessful() || app.getBusinessSeries()== null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
+			result.addMessage("该体系系统不存在("+this.getClass().getName()+")");
+			return result;
+		}
+		System.out.println("seriesId:" +seriesId +"   " +app.getBusinessSeries().getAtid());
+		if (!EEBeanUtils.isNULL(seriesId)&&!seriesId.equals(app.getBusinessSeries().getAtid())) {
+			result.addMessage("指定的业务体系与系统所隶属的业务体系不一致("+this.getClass().getName()+")");
+			return result;
+		}
+		
+		
+		
+		
+		
 		/* 检查该账号在该体系中是否已被使用 */
 		EndUserLoginAccount existAccount = getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(account.getBusinessSeries().getAtid() ,account.getLoginAccount());
 		if (existAccount.isSuccessful()) {
@@ -161,8 +196,36 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 			return result;
 		}
 		
+		
+		
+		String seriesId=null;
+		if (credential.getBusinessSeries() != null) {
+			seriesId = credential.getBusinessSeries().getAtid();
+		} 
+		System.out.println("传入的seriesId :"+seriesId +"  传入的appId：" +OPOwner.getCurrentSys());
+		
+		BusinessApp app = businessAppBizService.retrieveApp(OPOwner.getCurrentSys());
+		
+		System.out.println("appp get " +EEBeanUtils.object2Json(app));
+		if ( (app.getBusinessSeries()==null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid())) && !EEBeanUtils.isNULL(seriesId) ) 
+			app.setBusinessSeries(businessSeriesBizService.retrieveBusinessSeries(seriesId, null));
+		
+		
+		if (!app.isSuccessful() || app.getBusinessSeries()== null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
+			result.addMessage("该体系系统不存在("+this.getClass().getName()+")");
+			return result;
+		}
+		System.out.println("seriesId:" +seriesId +"   " +app.getBusinessSeries().getAtid());
+		if (!EEBeanUtils.isNULL(seriesId)&&!seriesId.equals(app.getBusinessSeries().getAtid())) {
+			result.addMessage("指定的业务体系与系统所隶属的业务体系不一致("+this.getClass().getName()+")");
+			return result;
+		}
+		
+		credential.setBusinessSeries(app.getBusinessSeries());
+		
 		/* 检查该账号是否已被使用 */
 		for (EndUserLoginAccount account : accounts) {
+			account.setBusinessSeries(app.getBusinessSeries());
 			EndUserLoginAccount existAccount = getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(account.getBusinessSeries().getAtid() ,account.getLoginAccount());
 			if (existAccount.isSuccessful()) {
 				result.addMessage("该账号已被该体系使用("+this.getClass().getName()+")");
@@ -255,6 +318,9 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 	private EndUserCredentialBizService endUserCredentialBizService;
 	private EndUserSignOnBizService endUserSignOnBizService;
 	
+	private BusinessSeriesBizService businessSeriesBizService;//业务体系服务
+	private BusinessAppBizService businessAppBizService;
+	
 	private RSADecrypt TransferRSADecrypt;//数据传输解密私钥
 	private RSAEncrypt StorageRSAEncrypt;//数据存储加密公钥
 	public AdminUserInfoBizService getAdminUserInfoBizService() {
@@ -333,5 +399,22 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 	public void setStorageRSAEncrypt(RSAEncrypt storageRSAEncrypt) {
 		StorageRSAEncrypt = storageRSAEncrypt;
 	}
+
+	public BusinessSeriesBizService getBusinessSeriesBizService() {
+		return businessSeriesBizService;
+	}
+
+	public void setBusinessSeriesBizService(BusinessSeriesBizService businessSeriesBizService) {
+		this.businessSeriesBizService = businessSeriesBizService;
+	}
+
+	public BusinessAppBizService getBusinessAppBizService() {
+		return businessAppBizService;
+	}
+
+	public void setBusinessAppBizService(BusinessAppBizService businessAppBizService) {
+		this.businessAppBizService = businessAppBizService;
+	}
+	
 	
 }

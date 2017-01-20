@@ -17,7 +17,7 @@ public class EndUserLoginAccount extends BaseEntity implements BackupDeletedData
 	private LoginAccountType accountType;//登录账号类型
 	private String accountLoginPassword;//账号登录密码
 	private String encryptionType = "RSA";//加密方式，RSA或MD5，默认RSA
-	private BusinessSeries businessSeries;
+	private BusinessSeries businessSeries;//
 	/**
 	 * @return the 用户基本信息
 	 */

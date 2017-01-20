@@ -1,10 +1,6 @@
 package com.eenet.security;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,14 +17,9 @@ import com.eenet.authen.APIRequestIdentity;
 import com.eenet.authen.AccessToken;
 import com.eenet.authen.AdminUserCredential;
 import com.eenet.authen.AdminUserLoginAccount;
-import com.eenet.authen.BusinessApp;
-import com.eenet.authen.BusinessAppBizService;
-import com.eenet.authen.BusinessSeries;
-import com.eenet.authen.BusinessSeriesBizService;
 import com.eenet.authen.EndUserCredential;
 import com.eenet.authen.EndUserLoginAccount;
 import com.eenet.authen.IdentityAuthenticationBizService;
-import com.eenet.authen.LoginAccountType;
 import com.eenet.authen.identifier.CallerIdentityInfo;
 import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.authen.response.AppAuthenResponse;
@@ -39,10 +30,7 @@ import com.eenet.baseinfo.user.AdminUserInfo;
 import com.eenet.baseinfo.user.EndUserInfo;
 import com.eenet.common.OPOwner;
 import com.eenet.common.code.SystemCode;
-import com.eenet.model.EndUserLoginAccountListModel;
-import com.eenet.security.RegistNewUserBizService;
 import com.eenet.util.EEBeanUtils;
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 @Controller
@@ -54,12 +42,6 @@ public class RegistNewUserController {
 	private IdentityAuthenticationBizService identityAuthenticationBizService;
 	@Autowired
 	private PreRegistEndUserBizService preRegistEndUserBizService;
-	
-	@Autowired
-	private BusinessAppBizService businessAppBizService;
-	@Autowired
-	private BusinessSeriesBizService businessSeriesBizService;
-	
 	
 	@RequestMapping(value = "/endUserExistMEID", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
@@ -143,32 +125,6 @@ public class RegistNewUserController {
 			return EEBeanUtils.object2Json(response);
 		}
 		
-		log.error("CurrentSys : "+OPOwner.getCurrentSys() +"seriesId : " +OPOwner.getSeriesId());
-		
-		
-		System.out.println("传入的seriesId :"+OPOwner.getSeriesId() +"  传入的appId：" +OPOwner.getCurrentSys());
-		BusinessApp app = businessAppBizService.retrieveApp(OPOwner.getCurrentSys());
-		
-		System.out.println("appp get " +EEBeanUtils.object2Json(app));
-		if ( (app.getBusinessSeries()==null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid())) && !EEBeanUtils.isNULL(OPOwner.getSeriesId()) ) {
-			BusinessSeries businessSeries = businessSeriesBizService.retrieveBusinessSeries(OPOwner.getSeriesId(), null);
-			app.setBusinessSeries(businessSeries);
-			account.setBusinessSeries(businessSeries);
-			credential.setBusinessSeries(businessSeries);
-		}
-		
-		
-		if (!app.isSuccessful() || app.getBusinessSeries()== null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
-			response.addMessage("该业务体系不存在或未指定("+this.getClass().getName()+")");
-			return EEBeanUtils.object2Json(response);
-		}
-		System.out.println("seriesId:" +OPOwner.getSeriesId() +"   " +app.getBusinessSeries().getAtid());
-		if (!EEBeanUtils.isNULL(OPOwner.getSeriesId())&&!OPOwner.getSeriesId().equals(app.getBusinessSeries().getAtid())) {
-			response.addMessage("指定的业务体系与系统所隶属的业务体系不一致("+this.getClass().getName()+")");
-			return EEBeanUtils.object2Json(response);
-		}
-		
-		
 		AccessToken token = registNewUserBizService.registEndUserWithLogin(user, account, credential);
 		return EEBeanUtils.object2Json(token);
 	}
@@ -195,39 +151,6 @@ public class RegistNewUserController {
 			response.setRSBizCode(SystemCode.AA0002);
 			return EEBeanUtils.object2Json(response);
 		}
-		
-		log.error("CurrentSys : "+OPOwner.getCurrentSys());
-		
-		
-		System.out.println("传入的seriesId :"+OPOwner.getSeriesId() +"  传入的appId：" +OPOwner.getCurrentSys());
-		BusinessApp app = businessAppBizService.retrieveApp(OPOwner.getCurrentSys());
-		
-		System.out.println("appp get " +EEBeanUtils.object2Json(app));
-		if ( (app.getBusinessSeries()==null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid())) && !EEBeanUtils.isNULL(OPOwner.getSeriesId()) ) {
-			BusinessSeries businessSeries = businessSeriesBizService.retrieveBusinessSeries(OPOwner.getSeriesId(), null);
-			app.setBusinessSeries(businessSeries);
-			endUserCredential.setBusinessSeries(businessSeries);
-			
-			if (list!=null && list.size()>0) {
-				for (EndUserLoginAccount loginAccount :list) {
-					loginAccount.setBusinessSeries(businessSeries);
-				}
-			}
-			
-			
-		}
-		
-		
-		if (!app.isSuccessful() || app.getBusinessSeries()== null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
-			response.addMessage("该业务体系不存在或未指定("+this.getClass().getName()+")");
-			return EEBeanUtils.object2Json(response);
-		}
-		System.out.println("seriesId:" +OPOwner.getSeriesId() +"   " +app.getBusinessSeries().getAtid());
-		if (!EEBeanUtils.isNULL(OPOwner.getSeriesId())&&!OPOwner.getSeriesId().equals(app.getBusinessSeries().getAtid())) {
-			response.addMessage("指定的业务体系与系统所隶属的业务体系不一致("+this.getClass().getName()+")");
-			return EEBeanUtils.object2Json(response);
-		}
-		
 		
 		AccessToken token = registNewUserBizService.registEndUserWithMulAccountAndLogin(info, list, endUserCredential);
 		return EEBeanUtils.object2Json(token);

@@ -20,6 +20,8 @@
 		<property name="endUserSignOnBizService" ref="EndUserSignOnBizImpl"/>
 		<property name="TransferRSADecrypt" ref="TransferRSADecrypt"/>
 		<property name="StorageRSAEncrypt" ref="StorageRSAEncrypt"/>
+		<property name="businessSeriesBizService" ref="BusinessSeriesBizImpl"/>
+		<property name="businessAppBizService" ref="BusinessAppBizImpl"/>
 	</bean>
 	
 	<!-- 最终用户密码重置服务 -->

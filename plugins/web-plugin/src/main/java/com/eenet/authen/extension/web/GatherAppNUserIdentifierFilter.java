@@ -87,6 +87,8 @@ public class GatherAppNUserIdentifierFilter implements Filter {
 		
 		if ( !EEBeanUtils.isNULL(request.getParameter(UserType_PARAM_TAG)) )
 			OPOwner.setUsertype( request.getParameter(UserType_PARAM_TAG) );
+		if ( !EEBeanUtils.isNULL(request.getParameter(BIZ_SERIES_TAG)) )
+			OPOwner.setSeriesId(request.getParameter(BIZ_SERIES_TAG) );
 	}
 	
 	@Override
@@ -123,4 +125,9 @@ public class GatherAppNUserIdentifierFilter implements Filter {
 	 * 用户类型
 	 */
 	public static final String UserType_PARAM_TAG = "userType";
+	
+	/**
+	 * 业务体系
+	 */
+	public static final String BIZ_SERIES_TAG = "seriesId";
 }

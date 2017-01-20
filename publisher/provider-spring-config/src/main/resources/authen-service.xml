@@ -50,6 +50,7 @@
 		<property name="reSetLoginPasswordCom" ref="ReSetLoginPasswordCom"/>
 		<property name="endUserLoginAccountBizService" ref="EndUserLoginAccountBizImpl"/>
 		<property name="businessSeriesBizService" ref="BusinessSeriesBizImpl"/>
+		<property name="businessAppBizService" ref="BusinessAppBizImpl"/>
 	</bean>
 	
 	<!-- 服务人员登录服务 -->
