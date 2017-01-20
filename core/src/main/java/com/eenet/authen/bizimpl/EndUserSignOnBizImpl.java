@@ -115,7 +115,10 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		
 		/* 生成并记录访问令牌 */
 		StringResponse mkAccessTokenResult = 
-				getSignOnUtil().makeAccessToken(AuthenCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, appId, getUserIdResult.getResult(), getBusinessAppBizService());
+				getSignOnUtil().makeAccessToken(AuthenCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, appId, seriesId, userId, getBusinessAppBizService());
+		
+		
+		
 		if (!mkAccessTokenResult.isSuccessful()) {
 			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(mkAccessTokenResult.getStrMessage());
@@ -125,8 +128,10 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		
 		
 		/* 生成并记录刷新令牌 */
+//		StringResponse mkFreshTokenResult = 
+//				getSignOnUtil().makeRefreshToken(AuthenCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appId, getUserIdResult.getResult());//用户标识：业务体系id
 		StringResponse mkFreshTokenResult = 
-				getSignOnUtil().makeRefreshToken(AuthenCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appId, getUserIdResult.getResult());//用户标识：业务体系id
+				getSignOnUtil().makeRefreshToken(AuthenCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appId,seriesId , userId);//用户标识：业务体系id
 		if (!mkFreshTokenResult.isSuccessful()) {
 			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(mkFreshTokenResult.getStrMessage());
@@ -209,6 +214,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		}
 		
 		String userIdResult =  getUserIdResult.getResult();
+		String seriesId = userIdResult.substring(userIdResult.indexOf(":")+1, userIdResult.length());
 		String userId =  userIdResult.substring(0, userIdResult.indexOf(":"));
 		
 		/* 验证刷新令牌是否属于传入的人员标识:业务体系id */
@@ -224,7 +230,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 				
 		/* 生成并记录访问令牌（超过有效期后令牌会从Redis中自动消失） */
 		StringResponse mkAccessTokenResult = 
-				getSignOnUtil().makeAccessToken(AuthenCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, appId, getUserIdResult.getResult(), getBusinessAppBizService());
+				getSignOnUtil().makeAccessToken(AuthenCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, appId, seriesId,userId, getBusinessAppBizService());
 		if (!mkAccessTokenResult.isSuccessful()) {
 			token.addMessage(mkAccessTokenResult.getStrMessage());
 			return token;
@@ -522,8 +528,10 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		
 		
 		/* 生成并缓存code */
+//		StringResponse makeCodeResult = 
+//				getSignOnUtil().makeGrantCode(AuthenCacheKey.ENDUSER_GRANTCODE_PREFIX, appId, endUser.getAtid()+":"+app.getBusinessSeries().getAtid());
 		StringResponse makeCodeResult = 
-				getSignOnUtil().makeGrantCode(AuthenCacheKey.ENDUSER_GRANTCODE_PREFIX, appId, endUser.getAtid()+":"+app.getBusinessSeries().getAtid());
+				getSignOnUtil().makeGrantCode(AuthenCacheKey.ENDUSER_GRANTCODE_PREFIX, appId, endUser.getAtid(),app.getBusinessSeries().getAtid());
 		grant.setSuccessful(makeCodeResult.isSuccessful());
 		if (makeCodeResult.isSuccessful())
 			grant.setGrantCode(makeCodeResult.getResult());

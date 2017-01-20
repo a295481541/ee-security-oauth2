@@ -77,9 +77,13 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 		String authenFailReason = "";
 		if ("endUser".equals(userType)) {
 			UserAccessTokenAuthenResponse authenResponse = this.endUserAuthen(userAuthenReq);
+			
+			
 			authenConfirm = authenResponse.isSuccessful();
 			if ( !authenConfirm )
 				authenFailReason = authenResponse.getStrMessage();
+			else
+				OPOwner.setSeriesId(authenResponse.getBizSeriesId());
 		} else if ("adminUser".equals(userType)) {
 			UserAccessTokenAuthenResponse authenResponse = this.adminUserAuthen(userAuthenReq);
 			authenConfirm = authenResponse.isSuccessful();

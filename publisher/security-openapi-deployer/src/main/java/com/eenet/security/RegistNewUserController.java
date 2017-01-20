@@ -21,6 +21,10 @@ import com.eenet.authen.APIRequestIdentity;
 import com.eenet.authen.AccessToken;
 import com.eenet.authen.AdminUserCredential;
 import com.eenet.authen.AdminUserLoginAccount;
+import com.eenet.authen.BusinessApp;
+import com.eenet.authen.BusinessAppBizService;
+import com.eenet.authen.BusinessSeries;
+import com.eenet.authen.BusinessSeriesBizService;
 import com.eenet.authen.EndUserCredential;
 import com.eenet.authen.EndUserLoginAccount;
 import com.eenet.authen.IdentityAuthenticationBizService;
@@ -50,6 +54,11 @@ public class RegistNewUserController {
 	private IdentityAuthenticationBizService identityAuthenticationBizService;
 	@Autowired
 	private PreRegistEndUserBizService preRegistEndUserBizService;
+	
+	@Autowired
+	private BusinessAppBizService businessAppBizService;
+	@Autowired
+	private BusinessSeriesBizService businessSeriesBizService;
 	
 	
 	@RequestMapping(value = "/endUserExistMEID", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
@@ -134,13 +143,36 @@ public class RegistNewUserController {
 			return EEBeanUtils.object2Json(response);
 		}
 		
-		log.error("CurrentSys : "+OPOwner.getCurrentSys());
+		log.error("CurrentSys : "+OPOwner.getCurrentSys() +"seriesId : " +OPOwner.getSeriesId());
+		
+		
+		System.out.println("传入的seriesId :"+OPOwner.getSeriesId() +"  传入的appId：" +OPOwner.getCurrentSys());
+		BusinessApp app = businessAppBizService.retrieveApp(OPOwner.getCurrentSys());
+		
+		System.out.println("appp get " +EEBeanUtils.object2Json(app));
+		if ( (app.getBusinessSeries()==null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid())) && !EEBeanUtils.isNULL(OPOwner.getSeriesId()) ) {
+			BusinessSeries businessSeries = businessSeriesBizService.retrieveBusinessSeries(OPOwner.getSeriesId(), null);
+			app.setBusinessSeries(businessSeries);
+			account.setBusinessSeries(businessSeries);
+			credential.setBusinessSeries(businessSeries);
+		}
+		
+		
+		if (!app.isSuccessful() || app.getBusinessSeries()== null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
+			response.addMessage("该业务体系不存在或未指定("+this.getClass().getName()+")");
+			return EEBeanUtils.object2Json(response);
+		}
+		System.out.println("seriesId:" +OPOwner.getSeriesId() +"   " +app.getBusinessSeries().getAtid());
+		if (!EEBeanUtils.isNULL(OPOwner.getSeriesId())&&!OPOwner.getSeriesId().equals(app.getBusinessSeries().getAtid())) {
+			response.addMessage("指定的业务体系与系统所隶属的业务体系不一致("+this.getClass().getName()+")");
+			return EEBeanUtils.object2Json(response);
+		}
+		
 		
 		AccessToken token = registNewUserBizService.registEndUserWithLogin(user, account, credential);
 		return EEBeanUtils.object2Json(token);
 	}
 	
-	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/regist/endUserWithMulAccountAndLogin", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String registEndUserWithMulAccountAndLogin(@ModelAttribute("user")String user, @ModelAttribute("account")String account, @ModelAttribute("credential")String credential) {
@@ -165,6 +197,37 @@ public class RegistNewUserController {
 		}
 		
 		log.error("CurrentSys : "+OPOwner.getCurrentSys());
+		
+		
+		System.out.println("传入的seriesId :"+OPOwner.getSeriesId() +"  传入的appId：" +OPOwner.getCurrentSys());
+		BusinessApp app = businessAppBizService.retrieveApp(OPOwner.getCurrentSys());
+		
+		System.out.println("appp get " +EEBeanUtils.object2Json(app));
+		if ( (app.getBusinessSeries()==null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid())) && !EEBeanUtils.isNULL(OPOwner.getSeriesId()) ) {
+			BusinessSeries businessSeries = businessSeriesBizService.retrieveBusinessSeries(OPOwner.getSeriesId(), null);
+			app.setBusinessSeries(businessSeries);
+			endUserCredential.setBusinessSeries(businessSeries);
+			
+			if (list!=null && list.size()>0) {
+				for (EndUserLoginAccount loginAccount :list) {
+					loginAccount.setBusinessSeries(businessSeries);
+				}
+			}
+			
+			
+		}
+		
+		
+		if (!app.isSuccessful() || app.getBusinessSeries()== null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
+			response.addMessage("该业务体系不存在或未指定("+this.getClass().getName()+")");
+			return EEBeanUtils.object2Json(response);
+		}
+		System.out.println("seriesId:" +OPOwner.getSeriesId() +"   " +app.getBusinessSeries().getAtid());
+		if (!EEBeanUtils.isNULL(OPOwner.getSeriesId())&&!OPOwner.getSeriesId().equals(app.getBusinessSeries().getAtid())) {
+			response.addMessage("指定的业务体系与系统所隶属的业务体系不一致("+this.getClass().getName()+")");
+			return EEBeanUtils.object2Json(response);
+		}
+		
 		
 		AccessToken token = registNewUserBizService.registEndUserWithMulAccountAndLogin(info, list, endUserCredential);
 		return EEBeanUtils.object2Json(token);

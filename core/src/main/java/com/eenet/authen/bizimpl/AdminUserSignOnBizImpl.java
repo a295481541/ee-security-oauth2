@@ -173,6 +173,10 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 			return token;
 		}
 		
+		String userIdResult =  getUserIdResult.getResult();
+		String seriesId = userIdResult.substring(userIdResult.indexOf(":")+1, userIdResult.length());
+		String userId =  userIdResult.substring(0, userIdResult.indexOf(":"));
+		
 		/* 删除授权码（授权码只能用一次） */
 		SimpleResponse rmCodeResult = 
 				getSignOnUtil().removeCodeOrToken(AuthenCacheKey.ADMINUSER_GRANTCODE_PREFIX, grantCode, appId);
@@ -189,7 +193,7 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		
 		/* 生成并记录访问令牌 */
 		StringResponse mkAccessTokenResult = 
-				getSignOnUtil().makeAccessToken(AuthenCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX, appId, getUserIdResult.getResult(), getBusinessAppBizService());
+				getSignOnUtil().makeAccessToken(AuthenCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX, appId, seriesId,userId, getBusinessAppBizService());
 		if (!mkAccessTokenResult.isSuccessful()) {
 			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(mkAccessTokenResult.getStrMessage());
@@ -280,6 +284,11 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 			return token;
 		}
 		
+		String userIdResult =  getUserIdResult.getResult();
+		String seriesId = userIdResult.substring(userIdResult.indexOf(":")+1, userIdResult.length());
+		String userId =  userIdResult.substring(0, userIdResult.indexOf(":"));
+		
+		
 		/* 验证刷新令牌是否属于传入的人员标识 */
 		if (!adminUserId.equals(getUserIdResult.getResult())) {
 			token.addMessage("服务人员刷新令牌错误("+this.getClass().getName()+")");
@@ -293,7 +302,7 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		
 		/* 生成并记录访问令牌（超过有效期后令牌会从Redis中自动消失） */
 		StringResponse mkAccessTokenResult = 
-				getSignOnUtil().makeAccessToken(AuthenCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX, appId, getUserIdResult.getResult(), getBusinessAppBizService());
+				getSignOnUtil().makeAccessToken(AuthenCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX, appId, seriesId , userId, getBusinessAppBizService());
 		if (!mkAccessTokenResult.isSuccessful()) {
 			token.addMessage(mkAccessTokenResult.getStrMessage());
 			return token;

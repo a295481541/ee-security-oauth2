@@ -21,6 +21,11 @@ public class EndUserLoginAccountController {
 	@Autowired
 	private IdentityAuthenticationBizService identityAuthenticationBizService;
 	
+	@Autowired
+	private BusinessAppBizService businessAppBizService;
+	@Autowired
+	private BusinessSeriesBizService businessSeriesBizService;
+	
 	@RequestMapping(value = "/registeEndUserLoginAccount", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
 	public String registeEndUserLoginAccount(APIRequestIdentity identity, EndUserLoginAccount loginAccount) {
@@ -156,6 +161,27 @@ public class EndUserLoginAccountController {
 			return EEBeanUtils.object2Json(response);
 		}
 		
+		
+		System.out.println("传入的seriesId :"+identity.getSeriesId() +"  传入的appId：" +identity.getAppId());
+		BusinessApp app = businessAppBizService.retrieveApp(identity.getAppId());
+		
+		System.out.println("appp get " +EEBeanUtils.object2Json(app));
+		if ( (app.getBusinessSeries()==null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid())) && !EEBeanUtils.isNULL(identity.getSeriesId()) ) 
+			app.setBusinessSeries(businessSeriesBizService.retrieveBusinessSeries(identity.getSeriesId(), null));
+		
+		
+		if (!app.isSuccessful() || app.getBusinessSeries()== null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
+			response.addMessage("该体系系统不存在("+this.getClass().getName()+")");
+			return EEBeanUtils.object2Json(response);
+		}
+		System.out.println("seriesId:" +identity.getSeriesId() +"   " +app.getBusinessSeries().getAtid());
+		if (!EEBeanUtils.isNULL(identity.getSeriesId())&&!identity.getSeriesId().equals(app.getBusinessSeries().getAtid())) {
+			response.addMessage("指定的业务体系与系统所隶属的业务体系不一致("+this.getClass().getName()+")");
+			return EEBeanUtils.object2Json(response);
+		}
+		
+		
+		
 		/* 用户身份验证（令牌） */
 		UserAccessTokenAuthenResponse tokenAuthen = identityAuthenticationBizService.endUserAuthen(identity);
 		if (!tokenAuthen.isSuccessful()) {
@@ -207,9 +233,27 @@ public class EndUserLoginAccountController {
 			return EEBeanUtils.object2Json(response);
 		}
 		
+		System.out.println("传入的seriesId :"+identity.getSeriesId() +"  传入的appId：" +identity.getAppId());
+		BusinessApp app = businessAppBizService.retrieveApp(identity.getAppId());
+		
+		System.out.println("appp get " +EEBeanUtils.object2Json(app));
+		if ( (app.getBusinessSeries()==null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid())) && !EEBeanUtils.isNULL(identity.getSeriesId()) ) 
+			app.setBusinessSeries(businessSeriesBizService.retrieveBusinessSeries(identity.getSeriesId(), null));
+		
+		
+		if (!app.isSuccessful() || app.getBusinessSeries()== null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
+			response.addMessage("该体系系统不存在("+this.getClass().getName()+")");
+			return EEBeanUtils.object2Json(response);
+		}
+		System.out.println("seriesId:" +identity.getSeriesId() +"   " +app.getBusinessSeries().getAtid());
+		if (!EEBeanUtils.isNULL(identity.getSeriesId())&&!identity.getSeriesId().equals(app.getBusinessSeries().getAtid())) {
+			response.addMessage("指定的业务体系与系统所隶属的业务体系不一致("+this.getClass().getName()+")");
+			return EEBeanUtils.object2Json(response);
+		}
+		
+		
+		
 		/* 执行业务 */
-		System.out.println("series: "  +identity.getSeriesId());
-		System.out.println("endUserId: "  +endUserId);
 		SimpleResponse result = endUserCredentialBizService.resetEndUserLoginPassword(identity.getSeriesId(),endUserId);
 		return EEBeanUtils.object2Json(result);
 	}

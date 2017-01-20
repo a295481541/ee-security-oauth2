@@ -202,8 +202,13 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 				appRequest.getAppId(), user.getAtid());
 		
 		/* 生成并记录访问令牌 */
+//		StringResponse mkAccessTokenResult = 
+//				getSignOnUtil().makeAccessToken(AuthenCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, appRequest.getAppId(), user.getAtid(), getBusinessAppBizService());
+		
+		
 		StringResponse mkAccessTokenResult = 
-				getSignOnUtil().makeAccessToken(AuthenCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, appRequest.getAppId(), user.getAtid(), getBusinessAppBizService());
+				getSignOnUtil().makeAccessToken(AuthenCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, appRequest.getAppId(), app.getBusinessSeries().getAtid(),user.getAtid(), getBusinessAppBizService());
+		
 		if (!mkAccessTokenResult.isSuccessful()) {
 			result.addMessage(mkAccessTokenResult.getStrMessage());
 			return result;

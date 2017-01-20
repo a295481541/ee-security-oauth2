@@ -177,6 +177,50 @@ public class SignOnUtil {
 		}
 	}
 	
+	
+	
+	/**
+	 * 生成并记录访问令牌
+	 * 访问令牌存储格式：[prefix]:[appid]:[access token]
+	 * 令牌有效期：web应用30分钟，其他类型应用1天
+	 * @param prefix
+	 * @param appId
+	 * @param userId
+	 * @param
+	 * @param businessAppBizService 业务系统服务
+	 * @return
+	 * 2016年6月10日
+	 * @author Orion
+	 */
+	public StringResponse makeAccessToken(String prefix, String appId, String seriesId, String userId, BusinessAppBizService businessAppBizService) {
+		StringResponse result = new StringResponse();
+		result.setSuccessful(false);
+		if (EEBeanUtils.isNULL(prefix) || EEBeanUtils.isNULL(appId) || EEBeanUtils.isNULL(userId)){
+			result.addMessage("授权码前缀、应用标识、用户标识均不可为空("+this.getClass().getName()+")");
+			return result;
+		}
+		
+		try {
+			String accessToken = EEBeanUtils.getUUID();
+			//APP类型
+			BusinessAppType appType = businessAppBizService.retrieveApp(appId).getAppType();
+			//访问令牌有效期
+			int expire = BusinessAppType.WEBAPP.equals(appType) ? 60 * 30 : 60 * 60 * 24;
+			//记录令牌
+			boolean cached = getRedisClient().setObject(prefix + ":" + appId + ":" + accessToken , userId+":"+seriesId, expire);
+			result.setSuccessful(cached);
+			if (cached)
+				result.setResult(accessToken);
+			else
+				result.addMessage("记录访问令牌失败("+this.getClass().getName()+")");
+			return result;
+		} catch (RedisOPException e) {
+			result.addMessage(e.toString());
+			return result;
+		}
+	}
+	
+	
 	/**
 	 * 生成并记录刷新令牌
 	 * 刷新令牌存储格式：[prefix]:[appid]:[refresh token]
@@ -203,6 +247,44 @@ public class SignOnUtil {
 			//记录令牌
 			boolean cached = getRedisClient().setObject(prefix + ":" + appId + ":" + refreshToken, userId, expire);
 			System.out.println("makeRefreshToken:　　key:" +prefix + ":" + appId + ":" + refreshToken +"   value ："+userId);
+			result.setSuccessful(cached);
+			if (cached)
+				result.setResult(refreshToken);
+			else
+				result.addMessage("记录刷新令牌失败("+this.getClass().getName()+")");
+			return result;
+		} catch (RedisOPException e) {
+			result.addMessage(e.toString());
+			return result;
+		}
+	}
+	
+	/**
+	 * 生成并记录刷新令牌
+	 * 刷新令牌存储格式：[prefix]:[appid]:[refresh token]
+	 * 令牌有效期：30天
+	 * @param prefix
+	 * @param appId
+	 * @param userId
+	 * @return
+	 * 2016年6月10日
+	 * @author Orion
+	 */
+	public StringResponse makeRefreshToken(String prefix, String appId, String seriesId,String userId) {
+		StringResponse result = new StringResponse();
+		result.setSuccessful(false);
+		if (EEBeanUtils.isNULL(prefix) || EEBeanUtils.isNULL(appId) || EEBeanUtils.isNULL(userId)){
+			result.addMessage("授权码前缀、应用标识、用户标识均不可为空("+this.getClass().getName()+")");
+			return result;
+		}
+		
+		try {
+			String refreshToken = EEBeanUtils.getUUID();
+			//访问令牌有效期
+			int expire = 60 * 60 * 24 * 30;
+			//记录令牌
+			boolean cached = getRedisClient().setObject(prefix + ":" + appId + ":" + refreshToken, userId+":"+seriesId, expire);
+			System.out.println("makeRefreshToken:　　key:" +prefix + ":" + appId + ":" + refreshToken +"   value ："+userId+":"+seriesId);
 			result.setSuccessful(cached);
 			if (cached)
 				result.setResult(refreshToken);
