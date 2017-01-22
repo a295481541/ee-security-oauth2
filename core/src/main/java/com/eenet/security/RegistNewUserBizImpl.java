@@ -66,26 +66,20 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 			result.setRSBizCode(ABBizCode.AB0002);
 			return result;
 		}
-		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] check over, current app :"+OPOwner.getCurrentSys()+", current user :" + OPOwner.getCurrentUser() + ", current userType :" + OPOwner.getUsertype());
 		
 		/* 新增用户 */
 		EndUserInfo savedEndUser = getEndUserInfoBizService().save(endUser);
-		boolean existEndUser = false;//是否为已存在的用户
 		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] saved user result : "+ EEBeanUtils.object2Json(savedEndUser));
-		if ( !savedEndUser.isSuccessful() ) {//新增用户失败
-			if ( EEBeanUtils.isNULL(savedEndUser.getAtid()) ) {//不是用户已存在，属于系统错误，返回
-				result.addMessage(savedEndUser.getStrMessage());
-				return result;
-			} else {//用户已存在，完善个人信息，继续剩余流程
-				endUser.setAtid(savedEndUser.getAtid());
-				savedEndUser = getEndUserInfoBizService().save(endUser);
-				existEndUser = true;//IAMSMART53GEI6 0.11 //IAMSMART5YA8FO 0.12 IAMSMART5C48JJ 0.14   
-			}
+		if ( !savedEndUser.isSuccessful() ) {//新增用户失败，属于系统错误，返回
+			result.addMessage(savedEndUser.getStrMessage());
+			return result;
 		}
+		
+		boolean existCredential = getEndUserCredentialBizService().retrieveEndUserCredentialInfo(savedEndUser.getAtid()).isSuccessful();//是否存在统一秘钥
 		
 		/* 注册登陆账号 */
 		String userCipherPassword = credential.getPassword();//用户密码（数据传输令牌加密的）密文
-		if (existEndUser) {//针对注册前已存在的用户，设置账号私有密码
+		if ( existCredential ) {//针对已设置过统一密码的用户，设置账号私有密码
 			try {
 				String passwordPlainText = RSAUtil.decryptWithTimeMillis(getTransferRSADecrypt(), userCipherPassword, 2);
 				String passwordStorageCipherPassword = RSAUtil.encrypt(getStorageRSAEncrypt(), passwordPlainText);
@@ -104,7 +98,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		}
 		
 		/* 初始化登陆密码，已存在的用户不初始化 */
-		if ( !existEndUser ) {
+		if ( !existCredential ) {
 			credential.setEndUser(savedEndUser);
 			SimpleResponse savedCredential = getEndUserCredentialBizService().initEndUserLoginPassword(credential);
 			log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] saved password result : "+ EEBeanUtils.object2Json(savedCredential));
