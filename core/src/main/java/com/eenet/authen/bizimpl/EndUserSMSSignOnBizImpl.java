@@ -11,7 +11,7 @@ import com.eenet.authen.BusinessAppBizService;
 import com.eenet.authen.BusinessSeriesBizService;
 import com.eenet.authen.EndUserSMSSignOnBizService;
 import com.eenet.authen.IdentityAuthenticationBizService;
-import com.eenet.authen.cacheSyn.AuthenCacheKey;
+import com.eenet.SecurityCacheKey;
 import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.authen.response.AppAuthenResponse;
 import com.eenet.authen.util.SignOnUtil;
@@ -23,7 +23,6 @@ import com.eenet.baseinfo.user.EndUserInfoBizService;
 import com.eenet.common.cache.RedisClient;
 import com.eenet.common.exception.RedisOPException;
 import com.eenet.security.PreRegistEndUserBizService;
-import com.eenet.security.cache.SecurityCacheKey;
 import com.eenet.sms.SendSMSBizService;
 import com.eenet.sms.SendSMSBizType;
 import com.eenet.sms.ShortMessageBody;
@@ -100,8 +99,8 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 		try {
 			getRedisClient().addMapItem(SecurityCacheKey.RECENT_SEND_SMS, String.valueOf(mobile), System.currentTimeMillis(), 62);
 			//已记录短信验证码
-			System.out.println(AuthenCacheKey.ENDUSER_FASTLOGIN_SMS_CODE_PREFIX + ":" + appId + ":"+seriesId+":" + mobile    +":" +smsCode);
-			boolean cached = getRedisClient().setObject(AuthenCacheKey.ENDUSER_FASTLOGIN_SMS_CODE_PREFIX + ":" + appId + ":"+seriesId+":" + mobile , smsCode, 600);
+			System.out.println(SecurityCacheKey.ENDUSER_FASTLOGIN_SMS_CODE_PREFIX + ":" + appId + ":"+seriesId+":" + mobile    +":" +smsCode);
+			boolean cached = getRedisClient().setObject(SecurityCacheKey.ENDUSER_FASTLOGIN_SMS_CODE_PREFIX + ":" + appId + ":"+seriesId+":" + mobile , smsCode, 600);
 			if ( !cached )
 				throw new RedisOPException("记录短信验证码失败("+this.getClass().getName()+")");
 		} catch (RedisOPException e) {
@@ -197,8 +196,8 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 		}
 		
 		/* 删除访问令牌（防止一个用户可以通过两个令牌登录） */
-		getSignOnUtil().removeUserTokenInApp(AuthenCacheKey.ENDUSER_CACHED_TOKEN,
-				AuthenCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, AuthenCacheKey.ENDUSER_REFRESHTOKEN_PREFIX,
+		getSignOnUtil().removeUserTokenInApp(SecurityCacheKey.ENDUSER_CACHED_TOKEN,
+				SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, SecurityCacheKey.ENDUSER_REFRESHTOKEN_PREFIX,
 				appRequest.getAppId(), user.getAtid());
 		
 		/* 生成并记录访问令牌 */
@@ -207,7 +206,7 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 		
 		
 		StringResponse mkAccessTokenResult = 
-				getSignOnUtil().makeAccessToken(AuthenCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, appRequest.getAppId(), app.getBusinessSeries().getAtid(),user.getAtid(), getBusinessAppBizService());
+				getSignOnUtil().makeAccessToken(SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, appRequest.getAppId(), app.getBusinessSeries().getAtid(),user.getAtid(), getBusinessAppBizService());
 		
 		if (!mkAccessTokenResult.isSuccessful()) {
 			result.addMessage(mkAccessTokenResult.getStrMessage());
@@ -216,14 +215,14 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 		
 		/* 生成并记录刷新令牌 */
 		StringResponse mkFreshTokenResult = 
-				getSignOnUtil().makeRefreshToken(AuthenCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appRequest.getAppId(), user.getAtid()+":"+appAuthenRS.getBizSeriesId());
+				getSignOnUtil().makeRefreshToken(SecurityCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appRequest.getAppId(), user.getAtid()+":"+appAuthenRS.getBizSeriesId());
 		if (!mkFreshTokenResult.isSuccessful()) {
 			result.addMessage(mkFreshTokenResult.getStrMessage());
 			return result;
 		}
 		
 		/* 标记最终用户已缓存令牌 */
-		getSignOnUtil().markUserTokenInApp(AuthenCacheKey.ENDUSER_CACHED_TOKEN, appRequest.getAppId(), user.getAtid(),
+		getSignOnUtil().markUserTokenInApp(SecurityCacheKey.ENDUSER_CACHED_TOKEN, appRequest.getAppId(), user.getAtid(),
 				mkAccessTokenResult.getResult(), mkFreshTokenResult.getResult());
 		
 		/* 所有参数已缓存，拼返回对象 */
@@ -249,8 +248,8 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 		String sentSmsCode = null;
 		try {
 			System.out.println("smsCode:" +smsCode);
-			System.out.println(AuthenCacheKey.ENDUSER_FASTLOGIN_SMS_CODE_PREFIX + ":" + appId + ":"+seriesId+":"  + mobile + smsCode);
-			sentSmsCode = getRedisClient().getObject(AuthenCacheKey.ENDUSER_FASTLOGIN_SMS_CODE_PREFIX + ":" + appId + ":"+seriesId+":" + mobile, String.class);
+			System.out.println(SecurityCacheKey.ENDUSER_FASTLOGIN_SMS_CODE_PREFIX + ":" + appId + ":"+seriesId+":"  + mobile + smsCode);
+			sentSmsCode = getRedisClient().getObject(SecurityCacheKey.ENDUSER_FASTLOGIN_SMS_CODE_PREFIX + ":" + appId + ":"+seriesId+":" + mobile, String.class);
 			System.out.println("sentSmsCode:" +sentSmsCode);
 			if (EEBeanUtils.isNULL(sentSmsCode) || !sentSmsCode.equals(smsCode)) {
 				result.addMessage("短信验证码错误或已经失效("+this.getClass().getName()+")");
@@ -265,7 +264,7 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 		/* 删除短信验证码（如需要） */
 		if (rmSmsCode) {
 			try {
-				getRedisClient().remove(AuthenCacheKey.ENDUSER_FASTLOGIN_SMS_CODE_PREFIX + ":" + appId + ":" + mobile);
+				getRedisClient().remove(SecurityCacheKey.ENDUSER_FASTLOGIN_SMS_CODE_PREFIX + ":" + appId + ":" + mobile);
 			} catch (RedisOPException e) {
 				e.printStackTrace();//do nothing
 			}

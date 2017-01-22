@@ -4,7 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import com.eenet.authen.BusinessAppBizService;
 import com.eenet.authen.IdentityAuthenticationBizService;
-import com.eenet.authen.cacheSyn.AuthenCacheKey;
+import com.eenet.SecurityCacheKey;
 import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.authen.request.UserAccessTokenAuthenRequest;
 import com.eenet.authen.response.AppAuthenResponse;
@@ -100,14 +100,14 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 
 	@Override
 	public UserAccessTokenAuthenResponse endUserAuthen(UserAccessTokenAuthenRequest request) {
-		return this.userAuthen(request, AuthenCacheKey.ENDUSER_ACCESSTOKEN_PREFIX);
+		return this.userAuthen(request, SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX);
 	}
 	@Override
 	public UserAccessTokenAuthenResponse endUserAuthenOnly(UserAccessTokenAuthenRequest request) {
 		UserAccessTokenAuthenResponse result = new UserAccessTokenAuthenResponse();
 		result.setSuccessful(false);
 		
-		SimpleResponse userAuthenResult = this.userTokenAuthen(request, AuthenCacheKey.ENDUSER_ACCESSTOKEN_PREFIX);
+		SimpleResponse userAuthenResult = this.userTokenAuthen(request, SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX);
 		result.setUserIdentityConfirm(userAuthenResult.isSuccessful());
 		if ( !userAuthenResult.isSuccessful() ) {
 			result.addMessage(userAuthenResult.getStrMessage());
@@ -120,13 +120,13 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 
 	@Override
 	public UserAccessTokenAuthenResponse adminUserAuthen(UserAccessTokenAuthenRequest request) {
-		return this.userAuthen(request, AuthenCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX);
+		return this.userAuthen(request, SecurityCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX);
 	}
 	public UserAccessTokenAuthenResponse adminUserAuthenOnly(UserAccessTokenAuthenRequest request) {
 		UserAccessTokenAuthenResponse result = new UserAccessTokenAuthenResponse();
 		result.setSuccessful(false);
 		
-		SimpleResponse userAuthenResult = this.userTokenAuthen(request, AuthenCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX);
+		SimpleResponse userAuthenResult = this.userTokenAuthen(request, SecurityCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX);
 		result.setUserIdentityConfirm(userAuthenResult.isSuccessful());
 		if ( !userAuthenResult.isSuccessful() ) {
 			result.addMessage(userAuthenResult.getStrMessage());

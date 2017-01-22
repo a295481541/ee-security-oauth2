@@ -28,14 +28,10 @@ public class EndUserLoginThroughAppWithoutSeriesTester extends SpringEnvironment
 	 ============================================================================= */
 //	@Test
 	public void loginByAccount() throws EncryptException {
-		System.out.println("=======loginByAccount");
 		SignOnGrant grantObj = userSignOnService.getSignOnGrant(appId, seriesId, redirectURI, loginAccount,RSAUtil.encrypt(transferRSAEncrypt, password+"##"+System.currentTimeMillis()));
 		if ( grantObj==null || grantObj.isSuccessful()==false )
 			Assert.fail(grantObj.getStrMessage());
 		
-		System.out.println("======="+EEBeanUtils.object2Json(grantObj));
-		
-		System.out.println("========================================"+RSAUtil.encrypt(transferRSAEncrypt, appSecret+"##"+System.currentTimeMillis()));
 		AccessToken tokenObj = userSignOnService.getAccessToken(appId, RSAUtil.encrypt(transferRSAEncrypt, appSecret+"##"+System.currentTimeMillis()), grantObj.getGrantCode());
 		if ( tokenObj==null || tokenObj.isSuccessful()==false )
 			Assert.fail(tokenObj.getStrMessage());

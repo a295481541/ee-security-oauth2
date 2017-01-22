@@ -34,7 +34,7 @@ public class EndUserLoginThroughAppWithSeriesTester extends SpringEnvironment {
 	/* ==============================================================================
 	 * 预期：用户登录成功
 	 ============================================================================= */
-	@Test
+//	@Test
 	public void loginByAccount() throws Exception {
 		SignOnGrant grantObj = userSignOnService.getSignOnGrant(appId, redirectURI, loginAccount, encrypt(password+"##"+System.currentTimeMillis()));
 		if ( grantObj==null || grantObj.isSuccessful()==false )

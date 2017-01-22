@@ -7,7 +7,7 @@ import com.eenet.authen.AdminUserLoginAccountBizService;
 import com.eenet.authen.AdminUserSignOnBizService;
 import com.eenet.authen.BusinessAppBizService;
 import com.eenet.authen.SignOnGrant;
-import com.eenet.authen.cacheSyn.AuthenCacheKey;
+import com.eenet.SecurityCacheKey;
 import com.eenet.authen.identifier.CallerIdentityInfo;
 import com.eenet.authen.util.ABBizCode;
 import com.eenet.authen.util.IdentityUtil;
@@ -118,7 +118,7 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		
 		/* 生成并缓存code */
 		StringResponse makeCodeResult = 
-				getSignOnUtil().makeGrantCode(AuthenCacheKey.ADMINUSER_GRANTCODE_PREFIX, appId, adminUser.getAtid());
+				getSignOnUtil().makeGrantCode(SecurityCacheKey.ADMINUSER_GRANTCODE_PREFIX, appId, adminUser.getAtid());
 		grant.setSuccessful(makeCodeResult.isSuccessful());
 		if (makeCodeResult.isSuccessful())
 			grant.setGrantCode(makeCodeResult.getResult());
@@ -166,7 +166,7 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		
 		/* 验证授权码 */
 		StringResponse getUserIdResult = 
-				getIdentityUtil().getUserIdByCodeOrToken(AuthenCacheKey.ADMINUSER_GRANTCODE_PREFIX, grantCode, appId);
+				getIdentityUtil().getUserIdByCodeOrToken(SecurityCacheKey.ADMINUSER_GRANTCODE_PREFIX, grantCode, appId);
 		if (!getUserIdResult.isSuccessful()) {
 			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(getUserIdResult.getStrMessage());
@@ -179,7 +179,7 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		
 		/* 删除授权码（授权码只能用一次） */
 		SimpleResponse rmCodeResult = 
-				getSignOnUtil().removeCodeOrToken(AuthenCacheKey.ADMINUSER_GRANTCODE_PREFIX, grantCode, appId);
+				getSignOnUtil().removeCodeOrToken(SecurityCacheKey.ADMINUSER_GRANTCODE_PREFIX, grantCode, appId);
 		if (!rmCodeResult.isSuccessful()) {
 			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(rmCodeResult.getStrMessage());
@@ -187,13 +187,13 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		}
 		
 		/* 删除访问令牌（防止一个用户可以通过两个令牌登录） */
-		getSignOnUtil().removeUserTokenInApp(AuthenCacheKey.ADMINUSER_CACHED_TOKEN,
-				AuthenCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX, AuthenCacheKey.ADMINUSER_REFRESHTOKEN_PREFIX, appId,
+		getSignOnUtil().removeUserTokenInApp(SecurityCacheKey.ADMINUSER_CACHED_TOKEN,
+				SecurityCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX, SecurityCacheKey.ADMINUSER_REFRESHTOKEN_PREFIX, appId,
 				getUserIdResult.getResult());
 		
 		/* 生成并记录访问令牌 */
 		StringResponse mkAccessTokenResult = 
-				getSignOnUtil().makeAccessToken(AuthenCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX, appId, seriesId,userId, getBusinessAppBizService());
+				getSignOnUtil().makeAccessToken(SecurityCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX, appId, seriesId,userId, getBusinessAppBizService());
 		if (!mkAccessTokenResult.isSuccessful()) {
 			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(mkAccessTokenResult.getStrMessage());
@@ -202,7 +202,7 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		
 		/* 生成并记录刷新令牌 */
 		StringResponse mkFreshTokenResult = 
-				getSignOnUtil().makeRefreshToken(AuthenCacheKey.ADMINUSER_REFRESHTOKEN_PREFIX, appId, getUserIdResult.getResult());
+				getSignOnUtil().makeRefreshToken(SecurityCacheKey.ADMINUSER_REFRESHTOKEN_PREFIX, appId, getUserIdResult.getResult());
 		if (!mkFreshTokenResult.isSuccessful()) {
 			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(mkFreshTokenResult.getStrMessage());
@@ -226,7 +226,7 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		}
 		
 		/* 标记服务人员已缓存令牌 */
-		getSignOnUtil().markUserTokenInApp(AuthenCacheKey.ADMINUSER_CACHED_TOKEN, appId, getUserIdResult.getResult(),
+		getSignOnUtil().markUserTokenInApp(SecurityCacheKey.ADMINUSER_CACHED_TOKEN, appId, getUserIdResult.getResult(),
 				mkAccessTokenResult.getResult(), mkFreshTokenResult.getResult());
 		
 		/* 所有参数已缓存，拼返回对象 */
@@ -278,7 +278,7 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		
 		/* 根据刷新令牌获得服务人员标识 */
 		StringResponse getUserIdResult = 
-				getIdentityUtil().getUserIdByCodeOrToken(AuthenCacheKey.ADMINUSER_REFRESHTOKEN_PREFIX, refreshToken, appId);
+				getIdentityUtil().getUserIdByCodeOrToken(SecurityCacheKey.ADMINUSER_REFRESHTOKEN_PREFIX, refreshToken, appId);
 		if (!getUserIdResult.isSuccessful()) {
 			token.addMessage(getUserIdResult.getStrMessage());
 			return token;
@@ -296,13 +296,13 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		}
 		
 		/* 删除当前服务人员在当前应用的所有令牌（包括：刷新令牌、访问令牌和已缓存令牌标识），防止一个服务人员可以通过两个令牌登录 */
-		getSignOnUtil().removeUserTokenInApp(AuthenCacheKey.ADMINUSER_CACHED_TOKEN,
-				AuthenCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX, AuthenCacheKey.ADMINUSER_REFRESHTOKEN_PREFIX, appId,
+		getSignOnUtil().removeUserTokenInApp(SecurityCacheKey.ADMINUSER_CACHED_TOKEN,
+				SecurityCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX, SecurityCacheKey.ADMINUSER_REFRESHTOKEN_PREFIX, appId,
 				getUserIdResult.getResult());
 		
 		/* 生成并记录访问令牌（超过有效期后令牌会从Redis中自动消失） */
 		StringResponse mkAccessTokenResult = 
-				getSignOnUtil().makeAccessToken(AuthenCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX, appId, seriesId , userId, getBusinessAppBizService());
+				getSignOnUtil().makeAccessToken(SecurityCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX, appId, seriesId , userId, getBusinessAppBizService());
 		if (!mkAccessTokenResult.isSuccessful()) {
 			token.addMessage(mkAccessTokenResult.getStrMessage());
 			return token;
@@ -310,14 +310,14 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		
 		/* 生成并记录新的刷新令牌 */
 		StringResponse mkFreshTokenResult = 
-				getSignOnUtil().makeRefreshToken(AuthenCacheKey.ADMINUSER_REFRESHTOKEN_PREFIX, appId, getUserIdResult.getResult());
+				getSignOnUtil().makeRefreshToken(SecurityCacheKey.ADMINUSER_REFRESHTOKEN_PREFIX, appId, getUserIdResult.getResult());
 		if (!mkFreshTokenResult.isSuccessful()) {
 			token.addMessage(mkFreshTokenResult.getStrMessage());
 			return token;
 		}
 		
 		/* 更新服务人员已缓存令牌 */
-		getSignOnUtil().markUserTokenInApp(AuthenCacheKey.ADMINUSER_CACHED_TOKEN, appId, getUserIdResult.getResult(),
+		getSignOnUtil().markUserTokenInApp(SecurityCacheKey.ADMINUSER_CACHED_TOKEN, appId, getUserIdResult.getResult(),
 				mkAccessTokenResult.getResult(), mkFreshTokenResult.getResult());
 		
 		/* 所有参数已缓存，拼返回对象 */
@@ -335,8 +335,8 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		}
 		
 		/* 删除所有令牌 */
-		getSignOnUtil().removeUserTokenInApp(AuthenCacheKey.ADMINUSER_CACHED_TOKEN,
-				AuthenCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX, AuthenCacheKey.ADMINUSER_REFRESHTOKEN_PREFIX, appId,
+		getSignOnUtil().removeUserTokenInApp(SecurityCacheKey.ADMINUSER_CACHED_TOKEN,
+				SecurityCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX, SecurityCacheKey.ADMINUSER_REFRESHTOKEN_PREFIX, appId,
 				userId);
 	}
 	

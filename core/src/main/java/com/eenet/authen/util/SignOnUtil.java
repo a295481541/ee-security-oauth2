@@ -183,10 +183,10 @@ public class SignOnUtil {
 	 * 生成并记录访问令牌
 	 * 访问令牌存储格式：[prefix]:[appid]:[access token]
 	 * 令牌有效期：web应用30分钟，其他类型应用1天
-	 * @param prefix
-	 * @param appId
-	 * @param userId
-	 * @param
+	 * @param prefix 访问令牌前缀
+	 * @param appId 应用ID
+	 * @param seriesId 业务体系ID
+	 * @param userId 用户ID
 	 * @param businessAppBizService 业务系统服务
 	 * @return
 	 * 2016年6月10日
