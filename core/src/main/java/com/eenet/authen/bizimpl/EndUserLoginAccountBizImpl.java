@@ -3,7 +3,6 @@ package com.eenet.authen.bizimpl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.impl.Log4JLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -21,7 +21,7 @@ public final class SecurityCacheKey {
 	
 	/**
 	 * 近期有发送短信的手机号（用于限制短信发送频率）
-	 * redisKey = RECENT_SEND_SMS, mapKey = [mobile]:[seriesId], value = [时间戳（与1970年1月1号0时0分0秒所差的毫秒数）]
+	 * redisKey = RECENT_SEND_SMS, mapKey = [seriesId]:[mobile], value = [时间戳（与1970年1月1号0时0分0秒所差的毫秒数）]
 	 */
 	public final static String RECENT_SEND_SMS = "RECENT_SEND_SMS";
 	
@@ -34,7 +34,7 @@ public final class SecurityCacheKey {
 	
 	/**
 	 * 最终用户登录账号
-	 * redisKey = ENDUSER_LOGIN_ACCOUNT, mapKey = [seriesId]:[loginAccount], value = 最终用户登录账号对象(@see com.eenet.authen.EndUserLoginAccount)
+	 * redisKey = ENDUSER_LOGIN_ACCOUNT, mapKey = [seriesId]:[loginAccount], value = [EncryptionType]:[最终用户登录账号对象(@see com.eenet.authen.EndUserLoginAccount)]
 	 */
 	public final static String ENDUSER_LOGIN_ACCOUNT = "ENDUSER_LOGIN_ACCOUNT";
 	/**
@@ -71,7 +71,7 @@ public final class SecurityCacheKey {
 	
 	/**
 	 * 最终用户重置密码短信验证码
-	 * redisKey:ENDUSER_RESETPASSWORD_SMS_CODE, mapKey:[endUserId]，value:[sms code]
+	 * redisKey:ENDUSER_RESETPASSWORD_SMS_CODE, mapKey:[seriesId]:[endUserId]，value:[sms code]
 	 */
 	public final static String ENDUSER_RESETPASSWORD_SMS_CODE = "ENDUSER_RESETPASSWORD_SMS_CODE";
 	

@@ -3,7 +3,7 @@ package com.eenet.authen.cacheSyn;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.eenet.authen.BusinessApp;
+import com.eenet.SecurityCacheKey;
 import com.eenet.authen.BusinessSeries;
 import com.eenet.common.cache.RedisClient;
 import com.eenet.common.exception.RedisOPException;
@@ -50,9 +50,9 @@ public final class SynBusinessSeries2Redis2 {
 		
 		BusinessSeries bizApp = null;
 		try {
-			System.out.println("SynBusinessApp2Redis get:  cacheKey" + AuthenCacheKey.BIZ_SERIES +"mapKey :"+seriesId +"value :" +EEBeanUtils.object2Json(client.getMapValue(AuthenCacheKey.BIZ_SERIES, seriesId)));
+			System.out.println("SynBusinessApp2Redis get:  cacheKey" + SecurityCacheKey.BIZ_SERIES +"mapKey :"+seriesId +"value :" +EEBeanUtils.object2Json(client.getMapValue(SecurityCacheKey.BIZ_SERIES, seriesId)));
 
-			bizApp = BusinessSeries.class.cast(client.getMapValue(AuthenCacheKey.BIZ_SERIES, seriesId));
+			bizApp = BusinessSeries.class.cast(client.getMapValue(SecurityCacheKey.BIZ_SERIES, seriesId));
 		} catch (Exception e) {
 			e.printStackTrace();//此处应该有log
 		}
@@ -67,7 +67,7 @@ public final class SynBusinessSeries2Redis2 {
 	 * @author koop
 	 */
 	public static void remove(final RedisClient client, final String[] seriesIds) {
-		RemoveMapItemFromRedisThread.execute(client, seriesIds, AuthenCacheKey.BIZ_SERIES);
+		RemoveMapItemFromRedisThread.execute(client, seriesIds, SecurityCacheKey.BIZ_SERIES);
 	}
 	
 	/**
@@ -95,8 +95,8 @@ public final class SynBusinessSeries2Redis2 {
 				Map<String, BusinessSeries> map = new HashMap<String, BusinessSeries>();
 				for (BusinessSeries ssoapp : this.bizApp) {
 					map.put(ssoapp.getAtid(), ssoapp);
-					this.redisClient.addMapItem(AuthenCacheKey.BIZ_SERIES, map, -1);
-					System.out.println("SynBusinessSeries2Redis2 set:  cacheKey :" + AuthenCacheKey.BIZ_SERIES +"  value :" +EEBeanUtils.object2Json(map));
+					this.redisClient.addMapItem(SecurityCacheKey.BIZ_SERIES, map, -1);
+					System.out.println("SynBusinessSeries2Redis2 set:  cacheKey :" + SecurityCacheKey.BIZ_SERIES +"  value :" +EEBeanUtils.object2Json(map));
 
 				}
 			} catch (RedisOPException e) {

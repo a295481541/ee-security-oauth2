@@ -40,15 +40,6 @@
 		<property name="privateExponent" value="48680615080734113672903556010235990257648289311077727091526762755135378557864245955607509651099825799718896797096801203480674300209863081818469085436600347654092900731013287492447809614177142343657378726428624926826367213906108211401987013204453583738303518396232916505418659503433359185572266611943701333889"/>
 	</bean>
 	
-	<!-- 登录工具类 -->
-	<bean id="SignOnUtil" class="com.eenet.authen.util.SignOnUtil">
-		<property name="RedisClient" ref="RedisClient"/>
-	</bean>
-	<!-- 身份认证工具类 -->
-	<bean id="IdentityUtil" class="com.eenet.authen.util.IdentityUtil">
-		<property name="RedisClient" ref="RedisClient"/>
-	</bean>
-	
 	<!-- EENET短信对接服务 -->
 	<bean id="EeSendSMSBizImpl" class="com.eenet.sms.eesms.EeSendSMSBizImpl">
 		<property name="sendSMSUsingTemplateURL" value="http://eesms.gzedu.com/sms/sendYunSms.do"/>

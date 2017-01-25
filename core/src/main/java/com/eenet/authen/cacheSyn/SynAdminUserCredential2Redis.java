@@ -3,6 +3,7 @@ package com.eenet.authen.cacheSyn;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.eenet.SecurityCacheKey;
 import com.eenet.authen.AdminUserCredential;
 import com.eenet.common.cache.RedisClient;
 import com.eenet.common.exception.RedisOPException;
@@ -49,8 +50,8 @@ public final class SynAdminUserCredential2Redis {
 		
 		String password = null;
 		try {
-			System.out.println("SynAdminUserCredential2Redis get:  cacheKey" + AuthenCacheKey.ADMINUSER_CREDENTIAL +"mapKey :"+userId +"value :" +EEBeanUtils.object2Json(client.getMapValue(AuthenCacheKey.ADMINUSER_CREDENTIAL, userId)));
-			password = String.class.cast(client.getMapValue(AuthenCacheKey.ADMINUSER_CREDENTIAL, userId));
+			System.out.println("SynAdminUserCredential2Redis get:  cacheKey" + SecurityCacheKey.ADMINUSER_CREDENTIAL +"mapKey :"+userId +"value :" +EEBeanUtils.object2Json(client.getMapValue(SecurityCacheKey.ADMINUSER_CREDENTIAL, userId)));
+			password = String.class.cast(client.getMapValue(SecurityCacheKey.ADMINUSER_CREDENTIAL, userId));
 		} catch (RedisOPException e) {
 			e.printStackTrace();//此处应该有log
 		}
@@ -66,7 +67,7 @@ public final class SynAdminUserCredential2Redis {
 	 * @author Orion
 	 */
 	public static void remove(final RedisClient client, final String[] userIds) {
-		RemoveMapItemFromRedisThread.execute(client, userIds, AuthenCacheKey.ADMINUSER_CREDENTIAL);
+		RemoveMapItemFromRedisThread.execute(client, userIds, SecurityCacheKey.ADMINUSER_CREDENTIAL);
 	}
 	
 	/**
@@ -94,8 +95,8 @@ public final class SynAdminUserCredential2Redis {
 				Map<String, String> map = new HashMap<String, String>();
 				for (AdminUserCredential credential : this.credentials) {
 					map.put(credential.getAdminUser().getAtid(), credential.getEncryptionType()+"##"+credential.getPassword());
-					this.redisClient.addMapItem(AuthenCacheKey.ADMINUSER_CREDENTIAL, map, -1);
-					System.out.println("SynAdminUserCredential2Redis set:  cacheKey :" + AuthenCacheKey.ADMINUSER_CREDENTIAL +"  value :" +EEBeanUtils.object2Json(map));
+					this.redisClient.addMapItem(SecurityCacheKey.ADMINUSER_CREDENTIAL, map, -1);
+					System.out.println("SynAdminUserCredential2Redis set:  cacheKey :" + SecurityCacheKey.ADMINUSER_CREDENTIAL +"  value :" +EEBeanUtils.object2Json(map));
 
 				}
 			} catch (RedisOPException e) {

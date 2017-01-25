@@ -9,7 +9,6 @@ import com.eenet.base.SimpleResponse;
 import com.eenet.base.StringResponse;
 import com.eenet.common.cache.RedisClient;
 import com.eenet.common.exception.RedisOPException;
-import com.eenet.security.RegistNewUserBizImpl;
 import com.eenet.util.EEBeanUtils;
 import com.eenet.util.cryptography.EncryptException;
 import com.eenet.util.cryptography.RSADecrypt;

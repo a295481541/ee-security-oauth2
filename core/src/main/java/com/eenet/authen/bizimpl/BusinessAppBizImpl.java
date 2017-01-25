@@ -93,17 +93,11 @@ public class BusinessAppBizImpl extends SimpleBizImpl implements BusinessAppBizS
 		}
 		
 		/* 从缓存取数据 */
-		
-		System.out.println(getRedisClient() +"  :" +appId);
-		
 		result = SynBusinessApp2Redis.get(getRedisClient(), appId);
-		
-		System.out.println("redis get :" +result);
 		
 		/* 从数据库取数据 */
 		if (result==null || !result.isSuccessful()) {
 			result = super.get(appId, BusinessApp.class);
-			System.out.println("db get :" +result);
 			/* 同步缓存 */
 			if (result!=null && result.isSuccessful())
 				SynBusinessApp2Redis.syn(getRedisClient(), result);

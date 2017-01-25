@@ -3,6 +3,7 @@ package com.eenet.authen.cacheSyn;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.eenet.SecurityCacheKey;
 import com.eenet.authen.AdminUserLoginAccount;
 import com.eenet.common.cache.RedisClient;
 import com.eenet.common.exception.RedisOPException;
@@ -49,9 +50,9 @@ public class SynAdminUserLoginAccount2Redis {
 		
 		AdminUserLoginAccount account = null;
 		try {
-			System.out.println("SynAdminUserLoginAccount2Redis get:  cacheKey" + AuthenCacheKey.ADMINUSER_LOGIN_ACCOUNT +"mapKey :"+loginAccount +"value :" +EEBeanUtils.object2Json(client.getMapValue(AuthenCacheKey.ADMINUSER_LOGIN_ACCOUNT, loginAccount)));
+			System.out.println("SynAdminUserLoginAccount2Redis get:  cacheKey" + SecurityCacheKey.ADMINUSER_LOGIN_ACCOUNT +"mapKey :"+loginAccount +"value :" +EEBeanUtils.object2Json(client.getMapValue(SecurityCacheKey.ADMINUSER_LOGIN_ACCOUNT, loginAccount)));
 
-			account = AdminUserLoginAccount.class.cast(client.getMapValue(AuthenCacheKey.ADMINUSER_LOGIN_ACCOUNT, loginAccount));
+			account = AdminUserLoginAccount.class.cast(client.getMapValue(SecurityCacheKey.ADMINUSER_LOGIN_ACCOUNT, loginAccount));
 		} catch (Exception e) {
 			e.printStackTrace();//此处应该有log
 		}
@@ -66,7 +67,7 @@ public class SynAdminUserLoginAccount2Redis {
 	 * @author Orion
 	 */
 	public static void remove(final RedisClient client, final String[] accounts) {
-		RemoveMapItemFromRedisThread.execute(client, accounts, AuthenCacheKey.ADMINUSER_LOGIN_ACCOUNT);
+		RemoveMapItemFromRedisThread.execute(client, accounts, SecurityCacheKey.ADMINUSER_LOGIN_ACCOUNT);
 	}
 	
 	/**
@@ -93,8 +94,8 @@ public class SynAdminUserLoginAccount2Redis {
 				Map<String, AdminUserLoginAccount> map = new HashMap<String, AdminUserLoginAccount>();
 				for (AdminUserLoginAccount account : this.accounts) {
 					map.put(account.getLoginAccount(), account);
-					this.redisClient.addMapItem(AuthenCacheKey.ADMINUSER_LOGIN_ACCOUNT, map, -1);
-					System.out.println("SynAdminUserLoginAccount2Redis set:  cacheKey :" + AuthenCacheKey.ADMINUSER_LOGIN_ACCOUNT +"  value :" +EEBeanUtils.object2Json(map));
+					this.redisClient.addMapItem(SecurityCacheKey.ADMINUSER_LOGIN_ACCOUNT, map, -1);
+					System.out.println("SynAdminUserLoginAccount2Redis set:  cacheKey :" + SecurityCacheKey.ADMINUSER_LOGIN_ACCOUNT +"  value :" +EEBeanUtils.object2Json(map));
 
 				}
 			} catch (RedisOPException e) {

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.eenet.authen.AccessToken;
-import com.eenet.authen.BusinessAppBizService;
 import com.eenet.authen.BusinessSeries;
 import com.eenet.authen.BusinessSeriesBizService;
 import com.eenet.authen.EndUserCredential;
@@ -30,7 +29,7 @@ import com.eenet.baseinfo.user.EndUserInfoBizService;
 import com.eenet.common.cache.RedisClient;
 import com.eenet.common.exception.RedisOPException;
 import com.eenet.security.bizComponent.ReSetLoginPasswordCom;
-import com.eenet.security.cache.SecurityCacheKey;
+import com.eenet.SecurityCacheKey;
 import com.eenet.sms.SendSMSBizService;
 import com.eenet.sms.SendSMSBizType;
 import com.eenet.sms.ShortMessageBody;

@@ -3,6 +3,7 @@ package com.eenet.authen.cacheSyn;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.eenet.SecurityCacheKey;
 import com.eenet.authen.BusinessApp;
 import com.eenet.common.cache.RedisClient;
 import com.eenet.common.exception.RedisOPException;
@@ -49,8 +50,8 @@ public final class SynBusinessApp2Redis {
 		
 		BusinessApp bizApp = null;
 		try {
-			System.out.println("SynBusinessApp2Redis get:  cacheKey" + AuthenCacheKey.BIZ_APP +"mapKey :"+appId +"value :" +EEBeanUtils.object2Json(client.getMapValue(AuthenCacheKey.BIZ_APP, appId)));
-			bizApp = BusinessApp.class.cast(client.getMapValue(AuthenCacheKey.BIZ_APP, appId));
+			System.out.println("SynBusinessApp2Redis get:  cacheKey" + SecurityCacheKey.BIZ_APP +"mapKey :"+appId +"value :" +EEBeanUtils.object2Json(client.getMapValue(SecurityCacheKey.BIZ_APP, appId)));
+			bizApp = BusinessApp.class.cast(client.getMapValue(SecurityCacheKey.BIZ_APP, appId));
 		} catch (Exception e) {
 			e.printStackTrace();//此处应该有log
 		}
@@ -65,7 +66,7 @@ public final class SynBusinessApp2Redis {
 	 * @author Orion
 	 */
 	public static void remove(final RedisClient client, final String[] appIds) {
-		RemoveMapItemFromRedisThread.execute(client, appIds, AuthenCacheKey.BIZ_APP);
+		RemoveMapItemFromRedisThread.execute(client, appIds, SecurityCacheKey.BIZ_APP);
 	}
 	
 	/**
@@ -93,8 +94,8 @@ public final class SynBusinessApp2Redis {
 				Map<String, BusinessApp> map = new HashMap<String, BusinessApp>();
 				for (BusinessApp ssoapp : this.bizApp) {
 					map.put(ssoapp.getAppId(), ssoapp);
-					this.redisClient.addMapItem(AuthenCacheKey.BIZ_APP, map, -1);
-					System.out.println("SynBusinessApp2Redis set:  cacheKey :" + AuthenCacheKey.BIZ_APP +"  value :" +EEBeanUtils.object2Json(map));
+					this.redisClient.addMapItem(SecurityCacheKey.BIZ_APP, map, -1);
+					System.out.println("SynBusinessApp2Redis set:  cacheKey :" + SecurityCacheKey.BIZ_APP +"  value :" +EEBeanUtils.object2Json(map));
 
 				}
 			} catch (RedisOPException e) {

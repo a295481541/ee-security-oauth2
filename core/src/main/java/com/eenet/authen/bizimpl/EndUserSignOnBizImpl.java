@@ -128,10 +128,8 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		
 		
 		/* 生成并记录刷新令牌 */
-//		StringResponse mkFreshTokenResult = 
-//				getSignOnUtil().makeRefreshToken(AuthenCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appId, getUserIdResult.getResult());//用户标识：业务体系id
 		StringResponse mkFreshTokenResult = 
-				getSignOnUtil().makeRefreshToken(SecurityCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appId,seriesId , userId);//用户标识：业务体系id
+				getSignOnUtil().makeRefreshToken(SecurityCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appId, userId, seriesId);//用户标识：业务体系id
 		if (!mkFreshTokenResult.isSuccessful()) {
 			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(mkFreshTokenResult.getStrMessage());

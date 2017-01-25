@@ -3,6 +3,10 @@ package com.eenet.authen.cacheSyn;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.eenet.SecurityCacheKey;
 import com.eenet.authen.EndUserCredential;
 import com.eenet.common.cache.RedisClient;
 import com.eenet.common.exception.RedisOPException;
@@ -11,11 +15,20 @@ import com.eenet.util.EEBeanUtils;
 
 /**
  * 最终用户登录密码在Redis中的操作thread safe
+ * 数据格式，redisKey = ENDUSER_CREDENTIAL, mapKey = [seriesId]:[endUserId], value = [EncryptionType]:[最终用户登录账号对象(@see com.eenet.authen.EndUserLoginAccount)]
  * @author Orion
  * 2016年6月9日
  */
 public final class SynEndUserCredential2Redis {
+	private static final Logger log = LoggerFactory.getLogger(SynEndUserCredential2Redis.class);
 	
+	/**
+	 * 
+	 * @param client
+	 * @param credentials
+	 * 2017年1月25日
+	 * @author Orion
+	 */
 	public static void syn(final RedisClient client, final EndUserCredential... credentials) {
 		if (credentials == null || credentials.length == 0 || client == null)
 			return;
@@ -24,29 +37,29 @@ public final class SynEndUserCredential2Redis {
 			Thread thread = new Thread(syn);
 			thread.start();
 		} catch (Exception e) {
-			e.printStackTrace();// 同步到Redis失败
+			log.error("end user credential syn to redis error! exception info: "+e.getMessage());
 		}
 	}
 	
 	/**
 	 * 根据最终用户标识获得最终用户登录密码
 	 * @param client
+	 * @param seriesId 体系标识
 	 * @param userId 最终用户标识
 	 * @return 已加密的密码
 	 * 2016年6月9日
 	 * @author Orion
 	 */
-	public static String get(final RedisClient client, final String userId) {
-		if (EEBeanUtils.isNULL(userId) || client == null)
+	public static String get(final RedisClient client, final String seriesId, final String userId) {
+		if (EEBeanUtils.isNULL(seriesId) || EEBeanUtils.isNULL(userId) || client == null)
 			return null;
 		
 		String password = null;
 		try {
-			System.out.println("SynEndUserCredential2Redis get:  cacheKey" + AuthenCacheKey.ENDUSER_CREDENTIAL +"mapKey :"+userId +"value :" +EEBeanUtils.object2Json(client.getMapValue(AuthenCacheKey.ENDUSER_CREDENTIAL, userId)));
-
-			password = String.class.cast(client.getMapValue(AuthenCacheKey.ENDUSER_CREDENTIAL, userId));
+			password = String.class.cast(client.getMapValue(SecurityCacheKey.ENDUSER_CREDENTIAL, seriesId+":"+userId));
 		} catch (RedisOPException e) {
-			e.printStackTrace();//此处应该有log
+			log.error("can not get end user Credential from redis, cacheKey: " + SecurityCacheKey.ENDUSER_CREDENTIAL
+					+ ",  mapKey: " + seriesId + ":" + userId + ", exception info: " + e.getMessage());
 		}
 		
 		return password;
@@ -55,12 +68,21 @@ public final class SynEndUserCredential2Redis {
 	/**
 	 * 将最终用户登录秘钥从Redis移除
 	 * @param client
+	 * @param seriesId 体系标识
 	 * @param userIds 最终用户标识
 	 * 2016年6月9日
 	 * @author Orion
 	 */
-	public static void remove(final RedisClient client, final String[] userIds) {
-		RemoveMapItemFromRedisThread.execute(client, userIds, AuthenCacheKey.ENDUSER_CREDENTIAL);
+	public static void remove(final RedisClient client, final String seriesId, final String[] userIds) {
+		if (userIds==null || userIds.length==0 || EEBeanUtils.isNULL(seriesId))
+			return;
+		
+		String[] mapKeys = new String[userIds.length];
+		for (int i=0;i<userIds.length;i++)
+			mapKeys[i] = seriesId+":"+userIds[i];
+		
+		log.info("end user credential remove from redis, cacheKey: " + SecurityCacheKey.ENDUSER_CREDENTIAL + ",  map data: " + EEBeanUtils.object2Json(mapKeys));
+		RemoveMapItemFromRedisThread.execute(client, userIds, SecurityCacheKey.ENDUSER_CREDENTIAL);
 	}
 	
 	/**
@@ -86,16 +108,16 @@ public final class SynEndUserCredential2Redis {
 		public void run() {
 			try {
 				Map<String, String> map = new HashMap<String, String>();
-				for (EndUserCredential credential : this.credentials) {
-					map.put(credential.getEndUser().getAtid()+":"+credential.getBusinessSeries().getAtid(), credential.getEncryptionType() +"##"+credential.getPassword());
-					this.redisClient.addMapItem(AuthenCacheKey.ENDUSER_CREDENTIAL, map, -1);
-					System.out.println("SynEndUserCredential2Redis set:  cacheKey :" + AuthenCacheKey.ENDUSER_CREDENTIAL +"  value :" +EEBeanUtils.object2Json(map));
-
-				}
+				
+				for (EndUserCredential credential : this.credentials)
+					map.put(credential.getBusinessSeries().getAtid()+":"+credential.getEndUser().getAtid(), credential.getEncryptionType() +"##"+credential.getPassword());
+				
+				log.info("end user credential save to redis, cacheKey :" + SecurityCacheKey.ENDUSER_CREDENTIAL + ",  value :" +EEBeanUtils.object2Json(map));
+				this.redisClient.addMapItem(SecurityCacheKey.ENDUSER_CREDENTIAL, map, -1);
 			} catch (RedisOPException e) {
-				e.printStackTrace();// 缓存写入失败，do nothing
+				log.error("end user credential save to redis error! exception info: "+e.getMessage());
 			} catch (Exception e) {
-				e.printStackTrace();// 其他错误，do nothing
+				log.error("end user credential save to redis error! exception info: "+e.getMessage());
 			}
 		}
 	}
