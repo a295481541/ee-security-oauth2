@@ -38,7 +38,6 @@ public final class SynBusinessApp2Redis {
 			thread.start();
 		} catch (Exception e) {
 			log.error("business app syn to redis error! exception info: "+e.getMessage());
-			e.printStackTrace();// 同步到Redis失败
 		}
 	}
 	
@@ -60,7 +59,6 @@ public final class SynBusinessApp2Redis {
 		} catch (Exception e) {
 			log.error("can not get business app from redis,  cacheKey: " + SecurityCacheKey.BIZ_APP + ",mapKey: "
 					+ appId + ", exception info: " + e.getMessage());
-			e.printStackTrace();//此处应该有log
 		}
 		return bizApp;
 	}

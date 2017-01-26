@@ -3,6 +3,9 @@ package com.eenet.authen.cacheSyn;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.eenet.SecurityCacheKey;
 import com.eenet.authen.BusinessSeries;
 import com.eenet.common.cache.RedisClient;
@@ -12,11 +15,12 @@ import com.eenet.util.EEBeanUtils;
 
 /**
  * 业务体系在Redis中的操作thread safe
+ * 数据格式，redisKey:BIZ_SERIES, mapKey:seriesId，value:业务体系对象(@see com.eenet.authen.BusinessSeries)
  * @author koop
  * 2017年1月10日
  */
-public final class SynBusinessSeries2Redis2 {
-	
+public final class SynBusinessSeries2Redis {
+	private static final Logger log = LoggerFactory.getLogger(SynBusinessSeries2Redis.class);
 	/**
 	 * 将业务体系同步到Redis
 	 * @param client redis客户端
@@ -28,18 +32,18 @@ public final class SynBusinessSeries2Redis2 {
 		if (businessSeries == null || businessSeries.length == 0 || client == null)
 			return;
 		try {
-			ToRedis syn = new SynBusinessSeries2Redis2().new ToRedis(client, businessSeries);
+			ToRedis syn = new SynBusinessSeries2Redis().new ToRedis(client, businessSeries);
 			Thread thread = new Thread(syn);
 			thread.start();
 		} catch (Exception e) {
-			e.printStackTrace();// 同步到Redis失败
+			log.error("business series syn to redis error! exception info: "+e.getMessage());
 		}
 	}
 	
 	/**
-	 * 根据app id获得业务体系
+	 * 根据体系id获得业务体系对象
 	 * @param client
-	 * @param appId
+	 * @param seriesId
 	 * @return redis中没有指定的对象或发生错误均返回null
 	 * 2017年1月10日
 	 * @author koop
@@ -50,11 +54,10 @@ public final class SynBusinessSeries2Redis2 {
 		
 		BusinessSeries bizApp = null;
 		try {
-			System.out.println("SynBusinessApp2Redis get:  cacheKey" + SecurityCacheKey.BIZ_SERIES +"mapKey :"+seriesId +"value :" +EEBeanUtils.object2Json(client.getMapValue(SecurityCacheKey.BIZ_SERIES, seriesId)));
-
 			bizApp = BusinessSeries.class.cast(client.getMapValue(SecurityCacheKey.BIZ_SERIES, seriesId));
 		} catch (Exception e) {
-			e.printStackTrace();//此处应该有log
+			log.error("can not get business series from redis,  cacheKey: " + SecurityCacheKey.BIZ_SERIES + ",mapKey: "
+					+ seriesId + ", exception info: " + e.getMessage());
 		}
 		return bizApp;
 	}
@@ -67,6 +70,7 @@ public final class SynBusinessSeries2Redis2 {
 	 * @author koop
 	 */
 	public static void remove(final RedisClient client, final String[] seriesIds) {
+		log.info("business series remove from redis, cacheKey: " + SecurityCacheKey.BIZ_SERIES + ",  map data: " + EEBeanUtils.object2Json(seriesIds));
 		RemoveMapItemFromRedisThread.execute(client, seriesIds, SecurityCacheKey.BIZ_SERIES);
 	}
 	
@@ -77,14 +81,14 @@ public final class SynBusinessSeries2Redis2 {
 	 */
 	private class ToRedis implements Runnable {
 		private final RedisClient redisClient;
-		private final BusinessSeries[] bizApp;
+		private final BusinessSeries[] bizSeries;
 		
-		public ToRedis(RedisClient redisClient, BusinessSeries[] bizApp) throws Exception {
-			this.bizApp = new BusinessSeries[bizApp.length];
-			for (int i=0;i<this.bizApp.length;i++) {
+		public ToRedis(RedisClient redisClient, BusinessSeries[] bizSeries) throws Exception {
+			this.bizSeries = new BusinessSeries[bizSeries.length];
+			for (int i=0;i<this.bizSeries.length;i++) {
 				BusinessSeries dest = new BusinessSeries();
-				EEBeanUtils.coverProperties(dest, bizApp[i]);
-				this.bizApp[i] = dest;
+				EEBeanUtils.coverProperties(dest, bizSeries[i]);
+				this.bizSeries[i] = dest;
 			}
 			this.redisClient = redisClient;
 		}
@@ -93,20 +97,20 @@ public final class SynBusinessSeries2Redis2 {
 		public void run() {
 			try {
 				Map<String, BusinessSeries> map = new HashMap<String, BusinessSeries>();
-				for (BusinessSeries ssoapp : this.bizApp) {
-					map.put(ssoapp.getAtid(), ssoapp);
-					this.redisClient.addMapItem(SecurityCacheKey.BIZ_SERIES, map, -1);
-					System.out.println("SynBusinessSeries2Redis2 set:  cacheKey :" + SecurityCacheKey.BIZ_SERIES +"  value :" +EEBeanUtils.object2Json(map));
-
-				}
+				
+				for (BusinessSeries series : this.bizSeries)
+					map.put(series.getAtid(), series);
+				
+				log.info("business series save to redis, cacheKey :" + SecurityCacheKey.BIZ_SERIES + ",  value :" +EEBeanUtils.object2Json(map));
+				this.redisClient.addMapItem(SecurityCacheKey.BIZ_SERIES, map, -1);
 			} catch (RedisOPException e) {
-				e.printStackTrace();// 缓存写入失败，do nothing
+				log.error("business app save to redis error! exception info: "+e.getMessage());
 			} catch (Exception e) {
-				e.printStackTrace();// 其他错误，do nothing
+				log.error("business app save to redis error! exception info: "+e.getMessage());
 			}
 		}
 		
 	}
 	
-	private SynBusinessSeries2Redis2() {}
+	private SynBusinessSeries2Redis() {}
 }
