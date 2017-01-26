@@ -3,6 +3,9 @@ package com.eenet.authen.cacheSyn;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.eenet.SecurityCacheKey;
 import com.eenet.authen.BusinessApp;
 import com.eenet.common.cache.RedisClient;
@@ -11,11 +14,13 @@ import com.eenet.common.util.RemoveMapItemFromRedisThread;
 import com.eenet.util.EEBeanUtils;
 
 /**
- * 第三方业务系统在Redis中的操作thread safe
+ * 业务系统在Redis中的操作thread safe
+ * 数据格式，redisKey:BIZ_APP, mapKey:appId，value:业务系统对象(@see com.eenet.authen.BusinessApp)
  * @author Orion
  * 2016年6月6日
  */
 public final class SynBusinessApp2Redis {
+	private static final Logger log = LoggerFactory.getLogger(SynBusinessApp2Redis.class);
 	
 	/**
 	 * 将业务应用系统同步到Redis
@@ -32,6 +37,7 @@ public final class SynBusinessApp2Redis {
 			Thread thread = new Thread(syn);
 			thread.start();
 		} catch (Exception e) {
+			log.error("business app syn to redis error! exception info: "+e.getMessage());
 			e.printStackTrace();// 同步到Redis失败
 		}
 	}
@@ -50,9 +56,10 @@ public final class SynBusinessApp2Redis {
 		
 		BusinessApp bizApp = null;
 		try {
-			System.out.println("SynBusinessApp2Redis get:  cacheKey" + SecurityCacheKey.BIZ_APP +"mapKey :"+appId +"value :" +EEBeanUtils.object2Json(client.getMapValue(SecurityCacheKey.BIZ_APP, appId)));
 			bizApp = BusinessApp.class.cast(client.getMapValue(SecurityCacheKey.BIZ_APP, appId));
 		} catch (Exception e) {
+			log.error("can not get business app from redis,  cacheKey: " + SecurityCacheKey.BIZ_APP + ",mapKey: "
+					+ appId + ", exception info: " + e.getMessage());
 			e.printStackTrace();//此处应该有log
 		}
 		return bizApp;
@@ -66,6 +73,7 @@ public final class SynBusinessApp2Redis {
 	 * @author Orion
 	 */
 	public static void remove(final RedisClient client, final String[] appIds) {
+		log.info("business app remove from redis, cacheKey: " + SecurityCacheKey.BIZ_APP + ",  map data: " + EEBeanUtils.object2Json(appIds));
 		RemoveMapItemFromRedisThread.execute(client, appIds, SecurityCacheKey.BIZ_APP);
 	}
 	
@@ -92,16 +100,16 @@ public final class SynBusinessApp2Redis {
 		public void run() {
 			try {
 				Map<String, BusinessApp> map = new HashMap<String, BusinessApp>();
-				for (BusinessApp ssoapp : this.bizApp) {
+				
+				for (BusinessApp ssoapp : this.bizApp)
 					map.put(ssoapp.getAppId(), ssoapp);
-					this.redisClient.addMapItem(SecurityCacheKey.BIZ_APP, map, -1);
-					System.out.println("SynBusinessApp2Redis set:  cacheKey :" + SecurityCacheKey.BIZ_APP +"  value :" +EEBeanUtils.object2Json(map));
-
-				}
+				
+				log.info("business app save to redis, cacheKey :" + SecurityCacheKey.BIZ_APP + ",  value :" +EEBeanUtils.object2Json(map));
+				this.redisClient.addMapItem(SecurityCacheKey.BIZ_APP, map, -1);
 			} catch (RedisOPException e) {
-				e.printStackTrace();// 缓存写入失败，do nothing
+				log.error("business app save to redis error! exception info: "+e.getMessage());
 			} catch (Exception e) {
-				e.printStackTrace();// 其他错误，do nothing
+				log.error("business app save to redis error! exception info: "+e.getMessage());
 			}
 		}
 		
