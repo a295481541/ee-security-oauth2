@@ -99,7 +99,7 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 		List<EndUserLoginAccount> accountInCacheObj = new ArrayList<EndUserLoginAccount>();//已经在缓存中的登录账号对象(list中放对象)
 		List<String> accountNoInCache = new ArrayList<String>();//未在缓存中的登录账号对象(list中放登录账号字符串)
 		for (String account : loginAccounts) {
-			EndUserLoginAccount accountObj = SynEndUserLoginAccount2Redis.get(getRedisClient(), account+":"+seriesId);
+			EndUserLoginAccount accountObj = SynEndUserLoginAccount2Redis.get(getRedisClient(), seriesId,account);
 			if (accountObj == null)
 				accountNoInCache.add(account);
 			else
@@ -138,7 +138,7 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 		for (int i = 0; i < loginAccounts.length; i++) 
 			loginAccounts[i]=  loginAccounts[i]+":" +seriesId;
 		
-		SynEndUserLoginAccount2Redis.remove(getRedisClient(), loginAccounts);
+		SynEndUserLoginAccount2Redis.remove(getRedisClient(), seriesId, loginAccounts);
 		result = super.delete(EndUserLoginAccount.class, loginAccountIDs);
 		
 		return result;
@@ -155,7 +155,7 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 		}
 		
 		/* 从缓存取数据 */
-		EndUserLoginAccount account = SynEndUserLoginAccount2Redis.get(getRedisClient(), loginAccount+":"+seriesId);
+		EndUserLoginAccount account = SynEndUserLoginAccount2Redis.get(getRedisClient(), seriesId, loginAccount);
 		if (account!=null) {
 			return account;
 		}

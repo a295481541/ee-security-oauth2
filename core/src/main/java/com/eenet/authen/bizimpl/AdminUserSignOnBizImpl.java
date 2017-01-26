@@ -67,7 +67,7 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		}
 		
 		/* 检查业务应用app是否存在，跳转地址是否合法(仅web应用) */
-		SimpleResponse existApp = getSignOnUtil().existAPP(appId, redirectURI, getBusinessAppBizService());
+		SimpleResponse existApp = getSignOnUtil().existAPP(appId, redirectURI);
 		if (!existApp.isSuccessful()) {
 			grant.setRSBizCode(ABBizCode.AB0006);
 			grant.addMessage(existApp.getStrMessage());
@@ -193,7 +193,7 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		
 		/* 生成并记录访问令牌 */
 		StringResponse mkAccessTokenResult = 
-				getSignOnUtil().makeAccessToken(SecurityCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX, appId, seriesId,userId, getBusinessAppBizService());
+				getSignOnUtil().makeAccessToken(SecurityCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX, appId, userId);
 		if (!mkAccessTokenResult.isSuccessful()) {
 			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(mkAccessTokenResult.getStrMessage());
@@ -302,7 +302,7 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		
 		/* 生成并记录访问令牌（超过有效期后令牌会从Redis中自动消失） */
 		StringResponse mkAccessTokenResult = 
-				getSignOnUtil().makeAccessToken(SecurityCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX, appId, seriesId , userId, getBusinessAppBizService());
+				getSignOnUtil().makeAccessToken(SecurityCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX, appId, seriesId , userId);
 		if (!mkAccessTokenResult.isSuccessful()) {
 			token.addMessage(mkAccessTokenResult.getStrMessage());
 			return token;

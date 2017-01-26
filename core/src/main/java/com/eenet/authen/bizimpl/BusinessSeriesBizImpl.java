@@ -4,8 +4,7 @@ import com.eenet.authen.BusinessApp;
 import com.eenet.authen.BusinessAppBizService;
 import com.eenet.authen.BusinessSeries;
 import com.eenet.authen.BusinessSeriesBizService;
-import com.eenet.authen.cacheSyn.SynBusinessApp2Redis;
-import com.eenet.authen.cacheSyn.SynBusinessSeries2Redis2;
+import com.eenet.authen.cacheSyn.SynBusinessSeries2Redis;
 import com.eenet.base.biz.SimpleBizImpl;
 import com.eenet.common.cache.RedisClient;
 import com.eenet.util.EEBeanUtils;
@@ -42,7 +41,7 @@ public class BusinessSeriesBizImpl  extends SimpleBizImpl implements BusinessSer
 		
 		
 		if (!EEBeanUtils.isNULL(seriesId)) {//是否有传业务体系标识
-			BusinessSeries   result = SynBusinessSeries2Redis2.get(getRedisClient(), seriesId);//缓存中取数据
+			BusinessSeries   result = SynBusinessSeries2Redis.get(getRedisClient(), seriesId);//缓存中取数据
 			System.out.println(result);
 			System.out.println("businessSeries redis :" +EEBeanUtils.object2Json(result) );
 			if (result != null )
@@ -52,7 +51,7 @@ public class BusinessSeriesBizImpl  extends SimpleBizImpl implements BusinessSer
 			if (result != null ){
 				System.out.println(result);
 				System.out.println("businessSeries db :" +EEBeanUtils.object2Json(result) );
-				SynBusinessSeries2Redis2.syn(getRedisClient(), result);
+				SynBusinessSeries2Redis.syn(getRedisClient(), result);
 				return result;
 			}
 		}

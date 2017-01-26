@@ -505,7 +505,7 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 		}
 		
 		/* 从缓存取数据 */
-		String ciphertext = SynEndUserCredential2Redis.get(getRedisClient(), endUserId+":"+seriesId);
+		String ciphertext = SynEndUserCredential2Redis.get(getRedisClient(), seriesId, endUserId);
 		
 		
 		

@@ -29,7 +29,7 @@ public interface EndUserSignOnBizService {
 	 * @param password 最终用户登录密码，带时间戳加密的形式。可以是最终用户统一密码，也可以是账单账号私有密码
 	 * @return 授权码
 	 */
-	public SignOnGrant getSignOnGrant(String appId, String seriesId,String redirectURI, String loginAccount, String password);
+	public SignOnGrant getSignOnGrant(String appId, String seriesId, String redirectURI, String loginAccount, String password);
 	
 	
 	
@@ -78,8 +78,9 @@ public interface EndUserSignOnBizService {
 	 * 最终用户登出
 	 * @param appId 业务应用标识
 	 * @param userId 登出用户标识
+	 * @param seriesId 业务体系标记
 	 * 2016年7月7日
 	 * @author Orion
 	 */
-	public void signOut(String appId, String userId);
+	public void signOut(String appId, String userId, String seriesId);
 }

@@ -177,14 +177,6 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 			return result;
 		}
 		
-		
-		
-		
-		
-		
-		
-		
-		
 		/* 获取手机所属用户个人信息 */
 		EndUserInfo user = getPreRegistEndUserBizService().retrieveEndUserInfo(app.getAppId(), app.getBusinessSeries().getAtid(), String.valueOf(mobile));
 		
@@ -198,15 +190,11 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 		/* 删除访问令牌（防止一个用户可以通过两个令牌登录） */
 		getSignOnUtil().removeUserTokenInApp(SecurityCacheKey.ENDUSER_CACHED_TOKEN,
 				SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, SecurityCacheKey.ENDUSER_REFRESHTOKEN_PREFIX,
-				appRequest.getAppId(), user.getAtid());
+				appRequest.getAppId(), user.getAtid(), appRequest.getBizSeriesId());
 		
 		/* 生成并记录访问令牌 */
-//		StringResponse mkAccessTokenResult = 
-//				getSignOnUtil().makeAccessToken(AuthenCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, appRequest.getAppId(), user.getAtid(), getBusinessAppBizService());
-		
-		
 		StringResponse mkAccessTokenResult = 
-				getSignOnUtil().makeAccessToken(SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, appRequest.getAppId(), app.getBusinessSeries().getAtid(),user.getAtid(), getBusinessAppBizService());
+				getSignOnUtil().makeAccessToken(SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, appRequest.getAppId(), user.getAtid(), app.getBusinessSeries().getAtid());
 		
 		if (!mkAccessTokenResult.isSuccessful()) {
 			result.addMessage(mkAccessTokenResult.getStrMessage());
@@ -214,8 +202,9 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 		}
 		
 		/* 生成并记录刷新令牌 */
-		StringResponse mkFreshTokenResult = 
-				getSignOnUtil().makeRefreshToken(SecurityCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appRequest.getAppId(), user.getAtid()+":"+appAuthenRS.getBizSeriesId());
+		StringResponse mkFreshTokenResult = getSignOnUtil().makeRefreshToken(
+				SecurityCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appRequest.getAppId(), user.getAtid(),
+				appAuthenRS.getBizSeriesId());
 		if (!mkFreshTokenResult.isSuccessful()) {
 			result.addMessage(mkFreshTokenResult.getStrMessage());
 			return result;
@@ -223,7 +212,7 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 		
 		/* 标记最终用户已缓存令牌 */
 		getSignOnUtil().markUserTokenInApp(SecurityCacheKey.ENDUSER_CACHED_TOKEN, appRequest.getAppId(), user.getAtid(),
-				mkAccessTokenResult.getResult(), mkFreshTokenResult.getResult());
+				appAuthenRS.getBizSeriesId(), mkAccessTokenResult.getResult(), mkFreshTokenResult.getResult());
 		
 		/* 所有参数已缓存，拼返回对象 */
 		result.setUserInfo(user);

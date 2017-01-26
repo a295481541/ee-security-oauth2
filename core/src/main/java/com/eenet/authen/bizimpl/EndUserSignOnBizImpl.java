@@ -109,13 +109,12 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		
 		
 		/* 删除访问令牌（防止一个用户可以通过两个令牌登录） */
-		getSignOnUtil().removeUserTokenInApp(SecurityCacheKey.ENDUSER_CACHED_TOKEN,
-				SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, SecurityCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appId,
-				getUserIdResult.getResult());
+		getSignOnUtil().removeUserTokenInApp(SecurityCacheKey.ENDUSER_CACHED_TOKEN, SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, 
+				SecurityCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appId, userId, seriesId);
 		
 		/* 生成并记录访问令牌 */
 		StringResponse mkAccessTokenResult = 
-				getSignOnUtil().makeAccessToken(SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, appId, seriesId, userId, getBusinessAppBizService());
+				getSignOnUtil().makeAccessToken(SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, appId, seriesId, userId);
 		
 		
 		
@@ -153,8 +152,8 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		}
 		
 		/* 标记最终用户已缓存令牌 */
-		getSignOnUtil().markUserTokenInApp(SecurityCacheKey.ENDUSER_CACHED_TOKEN, appId, getUserIdResult.getResult(),
-				mkAccessTokenResult.getResult(), mkFreshTokenResult.getResult());
+		getSignOnUtil().markUserTokenInApp(SecurityCacheKey.ENDUSER_CACHED_TOKEN, appId, userIdResult, 
+				seriesId, mkAccessTokenResult.getResult(), mkFreshTokenResult.getResult());
 		
 		/* 所有参数已缓存，拼返回对象 */
 		token.setUserInfo(getEndUserResult);
@@ -222,13 +221,13 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		}
 		
 		/* 删除当前用户在当前应用的所有令牌（包括：刷新令牌、访问令牌和已缓存令牌标识），防止一个用户可以通过两个令牌登录 */
-		getSignOnUtil().removeUserTokenInApp(SecurityCacheKey.ENDUSER_CACHED_TOKEN,
-				SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, SecurityCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appId,
-				getUserIdResult.getResult());
+		getSignOnUtil().removeUserTokenInApp(SecurityCacheKey.ENDUSER_CACHED_TOKEN, SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, 
+				SecurityCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appId, userId, seriesId);
+		
 				
 		/* 生成并记录访问令牌（超过有效期后令牌会从Redis中自动消失） */
 		StringResponse mkAccessTokenResult = 
-				getSignOnUtil().makeAccessToken(SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, appId, seriesId,userId, getBusinessAppBizService());
+				getSignOnUtil().makeAccessToken(SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, appId, userId, seriesId);
 		if (!mkAccessTokenResult.isSuccessful()) {
 			token.addMessage(mkAccessTokenResult.getStrMessage());
 			return token;
@@ -238,15 +237,14 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		
 		/* 生成并记录新的刷新令牌 */
 		StringResponse mkFreshTokenResult = 
-				getSignOnUtil().makeRefreshToken(SecurityCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appId, getUserIdResult.getResult());
+				getSignOnUtil().makeAccessToken(SecurityCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appId, userId, seriesId);
 		if (!mkFreshTokenResult.isSuccessful()) {
 			token.addMessage(mkFreshTokenResult.getStrMessage());
 			return token;
 		}
 		
 		/* 更新最终用户已缓存令牌 */
-		getSignOnUtil().markUserTokenInApp(SecurityCacheKey.ENDUSER_CACHED_TOKEN, appId, getUserIdResult.getResult(),
-				mkAccessTokenResult.getResult(), mkFreshTokenResult.getResult());
+		getSignOnUtil().markUserTokenInApp(SecurityCacheKey.ENDUSER_CACHED_TOKEN, appId, userIdResult, seriesId, mkAccessTokenResult.getResult(), refreshToken);
 		
 		/* 所有参数已缓存，拼返回对象 */
 		token.setAccessToken(mkAccessTokenResult.getResult());
@@ -256,16 +254,24 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 	}
 	
 	@Override
-	public void signOut(String appId, String userId) {
+	public void signOut(String appId, String userId, String seriesId) {
 		/* 参数检查 */
 		if (EEBeanUtils.isNULL(appId) || EEBeanUtils.isNULL(userId)) {
 			return;
 		}
 		
+		String vSeriesId = null;
+		if ( EEBeanUtils.isNULL(seriesId) ) {
+			BusinessSeries bizSeriesObj = getBusinessAppBizService().retrieveApp(appId).getBusinessSeries();
+			if ( bizSeriesObj != null )
+				vSeriesId = bizSeriesObj.getAtid();
+		} else 
+			vSeriesId = seriesId;
+		
 		/* 删除所有令牌 */
 		getSignOnUtil().removeUserTokenInApp(SecurityCacheKey.ENDUSER_CACHED_TOKEN,
 				SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, SecurityCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appId,
-				userId);
+				userId, vSeriesId);
 	}
 	
 	/****************************************************************************
@@ -436,7 +442,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		}
 		
 		/* 检查业务应用app是否存在，跳转地址是否合法(仅web应用) */
-		SimpleResponse existApp = getSignOnUtil().existAPP(appId, redirectURI, getBusinessAppBizService());
+		SimpleResponse existApp = getSignOnUtil().existAPP(appId, redirectURI);
 		if (!existApp.isSuccessful()) {
 			grant.setRSBizCode(ABBizCode.AB0006);
 			grant.addMessage(existApp.getStrMessage());

@@ -138,19 +138,25 @@ public class SignOnUtil {
 	 * @param prefix 访问令牌前缀
 	 * @param appId 应用标识
 	 * @param userId 用户标识（服务人员或最终用户）
-	 * @param appType 业务系统类型
 	 * @return
 	 * 2017年1月25日
 	 * @author Orion
 	 */
 	@Deprecated
-	public StringResponse makeAccessToken(String prefix, String appId, String userId, BusinessAppType appType) {
+	public StringResponse makeAccessToken(String prefix, String appId, String userId) {
 		StringResponse result = new StringResponse();
 		result.setSuccessful(false);
 		if (EEBeanUtils.isNULL(prefix) || EEBeanUtils.isNULL(appId) || EEBeanUtils.isNULL(userId)){
 			result.addMessage("授权码前缀、应用标识、用户标识均不可为空("+this.getClass().getName()+")");
 			return result;
 		}
+		
+		//获得应用类型
+		BusinessApp currentApp = this.getBusinessAppBizService().retrieveApp(appId);
+		if (!currentApp.isSuccessful()) {
+			result.addMessage("当前应用未知");
+		}
+		BusinessAppType appType = currentApp.getAppType();
 		
 		try {
 			String accessToken = EEBeanUtils.getUUID();
@@ -178,18 +184,24 @@ public class SignOnUtil {
 	 * @param appId 应用ID
 	 * @param userId 用户ID
 	 * @param seriesId 业务体系ID
-	 * @param businessAppBizService 业务系统类型
 	 * @return
 	 * 2016年6月10日
 	 * @author Orion
 	 */
-	public StringResponse makeAccessToken(String prefix, String appId, String userId, String seriesId, BusinessAppType appType) {
+	public StringResponse makeAccessToken(String prefix, String appId, String userId, String seriesId) {
 		StringResponse result = new StringResponse();
 		result.setSuccessful(false);
 		if (EEBeanUtils.isNULL(prefix) || EEBeanUtils.isNULL(appId) || EEBeanUtils.isNULL(userId) || EEBeanUtils.isNULL(seriesId)){
 			result.addMessage("授权码前缀、应用标识、用户标识、业务体系标识均不可为空("+this.getClass().getName()+")");
 			return result;
 		}
+		
+		//获得应用类型
+		BusinessApp currentApp = this.getBusinessAppBizService().retrieveApp(appId);
+		if (!currentApp.isSuccessful()) {
+			result.addMessage("当前应用未知");
+		}
+		BusinessAppType appType = currentApp.getAppType();
 		
 		try {
 			String accessToken = EEBeanUtils.getUUID();
