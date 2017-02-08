@@ -116,7 +116,9 @@ public class SignOnUtil {
 		
 		try {
 			String code = EEBeanUtils.getUUID();
+			log.error("[makeGrantCode("+Thread.currentThread().getId()+")] make redis key : " + prefix+":"+appId+":"+code +", value : "+userId+":"+seriesId);
 			boolean cached = getRedisClient().setObject(prefix+":"+appId+":"+code, userId+":"+seriesId, 60 * 15);
+			log.error("[makeGrantCode("+Thread.currentThread().getId()+")] get redis result : " + getRedisClient().getObject(prefix+":"+appId+":"+code,String.class));
 			
 			result.setSuccessful(cached);
 			if (cached)
@@ -208,7 +210,13 @@ public class SignOnUtil {
 			//访问令牌有效期
 			int expire = BusinessAppType.WEBAPP.equals(appType) ? 60 * 30 : 60 * 60 * 24;
 			//记录令牌
+			
+			log.error("[makeGrantCode("+Thread.currentThread().getId()+")] make redis key : " + prefix + ":" + appId + ":" + accessToken +", value : "+userId + ":" + seriesId);
+			
 			boolean cached = getRedisClient().setObject(prefix + ":" + appId + ":" + accessToken , userId + ":" + seriesId, expire);
+			
+			log.error("[makeGrantCode("+Thread.currentThread().getId()+")] get redis result : " + getRedisClient().getObject(prefix + ":" + appId + ":" + accessToken,String.class));
+			
 			result.setSuccessful(cached);
 			if (cached)
 				result.setResult(accessToken);
@@ -246,7 +254,9 @@ public class SignOnUtil {
 			//访问令牌有效期
 			int expire = 60 * 60 * 24 * 30;
 			//记录令牌
+			log.error("[makeGrantCode("+Thread.currentThread().getId()+")] make redis key : " + prefix + ":" + appId + ":" + refreshToken +", value : "+userId);
 			boolean cached = getRedisClient().setObject(prefix + ":" + appId + ":" + refreshToken, userId, expire);
+			log.error("[makeGrantCode("+Thread.currentThread().getId()+")] get redis result : " + getRedisClient().getObject(prefix + ":" + appId + ":" + refreshToken,String.class));
 			result.setSuccessful(cached);
 			if (cached)
 				result.setResult(refreshToken);

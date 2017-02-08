@@ -190,11 +190,11 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 		/* 删除访问令牌（防止一个用户可以通过两个令牌登录） */
 		getSignOnUtil().removeUserTokenInApp(SecurityCacheKey.ENDUSER_CACHED_TOKEN,
 				SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, SecurityCacheKey.ENDUSER_REFRESHTOKEN_PREFIX,
-				appRequest.getAppId(), user.getAtid(), appRequest.getBizSeriesId());
+				app.getAppId(), user.getAtid(), app.getBusinessSeries().getAtid());
 		
 		/* 生成并记录访问令牌 */
 		StringResponse mkAccessTokenResult = 
-				getSignOnUtil().makeAccessToken(SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, appRequest.getAppId(), user.getAtid(), app.getBusinessSeries().getAtid());
+				getSignOnUtil().makeAccessToken(SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, app.getAppId(), user.getAtid(), app.getBusinessSeries().getAtid());
 		
 		if (!mkAccessTokenResult.isSuccessful()) {
 			result.addMessage(mkAccessTokenResult.getStrMessage());
@@ -203,16 +203,16 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 		
 		/* 生成并记录刷新令牌 */
 		StringResponse mkFreshTokenResult = getSignOnUtil().makeRefreshToken(
-				SecurityCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appRequest.getAppId(), user.getAtid(),
-				appAuthenRS.getBizSeriesId());
+				SecurityCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, app.getAppId(), user.getAtid(),
+				app.getBusinessSeries().getAtid());
 		if (!mkFreshTokenResult.isSuccessful()) {
 			result.addMessage(mkFreshTokenResult.getStrMessage());
 			return result;
 		}
 		
 		/* 标记最终用户已缓存令牌 */
-		getSignOnUtil().markUserTokenInApp(SecurityCacheKey.ENDUSER_CACHED_TOKEN, appRequest.getAppId(), user.getAtid(),
-				appAuthenRS.getBizSeriesId(), mkAccessTokenResult.getResult(), mkFreshTokenResult.getResult());
+		getSignOnUtil().markUserTokenInApp(SecurityCacheKey.ENDUSER_CACHED_TOKEN, app.getAppId(), user.getAtid(),
+				app.getBusinessSeries().getAtid(), mkAccessTokenResult.getResult(), mkFreshTokenResult.getResult());
 		
 		/* 所有参数已缓存，拼返回对象 */
 		result.setUserInfo(user);

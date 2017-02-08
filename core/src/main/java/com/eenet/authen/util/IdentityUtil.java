@@ -1,10 +1,13 @@
 package com.eenet.authen.util;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.eenet.authen.BusinessApp;
 import com.eenet.authen.BusinessAppBizService;
+import com.eenet.base.MapResponse;
 import com.eenet.base.SimpleResponse;
 import com.eenet.base.StringResponse;
 import com.eenet.common.cache.RedisClient;
@@ -88,14 +91,54 @@ public class IdentityUtil {
 		}
 		
 		try {
-			String userId = getRedisClient().getObject(prefix + ":" + appId + ":" + codeOrToken, String.class);
-			log.error("[getUserIdByCodeOrToken("+Thread.currentThread().getId()+")] redis target key : " + prefix + ":" + appId + ":" + codeOrToken +", value : "+userId);
-			if (EEBeanUtils.isNULL(userId))
+			String cacheResult = getRedisClient().getObject(prefix + ":" + appId + ":" + codeOrToken, String.class);
+			log.error("[getUserIdByCodeOrToken("+Thread.currentThread().getId()+")] redis target key : " + prefix + ":" + appId + ":" + codeOrToken +", value : "+cacheResult);
+			if (EEBeanUtils.isNULL(cacheResult))
 				result.addMessage("无效登录授权码/访问授权码/刷新授权码("+this.getClass().getName()+")");
-			else {
-				result.setResult(userId);
+			
+			if (cacheResult.contains(":")){
+				result.setResult(cacheResult.substring(0, cacheResult.indexOf(":")));
 				result.setSuccessful(true);
 			}
+			else {
+				result.setResult(cacheResult);
+				result.setSuccessful(true);
+			}
+			return result;
+		} catch (RedisOPException e) {
+			result.addMessage(e.toString());
+			return result;
+		}
+	}
+	
+	
+	/**
+	 * 根据标识码（登录授权码/访问授权码/刷新授权码）获得人员（最终用户/服务人员）标识
+	 * @param prefix 授权码前缀
+	 * @param codeOrToken 登录授权码/访问授权码/刷新授权码
+	 * @param appId 应用标识
+	 * @return
+	 * 2016年6月10日
+	 * @author Orion
+	 */
+	public StringResponse getSeriesIdByCodeOrToken(String prefix, String codeOrToken, String appId) {
+		StringResponse result = new StringResponse();
+		result.setSuccessful(false);
+		if (EEBeanUtils.isNULL(prefix) || EEBeanUtils.isNULL(codeOrToken) || EEBeanUtils.isNULL(appId)){
+			result.addMessage("授权码前缀、登录授权码/访问授权码/刷新授权码、应用标识均不可为空("+this.getClass().getName()+")");
+			return result;
+		}
+		
+		try {
+			String cacheResult = getRedisClient().getObject(prefix + ":" + appId + ":" + codeOrToken, String.class);
+			log.error("[getSeriesIdByCodeOrToken("+Thread.currentThread().getId()+")] redis target key : " + prefix + ":" + appId + ":" + codeOrToken +", value : "+cacheResult);
+			if (EEBeanUtils.isNULL(cacheResult))
+				result.addMessage("无效登录授权码/访问授权码/刷新授权码("+this.getClass().getName()+")");
+			
+			if (cacheResult.contains(":")) {
+				result.setResult(cacheResult.substring(cacheResult.indexOf(":")+1, cacheResult.length()));
+				result.setSuccessful(true);
+			} 
 			return result;
 		} catch (RedisOPException e) {
 			result.addMessage(e.toString());

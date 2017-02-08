@@ -11,7 +11,7 @@
 	<!-- 登录工具类 -->
 	<bean id="SignOnUtil" class="com.eenet.authen.util.SignOnUtil">
 		<property name="RedisClient" ref="RedisClient"/>
-		<property name="businessAppBizService" ref="BusinessSeriesBizImpl"/>
+		<property name="businessAppBizService" ref="BusinessAppBizImpl"/>
 	</bean>
 	<!-- 身份认证工具类 -->
 	<bean id="IdentityUtil" class="com.eenet.authen.util.IdentityUtil">

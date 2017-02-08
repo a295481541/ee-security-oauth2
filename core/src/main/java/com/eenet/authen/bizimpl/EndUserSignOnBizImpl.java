@@ -11,6 +11,9 @@ import com.eenet.authen.EndUserLoginAccount;
 import com.eenet.authen.EndUserLoginAccountBizService;
 import com.eenet.authen.EndUserSignOnBizService;
 import com.eenet.authen.SignOnGrant;
+
+import java.nio.file.attribute.UserPrincipalLookupService;
+
 import com.eenet.SecurityCacheKey;
 import com.eenet.authen.identifier.CallerIdentityInfo;
 import com.eenet.authen.util.ABBizCode;
@@ -93,10 +96,20 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 			token.addMessage(getUserIdResult.getStrMessage());
 			return token;
 		}
-		String userIdResult =  getUserIdResult.getResult();
-		System.out.println("/* 验证授权码 */ :" +userIdResult);
-		String seriesId = userIdResult.substring(userIdResult.indexOf(":")+1, userIdResult.length());
-		String userId =  userIdResult.substring(0, userIdResult.indexOf(":"));
+		
+		
+		StringResponse getSeriesIdResult = 
+				getIdentityUtil().getSeriesIdByCodeOrToken(SecurityCacheKey.ENDUSER_GRANTCODE_PREFIX, grantCode, appId);
+		if (!getUserIdResult.isSuccessful()) {
+			token.setRSBizCode(ABBizCode.AB0006);
+			token.addMessage(getUserIdResult.getStrMessage());
+			return token;
+		}
+		
+		String seriesId = getSeriesIdResult.getResult();
+		String userId =  getUserIdResult.getResult();
+		
+		System.out.println("/* 验证授权码 */ :" +userId+":"+userId);
 		
 		/* 删除授权码（授权码只能用一次） */
 		SimpleResponse rmCodeResult = 
@@ -114,7 +127,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		
 		/* 生成并记录访问令牌 */
 		StringResponse mkAccessTokenResult = 
-				getSignOnUtil().makeAccessToken(SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, appId, seriesId, userId);
+				getSignOnUtil().makeAccessToken(SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, appId,  userId ,seriesId);
 		
 		
 		
@@ -152,7 +165,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		}
 		
 		/* 标记最终用户已缓存令牌 */
-		getSignOnUtil().markUserTokenInApp(SecurityCacheKey.ENDUSER_CACHED_TOKEN, appId, userIdResult, 
+		getSignOnUtil().markUserTokenInApp(SecurityCacheKey.ENDUSER_CACHED_TOKEN, appId, userId, 
 				seriesId, mkAccessTokenResult.getResult(), mkFreshTokenResult.getResult());
 		
 		/* 所有参数已缓存，拼返回对象 */
@@ -203,18 +216,30 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		}
 		
 		/* 根据刷新令牌获得最终用户标识 */
+		/* 验证授权码 */
 		StringResponse getUserIdResult = 
-				getIdentityUtil().getUserIdByCodeOrToken(SecurityCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, refreshToken, appId);
+				getIdentityUtil().getUserIdByCodeOrToken(SecurityCacheKey.ENDUSER_GRANTCODE_PREFIX, refreshToken, appId);
 		if (!getUserIdResult.isSuccessful()) {
+			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(getUserIdResult.getStrMessage());
 			return token;
 		}
 		
-		String userIdResult =  getUserIdResult.getResult();
-		String seriesId = userIdResult.substring(userIdResult.indexOf(":")+1, userIdResult.length());
-		String userId =  userIdResult.substring(0, userIdResult.indexOf(":"));
 		
-		/* 验证刷新令牌是否属于传入的人员标识:业务体系id */
+		StringResponse getSeriesIdResult = 
+				getIdentityUtil().getSeriesIdByCodeOrToken(SecurityCacheKey.ENDUSER_GRANTCODE_PREFIX, refreshToken, appId);
+		if (!getUserIdResult.isSuccessful()) {
+			token.setRSBizCode(ABBizCode.AB0006);
+			token.addMessage(getUserIdResult.getStrMessage());
+			return token;
+		}
+		
+		String seriesId = getSeriesIdResult.getResult();
+		String userId =  getUserIdResult.getResult();
+		
+		System.out.println("/* 验证授权码 */ :" +userId+":"+userId);
+		
+		/* 验证刷新令牌是否属于传入的人员*/
 		if (!endUserId.equals(userId)) {
 			token.addMessage("最终用户刷新令牌错误("+this.getClass().getName()+")");
 			return token;
@@ -244,7 +269,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		}
 		
 		/* 更新最终用户已缓存令牌 */
-		getSignOnUtil().markUserTokenInApp(SecurityCacheKey.ENDUSER_CACHED_TOKEN, appId, userIdResult, seriesId, mkAccessTokenResult.getResult(), refreshToken);
+		getSignOnUtil().markUserTokenInApp(SecurityCacheKey.ENDUSER_CACHED_TOKEN, appId, userId, seriesId, mkAccessTokenResult.getResult(), refreshToken);
 		
 		/* 所有参数已缓存，拼返回对象 */
 		token.setAccessToken(mkAccessTokenResult.getResult());
@@ -504,8 +529,6 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		if (!passwordEqual) {//获得账号私有密码加密类型
 			encryptionType = getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(app.getBusinessSeries().getAtid() ,loginAccount).getEncryptionType();
 			EndUserLoginAccount accountPassword = getEndUserLoginAccountBizService().retrieveEndUserAccountPassword(app.getBusinessSeries().getAtid() ,loginAccount, getStorageRSADecrypt());
-			System.out.println("输入登录密码："+passwordPlaintext);
-			System.out.println("账户登录密码："+accountPassword.getAccountLoginPassword());
 			
 			
 			if ( !passwordEqual && accountPassword.isSuccessful() && encryptionType.equals("RSA") && passwordPlaintext.equals(accountPassword.getAccountLoginPassword()) )
@@ -527,8 +550,6 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 			return grant;
 		}
 		
-		System.out.println("endUser atid :"+endUser.getAtid());
-		System.out.println("business atid:"+app.getBusinessSeries().getAtid());
 		
 		
 		/* 生成并缓存code */
