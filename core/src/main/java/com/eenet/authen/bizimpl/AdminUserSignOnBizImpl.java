@@ -1,5 +1,6 @@
 package com.eenet.authen.bizimpl;
 
+import com.eenet.SecurityCacheKey;
 import com.eenet.authen.AccessToken;
 import com.eenet.authen.AdminUserCredential;
 import com.eenet.authen.AdminUserCredentialBizService;
@@ -7,11 +8,11 @@ import com.eenet.authen.AdminUserLoginAccountBizService;
 import com.eenet.authen.AdminUserSignOnBizService;
 import com.eenet.authen.BusinessAppBizService;
 import com.eenet.authen.SignOnGrant;
-import com.eenet.SecurityCacheKey;
 import com.eenet.authen.identifier.CallerIdentityInfo;
 import com.eenet.authen.util.ABBizCode;
 import com.eenet.authen.util.IdentityUtil;
 import com.eenet.authen.util.SignOnUtil;
+import com.eenet.authen.util.UserNSeriesResponse;
 import com.eenet.base.SimpleResponse;
 import com.eenet.base.StringResponse;
 import com.eenet.baseinfo.user.AdminUserInfo;
@@ -165,15 +166,15 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		}
 		
 		/* 验证授权码 */
-		StringResponse getUserIdResult = 
-				getIdentityUtil().getUserIdByCodeOrToken(SecurityCacheKey.ADMINUSER_GRANTCODE_PREFIX, grantCode, appId);
+		UserNSeriesResponse getUserIdResult = 
+				getIdentityUtil().getUserNSeriesByCodeOrToken(SecurityCacheKey.ADMINUSER_GRANTCODE_PREFIX, grantCode, appId);
 		if (!getUserIdResult.isSuccessful()) {
 			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(getUserIdResult.getStrMessage());
 			return token;
 		}
 		
-		String userId =  getUserIdResult.getResult();
+		String userId =  getUserIdResult.getUserId();
 		
 		/* 删除授权码（授权码只能用一次） */
 		SimpleResponse rmCodeResult = 
@@ -211,12 +212,12 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		 * 注入访问令牌是因为调用基础服务取个人信息时需要验证令牌 */
 		OPOwner.setCurrentSys(appId);
 		CallerIdentityInfo.setAppsecretkey(secretKey);
-		OPOwner.setCurrentUser(getUserIdResult.getResult());
+		OPOwner.setCurrentUser(userId);
 		OPOwner.setUsertype("adminUser");
 		CallerIdentityInfo.setAccesstoken(mkAccessTokenResult.getResult());
 		
 		/* 获得服务人员基本信息 */
-		AdminUserInfo getAdminUserResult = getAdminUserInfoBizService().get(getUserIdResult.getResult());
+		AdminUserInfo getAdminUserResult = getAdminUserInfoBizService().get(userId);
 		if (!getAdminUserResult.isSuccessful()) {
 			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(getAdminUserResult.getStrMessage());
@@ -275,18 +276,18 @@ public class AdminUserSignOnBizImpl implements AdminUserSignOnBizService {
 		}
 		
 		/* 根据刷新令牌获得服务人员标识 */
-		StringResponse getUserIdResult = 
-				getIdentityUtil().getUserIdByCodeOrToken(SecurityCacheKey.ADMINUSER_REFRESHTOKEN_PREFIX, refreshToken, appId);
+		UserNSeriesResponse getUserIdResult = 
+				getIdentityUtil().getUserNSeriesByCodeOrToken(SecurityCacheKey.ADMINUSER_REFRESHTOKEN_PREFIX, refreshToken, appId);
 		if (!getUserIdResult.isSuccessful()) {
 			token.addMessage(getUserIdResult.getStrMessage());
 			return token;
 		}
 		
-		String userId =  getUserIdResult.getResult();
+		String userId =  getUserIdResult.getUserId();
 		
 		
 		/* 验证刷新令牌是否属于传入的人员标识 */
-		if (!adminUserId.equals(getUserIdResult.getResult())) {
+		if (!adminUserId.equals(userId)) {
 			token.addMessage("服务人员刷新令牌错误("+this.getClass().getName()+")");
 			return token;
 		}

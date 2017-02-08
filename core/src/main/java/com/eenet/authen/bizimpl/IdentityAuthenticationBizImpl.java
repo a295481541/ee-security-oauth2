@@ -2,16 +2,16 @@ package com.eenet.authen.bizimpl;
 
 import java.lang.reflect.InvocationTargetException;
 
+import com.eenet.SecurityCacheKey;
 import com.eenet.authen.BusinessAppBizService;
 import com.eenet.authen.IdentityAuthenticationBizService;
-import com.eenet.SecurityCacheKey;
 import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.authen.request.UserAccessTokenAuthenRequest;
 import com.eenet.authen.response.AppAuthenResponse;
 import com.eenet.authen.response.UserAccessTokenAuthenResponse;
 import com.eenet.authen.util.IdentityUtil;
+import com.eenet.authen.util.UserNSeriesResponse;
 import com.eenet.base.SimpleResponse;
-import com.eenet.base.StringResponse;
 import com.eenet.util.EEBeanUtils;
 import com.eenet.util.cryptography.EncryptException;
 import com.eenet.util.cryptography.RSADecrypt;
@@ -198,16 +198,14 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 		}
 		
 		/* 获得传入访问令牌的所有者标识 */
-		StringResponse getUserIdResult = 
-				getIdentityUtil().getUserIdByCodeOrToken(accesstokenPrefix, request.getUserAccessToken(), request.getAppId());
-		if (!getUserIdResult.isSuccessful()) {
+		UserNSeriesResponse getUserIdResult = 
+				getIdentityUtil().getUserNSeriesByCodeOrToken(accesstokenPrefix, request.getUserAccessToken(), request.getAppId());
+		if (!getUserIdResult.isSuccessful()) { 
 			result.addMessage(getUserIdResult.getStrMessage());
 			return result;
 		}
 		
-		String userIdResult  = getUserIdResult.getResult();
-		if (userIdResult.contains(":")) 
-			userIdResult =  userIdResult.substring(0, userIdResult.indexOf(":"));
+		String userIdResult  = getUserIdResult.getUserId();
 			
 		
 		String requestUserId = request.getUserId();
@@ -215,10 +213,6 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 			requestUserId = requestUserId.substring(0, requestUserId.indexOf(":"));
 		
 		/* 验证访问令牌（令牌所有者是否与传入的用户标识匹配） */
-		System.out.println(request.getUserId());
-		System.out.println(getUserIdResult.getResult());
-		System.out.println(userIdResult);
-		System.out.println(requestUserId);
 		if (!userIdResult.equals(requestUserId)) {
 			result.addMessage("访问令牌验证失败("+this.getClass().getName()+"("+this.getClass().getName()+")");
 			return result;
