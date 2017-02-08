@@ -128,7 +128,7 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 			return result;
 		}  else if (curCredential.getBusinessSeries() == null ||EEBeanUtils.isNULL(curCredential.getBusinessSeries().getAtid())){
 			result.setSuccessful(false);
-			result.addMessage("要初始化的最终用户登录秘钥参数不全，业务体系必须指定("+this.getClass().getName()+")");
+			result.addMessage("要修改的最终用户登录秘钥参数不全，业务体系必须指定("+this.getClass().getName()+")");
 		}else if (EEBeanUtils.isNULL(curCredential.getPassword()) || curCredential.getEndUser()==null || EEBeanUtils.isNULL(curCredential.getEndUser().getAtid())) {
 			result.setSuccessful(false);
 			result.addMessage("要修改的最终用户登录秘钥参数不全，END USER标识、当前登录密码均不可为空("+this.getClass().getName()+")");
@@ -155,14 +155,8 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 			}
 		}
 		
-		
 		/* 判断指定的业务体系是否存在 */
 		BusinessSeries  businessSeries= businessSeriesBizService.retrieveBusinessSeries(curCredential.getBusinessSeries().getAtid(), null);
-		System.out.println("============="+businessSeries);
-		if (businessSeries !=null ) {
-			System.out.println(EEBeanUtils.object2Json(businessSeries));
-		}
-		
 		if (businessSeries.isSuccessful() ) {
 			result.setSuccessful(false);
 			result.addMessage("未找到指定要设置登录密码对应的业务体系("+existEndUser.getStrMessage()+")");
@@ -225,8 +219,6 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 		
 		return result;
 	}
-	
-	
 	
 	@Override
 	public SimpleResponse changeEndUserLoginPassword(EndUserCredential curCredential,EndUserLoginAccount account, String newSecretKey) {
