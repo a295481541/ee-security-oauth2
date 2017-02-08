@@ -19,6 +19,8 @@ public interface EndUserCredentialBizService {
 	 */
 	public SimpleResponse initEndUserLoginPassword(EndUserCredential credential);
 	
+	
+	
 	/**
 	 * 修改用户主登录密码
 	 * @param curCredential 登录密码属性必须是：带时间戳加密的形式
@@ -33,7 +35,7 @@ public interface EndUserCredentialBizService {
 	
 	
 	/**
-	 * 修改用户主登录密码
+	 * 修改用户登录密码
 	 * @param curCredential 登录密码属性必须是：带时间戳加密的形式
 	 * @param account 登陆账户
 	 * @param newSecretKey 新密码：明文直接加密的形式（不带时间戳）
