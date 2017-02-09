@@ -14,6 +14,7 @@ public interface IdentityAuthenticationBizService {
 	
 	/**
 	 * 业务应用认证
+	 * 指定的业务体系ID和应用所属的业务体系ID不一致时，认为验证失败
 	 * @param request 应用接入秘钥属性，以带时间戳形式加密
 	 * @return appIdentityConfirm认证是否成功，bizSeriesId属性为null表示无体系系统
 	 */
@@ -21,6 +22,7 @@ public interface IdentityAuthenticationBizService {
 	
 	/**
 	 * 业务应用认证
+	 * 指定的业务体系ID和应用所属的业务体系ID不一致时，认为验证失败
 	 * @param request 应用接入秘钥属性，以不带带时间戳形式加密
 	 * @return appIdentityConfirm认证是否成功，bizSeriesId属性为null表示无体系系统
 	 */

@@ -20,7 +20,6 @@ import com.eenet.authen.request.AppAuthenRequest;
 import com.eenet.authen.request.UserAccessTokenAuthenRequest;
 import com.eenet.authen.response.AppAuthenResponse;
 import com.eenet.authen.response.UserAccessTokenAuthenResponse;
-import com.eenet.base.SimpleResponse;
 import com.eenet.common.OPOwner;
 import com.eenet.common.exception.AuthenException;
 import com.eenet.util.EEBeanUtils;
@@ -75,20 +74,19 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 		/* 根据不同用户类型进行不同形式认证  */
 		boolean authenConfirm = false;
 		String authenFailReason = "";
+		String seriesId = "";
 		if ("endUser".equals(userType)) {
 			UserAccessTokenAuthenResponse authenResponse = this.endUserAuthen(userAuthenReq);
-			
-			
 			authenConfirm = authenResponse.isSuccessful();
 			if ( !authenConfirm )
 				authenFailReason = authenResponse.getStrMessage();
-			else
-				OPOwner.setSeriesId(authenResponse.getBizSeriesId());
+			seriesId = authenResponse.getBizSeriesId();
 		} else if ("adminUser".equals(userType)) {
 			UserAccessTokenAuthenResponse authenResponse = this.adminUserAuthen(userAuthenReq);
 			authenConfirm = authenResponse.isSuccessful();
 			if ( !authenConfirm )
 				authenFailReason = authenResponse.getStrMessage();
+			seriesId = authenResponse.getBizSeriesId();
 		} else if ( "anonymous".equals(userType) ) {
 			if (!appAuthenLimit)
 				authenConfirm = true;
@@ -96,10 +94,12 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 				AppAuthenRequest appAuthenReq = new AppAuthenRequest();
 				appAuthenReq.setAppId(userAuthenReq.getAppId());
 				appAuthenReq.setAppSecretKey(userAuthenReq.getAppSecretKey());
+				appAuthenReq.setBizSeriesId(invocation.getAttachment(RPCAuthenParamKey.BIZ_SERIES_ID,""));
 				AppAuthenResponse authenResponse = this.appAuthen(appAuthenReq);
 				authenConfirm = authenResponse.isAppIdentityConfirm();
 				if ( !authenConfirm )
 					authenFailReason = authenResponse.getStrMessage();
+				seriesId = authenResponse.getBizSeriesId();
 			}
 		}
 		
@@ -109,6 +109,19 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 			rpcRS.setException(new AuthenException(authenFailReason));
 			return rpcRS;
 		}
+		
+		/* 业务体系未知：返回失败信息 */
+		boolean seriesCanNull = false;
+		if ( "adminUser".equals(userType) )
+			seriesCanNull = true;
+		if ( "anonymous".equals(userType) && !appAuthenLimit )
+			seriesCanNull = true;
+		if ( EEBeanUtils.isNULL(seriesId) &&  !seriesCanNull ) {//业务上不允许为空但实际上为空
+			RpcResult rpcRS = new RpcResult();
+			rpcRS.setException(new AuthenException("业务体系未知"));
+			return rpcRS;
+		} else
+			OPOwner.setCurrentSeries(seriesId);
 		
 		/* 认证成功：记录当前用户、当前调用服务的消费者 */
 		OPOwner.setUsertype(userType);
@@ -174,9 +187,6 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 		if (paramExp.lastIndexOf(",")!=-1)
 			paramExp.deleteCharAt(paramExp.lastIndexOf(","));
 		paramExp.append(")");
-		
-		
-		
 		
 		/* 按优先级匹配表达式并赋值 */
 		if ( AuthenRuleProperties.containsKey(serviceNameExp+methodNameExp+paramExp.toString()) ) //按服务名+方法名+参数列表计算访问权限

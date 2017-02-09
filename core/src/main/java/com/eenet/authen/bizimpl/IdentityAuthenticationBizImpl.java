@@ -1,7 +1,5 @@
 package com.eenet.authen.bizimpl;
 
-import java.lang.reflect.InvocationTargetException;
-
 import com.eenet.SecurityCacheKey;
 import com.eenet.authen.BusinessAppBizService;
 import com.eenet.authen.IdentityAuthenticationBizService;
@@ -11,7 +9,7 @@ import com.eenet.authen.response.AppAuthenResponse;
 import com.eenet.authen.response.UserAccessTokenAuthenResponse;
 import com.eenet.authen.util.IdentityUtil;
 import com.eenet.authen.util.UserNSeriesResponse;
-import com.eenet.base.SimpleResponse;
+import com.eenet.base.StringResponse;
 import com.eenet.util.EEBeanUtils;
 import com.eenet.util.cryptography.EncryptException;
 import com.eenet.util.cryptography.RSADecrypt;
@@ -52,13 +50,27 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 		}
 		
 		/* 验证业务应用系统 */
-		SimpleResponse validateResult = getIdentityUtil().validateAPP(request.getAppId(), secretKeyPlaintext, getStorageRSADecrypt(), getBusinessAppBizService());
+		StringResponse validateResult = getIdentityUtil().validateAPP(request.getAppId(), secretKeyPlaintext, getStorageRSADecrypt(), getBusinessAppBizService());
 		if (!validateResult.isSuccessful()) {
 			result.addMessage(validateResult.getStrMessage());
 			return result;
 		}
 		
+		/* 判断提供的业务体系ID和应用所属的业务体系ID是否有冲突 */
+		if (!EEBeanUtils.isNULL(request.getBizSeriesId()) && !EEBeanUtils.isNULL(validateResult.getResult())
+				&& request.getBizSeriesId().equals(validateResult.getResult())) {
+			result.addMessage("指定的业务体系与应用所属的业务体系有冲突");
+			return result;
+		}
+		
+		/* 设置返回信息 */
 		result.setAppIdentityConfirm(true);
+		result.setAtid(request.getAppId());
+		if ( !EEBeanUtils.isNULL(validateResult.getResult()) )
+			result.setBizSeriesId(validateResult.getResult());
+		else if ( !EEBeanUtils.isNULL(request.getBizSeriesId()) )
+			result.setBizSeriesId(request.getBizSeriesId());
+		
 		return result;
 	}
 	
@@ -87,27 +99,53 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 			return result;
 		}
 		/* 验证业务应用系统 */
-		SimpleResponse validateResult = getIdentityUtil().validateAPP(request.getAppId(), secretKeyPlaintext, getStorageRSADecrypt(), getBusinessAppBizService());
-		
+		StringResponse validateResult = getIdentityUtil().validateAPP(request.getAppId(), secretKeyPlaintext, getStorageRSADecrypt(), getBusinessAppBizService());
 		if (!validateResult.isSuccessful()) {
 			result.addMessage(validateResult.getStrMessage());
 			return result;
 		}
 		
+		/* 判断提供的业务体系ID和应用所属的业务体系ID是否有冲突 */
+		if (!EEBeanUtils.isNULL(request.getBizSeriesId()) && !EEBeanUtils.isNULL(validateResult.getResult())
+				&& request.getBizSeriesId().equals(validateResult.getResult())) {
+			result.addMessage("指定的业务体系与应用所属的业务体系有冲突");
+			return result;
+		}
+		
+		/* 设置返回信息 */
 		result.setAppIdentityConfirm(true);
+		result.setAtid(request.getAppId());
+		if ( !EEBeanUtils.isNULL(validateResult.getResult()) )
+			result.setBizSeriesId(validateResult.getResult());
+		else if ( !EEBeanUtils.isNULL(request.getBizSeriesId()) )
+			result.setBizSeriesId(request.getBizSeriesId());
+		
 		return result;
 	}
 
 	@Override
 	public UserAccessTokenAuthenResponse endUserAuthen(UserAccessTokenAuthenRequest request) {
-		return this.userAuthen(request, SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX);
+		UserAccessTokenAuthenResponse result = new UserAccessTokenAuthenResponse();
+		result.setSuccessful(false);
+		
+		/* 认证业务系统 */
+		AppAuthenRequest appAuthenRequest = new AppAuthenRequest();
+		appAuthenRequest.setAppId(request.getAppId());
+		appAuthenRequest.setAppSecretKey(request.getAppSecretKey());
+		AppAuthenResponse appAuthenResponse = this.appAuthen(appAuthenRequest);
+		if ( !appAuthenResponse.isSuccessful() ) {
+			result.addMessage(appAuthenResponse.getStrMessage());
+			return result;
+		}
+		
+		return this.endUserAuthenOnly(request);
 	}
 	@Override
 	public UserAccessTokenAuthenResponse endUserAuthenOnly(UserAccessTokenAuthenRequest request) {
 		UserAccessTokenAuthenResponse result = new UserAccessTokenAuthenResponse();
 		result.setSuccessful(false);
 		
-		SimpleResponse userAuthenResult = this.userTokenAuthen(request, SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX);
+		StringResponse userAuthenResult = this.userTokenAuthen(request, SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX);
 		result.setUserIdentityConfirm(userAuthenResult.isSuccessful());
 		if ( !userAuthenResult.isSuccessful() ) {
 			result.addMessage(userAuthenResult.getStrMessage());
@@ -115,18 +153,33 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 		}
 		
 		result.setSuccessful(true);
+		result.setBizSeriesId(userAuthenResult.getResult());
 		return result;
 	}
 
 	@Override
 	public UserAccessTokenAuthenResponse adminUserAuthen(UserAccessTokenAuthenRequest request) {
-		return this.userAuthen(request, SecurityCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX);
+		UserAccessTokenAuthenResponse result = new UserAccessTokenAuthenResponse();
+		result.setSuccessful(false);
+		
+		/* 认证业务系统 */
+		AppAuthenRequest appAuthenRequest = new AppAuthenRequest();
+		appAuthenRequest.setAppId(request.getAppId());
+		appAuthenRequest.setAppSecretKey(request.getAppSecretKey());
+		AppAuthenResponse appAuthenResponse = this.appAuthen(appAuthenRequest);
+		if ( !appAuthenResponse.isSuccessful() ) {
+			result.addMessage(appAuthenResponse.getStrMessage());
+			return result;
+		}
+		
+		return this.adminUserAuthenOnly(request);
 	}
+	@Override
 	public UserAccessTokenAuthenResponse adminUserAuthenOnly(UserAccessTokenAuthenRequest request) {
 		UserAccessTokenAuthenResponse result = new UserAccessTokenAuthenResponse();
 		result.setSuccessful(false);
 		
-		SimpleResponse userAuthenResult = this.userTokenAuthen(request, SecurityCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX);
+		StringResponse userAuthenResult = this.userTokenAuthen(request, SecurityCacheKey.ADMINUSER_ACCESSTOKEN_PREFIX);
 		result.setUserIdentityConfirm(userAuthenResult.isSuccessful());
 		if ( !userAuthenResult.isSuccessful() ) {
 			result.addMessage(userAuthenResult.getStrMessage());
@@ -134,6 +187,7 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 		}
 		
 		result.setSuccessful(true);
+		result.setBizSeriesId(userAuthenResult.getResult());
 		return result;
 	}
 
@@ -142,53 +196,16 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 		return true;
 	}
 	
-	private UserAccessTokenAuthenResponse userAuthen(UserAccessTokenAuthenRequest request, String accesstokenPrefix) {
-		UserAccessTokenAuthenResponse result = new UserAccessTokenAuthenResponse();
-		result.setSuccessful(false);
-		/* 参数检查 */
-		if (request == null || EEBeanUtils.isNULL(request.getAppId()) || EEBeanUtils.isNULL(request.getAppSecretKey())
-				|| EEBeanUtils.isNULL(request.getUserId()) || EEBeanUtils.isNULL(request.getUserAccessToken())) {
-			result.addMessage("参数不完整("+this.getClass().getName()+")");
-			return result;
-		}
-		
-		/* 验证业务应用系统 */
-		AppAuthenResponse appAuthenResult = null;
-		try {
-			AppAuthenRequest appAuthenRequest = new AppAuthenRequest();
-			EEBeanUtils.coverProperties(appAuthenRequest, request);
-			appAuthenResult = this.appAuthen(appAuthenRequest);
-		} catch (IllegalAccessException | InvocationTargetException e) {
-			result.addMessage(e.getMessage()+"("+this.getClass().getName()+")");
-		}
-		if (request==null || !appAuthenResult.isAppIdentityConfirm()) {
-			result.addMessage("业务应用系统验证失败("+this.getClass().getName()+")");
-			return result;
-		}
-		result.setAppIdentityConfirm(true);
-		
-		/* 验证访问令牌（令牌所有者是否与传入的用户标识匹配） */
-		SimpleResponse userAuthenResult = this.userTokenAuthen(request, accesstokenPrefix);
-		result.setUserIdentityConfirm(userAuthenResult.isSuccessful());
-		if ( !userAuthenResult.isSuccessful() ) {
-			result.addMessage(userAuthenResult.getStrMessage());
-			return result;
-		}
-		
-		result.setSuccessful(true);
-		return result;
-	}
-	
 	/**
 	 * 认证用户令牌
 	 * @param request
 	 * @param accesstokenPrefix
-	 * @return
+	 * @return successful属性标识令牌是否认证成功，result记录业务体系标识
 	 * 2016年8月22日
 	 * @author Orion
 	 */
-	private SimpleResponse userTokenAuthen(UserAccessTokenAuthenRequest request, String accesstokenPrefix) {
-		SimpleResponse result = new SimpleResponse();
+	private StringResponse userTokenAuthen(UserAccessTokenAuthenRequest request, String accesstokenPrefix) {
+		StringResponse result = new StringResponse();
 		result.setSuccessful(false);
 		/* 参数检查 */
 		if (request == null || EEBeanUtils.isNULL(request.getUserId())
@@ -198,26 +215,21 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 		}
 		
 		/* 获得传入访问令牌的所有者标识 */
-		UserNSeriesResponse getUserIdResult = 
+		UserNSeriesResponse getTokenInfoResult = 
 				getIdentityUtil().getUserNSeriesByCodeOrToken(accesstokenPrefix, request.getUserAccessToken(), request.getAppId());
-		if (!getUserIdResult.isSuccessful()) { 
-			result.addMessage(getUserIdResult.getStrMessage());
+		if ( !getTokenInfoResult.isSuccessful() ) { 
+			result.addMessage(getTokenInfoResult.getStrMessage());
 			return result;
 		}
 		
-		String userIdResult  = getUserIdResult.getUserId();
-			
-		
-		String requestUserId = request.getUserId();
-		if (requestUserId.contains(":")) 
-			requestUserId = requestUserId.substring(0, requestUserId.indexOf(":"));
-		
 		/* 验证访问令牌（令牌所有者是否与传入的用户标识匹配） */
-		if (!userIdResult.equals(requestUserId)) {
+		if (!request.getUserId().equals(getTokenInfoResult.getUserId())) {
 			result.addMessage("访问令牌验证失败("+this.getClass().getName()+"("+this.getClass().getName()+")");
 			return result;
 		}
+		
 		result.setSuccessful(true);
+		result.setResult(getTokenInfoResult.getSeriesId());
 		return result;
 	}
 	

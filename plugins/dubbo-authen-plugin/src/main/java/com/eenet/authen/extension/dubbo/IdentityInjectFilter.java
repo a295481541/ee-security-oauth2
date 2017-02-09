@@ -42,6 +42,7 @@ public class IdentityInjectFilter implements Filter, ApplicationContextAware {
 		try {
 			/* 注入获取当前系统或当前应用身份信息 */
 			AppAuthenRequest appIdentifier = this.obtainCurrentApp();
+			invocation.getAttachments().put(RPCAuthenParamKey.BIZ_SERIES_ID, appIdentifier.getBizSeriesId());
 			invocation.getAttachments().put(RPCAuthenParamKey.BIZ_APP_ID, appIdentifier.getAppId());
 			invocation.getAttachments().put(RPCAuthenParamKey.BIZ_APP_SECRETKEY, appIdentifier.getAppSecretKey());
 			invocation.getAttachments().put(RPCAuthenParamKey.BIZ_APP_DOMAIN, appIdentifier.getRedirectURI());
