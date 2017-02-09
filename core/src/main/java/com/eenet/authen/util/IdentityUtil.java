@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import com.eenet.authen.BusinessApp;
 import com.eenet.authen.BusinessAppBizService;
-import com.eenet.base.SimpleResponse;
+import com.eenet.base.StringResponse;
 import com.eenet.common.cache.RedisClient;
 import com.eenet.common.exception.RedisOPException;
 import com.eenet.util.EEBeanUtils;
@@ -27,16 +27,15 @@ public class IdentityUtil {
 	 * @param appId 业务系统标识
 	 * @param secretKeyPlaintext 业务系统秘钥（明文）
 	 * @param StorageRSADecrypt /数据存储解密私钥
-	 * @return
+	 * @return successful属性标识认证是否通过，result属性标识该应用所属的业务体系id
 	 * 2016年6月10日
 	 * @author Orion
 	 */
-	public SimpleResponse validateAPP(String appId, String secretKeyPlaintext, RSADecrypt StorageRSADecrypt, BusinessAppBizService businessAppBizService) {
-		SimpleResponse result = new SimpleResponse();
+	public StringResponse validateAPP(String appId, String secretKeyPlaintext, RSADecrypt StorageRSADecrypt, BusinessAppBizService businessAppBizService) {
+		StringResponse result = new StringResponse();
 		result.setSuccessful(false);
 		/* 参数检查 */
 		if (EEBeanUtils.isNULL(appId) || EEBeanUtils.isNULL(secretKeyPlaintext) || StorageRSADecrypt==null){
-			result.setSuccessful(false);
 			result.addMessage("业务系统标识、业务系统秘钥、解码私钥均不可为空("+this.getClass().getName()+")");
 			return result;
 		}
@@ -66,6 +65,7 @@ public class IdentityUtil {
 		}
 		
 		result.setSuccessful(true);
+		result.setResult(app.getSeriesId());
 		return result;
 	}
 	

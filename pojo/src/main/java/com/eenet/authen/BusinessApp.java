@@ -88,5 +88,13 @@ public class BusinessApp extends BaseEntity implements BackupDeletedData,BackupU
 	public void setBusinessSeries(BusinessSeries businessSeries) {
 		this.businessSeries = businessSeries;
 	}
-	
+	/**
+	 * @return the 业务体系标识
+	 */
+	public String getSeriesId() {
+		if ( getBusinessSeries()!=null )
+			return getBusinessSeries().getAtid();
+		else
+			return null;
+	}
 }

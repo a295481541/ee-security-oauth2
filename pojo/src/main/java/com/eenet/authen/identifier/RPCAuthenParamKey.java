@@ -7,6 +7,10 @@ package com.eenet.authen.identifier;
  */
 public class RPCAuthenParamKey {
 	/**
+	 * 业务体系标识
+	 */
+	public static final String BIZ_SERIES_ID = "AUTHEN_BIZ_SERIES_ID";
+	/**
 	 * 业务系统编码
 	 */
 	public static final String BIZ_APP_ID = "AUTHEN_BIZ_APP_ID";
