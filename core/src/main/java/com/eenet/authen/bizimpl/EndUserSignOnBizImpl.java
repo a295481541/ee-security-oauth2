@@ -79,7 +79,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		}
 		
 		/* 验证业务应用系统 */
-		SimpleResponse validateResult = getIdentityUtil().validateAPP(appId, secretKeyPlaintext, getStorageRSADecrypt(), getBusinessAppBizService());
+		StringResponse validateResult = getIdentityUtil().validateAPP(appId, secretKeyPlaintext, getStorageRSADecrypt(), getBusinessAppBizService());
 		if (!validateResult.isSuccessful()) {
 			token.setRSBizCode(ABBizCode.AB0006);
 			token.addMessage(validateResult.getStrMessage());
@@ -199,7 +199,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		}
 		
 		/* 验证业务应用系统 */
-		SimpleResponse validateResult = getIdentityUtil().validateAPP(appId, secretKeyPlaintext, getStorageRSADecrypt(), getBusinessAppBizService());
+		StringResponse validateResult = getIdentityUtil().validateAPP(appId, secretKeyPlaintext, getStorageRSADecrypt(), getBusinessAppBizService());
 		if (!validateResult.isSuccessful()) {
 			token.addMessage(validateResult.getStrMessage());
 			return token;
