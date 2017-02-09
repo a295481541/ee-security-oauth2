@@ -57,7 +57,7 @@ public class EndUserLoginThroughAppWithSeriesTester extends SpringEnvironment {
 	
 //	@Test
 	public void loginBySMS() throws EncryptException {
-		String smsCode = "684522";
+		String smsCode = "880065";
 		
 		AppAuthenRequest appRequest = new AppAuthenRequest();
 		appRequest.setAppId(appId);appRequest.setAppSecretKey(RSAUtil.encrypt(transferRSAEncrypt, appSecret+"##"+System.currentTimeMillis()));

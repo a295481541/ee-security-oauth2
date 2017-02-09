@@ -12,41 +12,40 @@ import com.eenet.util.cryptography.RSADecrypt;
 public interface EndUserCredentialBizService {
 	/**
 	 * 初始化用户登录密码
+	 * @param seriesId 业务体系标识
 	 * @param credential 登录密码属性必须是：带时间戳加密的形式
 	 * @return
 	 * 2016年3月31日
 	 * @author Orion
 	 */
-	public SimpleResponse initEndUserLoginPassword(String seriesId,EndUserCredential credential);
-	
-	
+	public SimpleResponse initEndUserLoginPassword(String seriesId, EndUserCredential credential);
 	
 	/**
 	 * 修改用户主登录密码
+	 * @param seriesId 业务体系标识
 	 * @param curCredential 登录密码属性必须是：带时间戳加密的形式
 	 * @param newSecretKey 新密码：明文直接加密的形式（不带时间戳）
 	 * @return
 	 * 2016年3月31日
 	 * @author Orion
 	 */
-	public SimpleResponse changeEndUserLoginPassword(String seriesId,EndUserCredential curCredential, String newSecretKey);
-	
-	
-	
+	public SimpleResponse changeEndUserLoginPassword(String seriesId, EndUserCredential curCredential, String newSecretKey);
 	
 	/**
-	 * 修改用户登录密码
-	 * @param curCredential 登录密码属性必须是：带时间戳加密的形式
-	 * @param account 登陆账户
+	 * 修改用户主登录密码和账号私有密码
+	 * 当curCredential匹配到用户当前的公共密码 或者 账号的私有密码时，同时修改公共密码和账号私有密码（没有则新增）
+	 * @param seriesId 业务体系标识
+	 * @param curCredential 登录密码属性必须是：带时间戳加密的形式，endUser属性的atid为目标用户标识
+	 * @param account 登陆账户，为空则表示只修改用户主登录密码
 	 * @param newSecretKey 新密码：明文直接加密的形式（不带时间戳）
 	 * @return
 	 * 2016年12月9日
 	 * @author Orion
 	 */
-	public SimpleResponse changeEndUserLoginPassword(String seriesId,EndUserCredential curCredential,EndUserLoginAccount account, String newSecretKey);
+	public SimpleResponse changeEndUserLoginPassword(String seriesId, EndUserCredential curCredential,EndUserLoginAccount account, String newSecretKey);
 	
 	/**
-	 * 重置用户登录密码（适合忘记密码）
+	 * 重置用户登录密码（适合忘记密码），新密码为当前日期
 	 * @param endUserId 用户标识
 	 * @return
 	 * 2016年3月31日
