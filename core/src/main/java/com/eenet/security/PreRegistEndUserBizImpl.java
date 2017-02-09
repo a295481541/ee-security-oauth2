@@ -8,6 +8,7 @@ import com.eenet.authen.EndUserLoginAccountBizService;
 import com.eenet.base.BooleanResponse;
 import com.eenet.baseinfo.user.EndUserInfo;
 import com.eenet.baseinfo.user.EndUserInfoBizService;
+import com.eenet.common.OPOwner;
 import com.eenet.util.EEBeanUtils;
 
 public class PreRegistEndUserBizImpl implements PreRegistEndUserBizService {
@@ -18,7 +19,11 @@ public class PreRegistEndUserBizImpl implements PreRegistEndUserBizService {
 	
 	
 	@Override
-	public BooleanResponse existAccount(String appId, String seriesId, String... accounts) {
+	public BooleanResponse existAccount( String... accounts) {
+		
+		String appId = OPOwner.getCurrentSys();
+		String seriesId = OPOwner.getCurrentSeries();
+		
 		System.out.println("传入的seriesId :"+seriesId +"  传入的appId：" +appId);
 		
 		BooleanResponse result =new BooleanResponse();
@@ -59,6 +64,7 @@ public class PreRegistEndUserBizImpl implements PreRegistEndUserBizService {
 
 	@Override
 	public EndUserInfo retrieveEndUserInfo(String appId, String seriesId, String account) {
+		
 		
 		EndUserInfo  result  = new EndUserInfo();
 		

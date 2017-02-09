@@ -51,17 +51,18 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 	private BusinessAppBizService businessAppBizService;
 	
 	@Override
-	public SimpleResponse initEndUserLoginPassword(String seriesId, EndUserCredential credential) {
+	public SimpleResponse initEndUserLoginPassword( EndUserCredential credential) {
+		
 		SimpleResponse result = new SimpleResponse();
 		/* 参数检查 */
 		if (credential == null) {
 			result.setSuccessful(false);
 			result.addMessage("要初始化的最终用户登录秘钥未知("+this.getClass().getName()+")");
 			return result;
-		} else if (EEBeanUtils.isNULL(credential.getPassword()) || credential.getEndUser()==null || EEBeanUtils.isNULL(credential.getEndUser().getAtid())) {
-			result.setSuccessful(false);
-			result.addMessage("要初始化的最终用户登录秘钥参数不全，END USER标识、登录秘钥均不可为空("+this.getClass().getName()+")");
 		}
+		
+		
+		
 		if (!result.isSuccessful())
 			return result;
 		
@@ -71,7 +72,7 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 		if ( app.getBusinessSeries()!=null && !EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) )
 			vSeriesId = app.getBusinessSeries().getAtid();
 		else
-			vSeriesId = seriesId;
+			vSeriesId = OPOwner.getCurrentSeries();
 		if ( EEBeanUtils.isNULL(vSeriesId) ) {
 			result.setSuccessful(false);
 			result.addMessage("未知要初始化业务体系的密码");
@@ -85,6 +86,9 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 			result.addMessage("未找到指定要设置登录密码对应的最终用户("+existEndUser.getStrMessage()+")");
 			return result;
 		}
+		
+		credential.setBusinessSeries(app.getBusinessSeries());
+		
 		
 		/* 秘钥加密 */
 		try {
@@ -114,16 +118,13 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 	}
 
 	@Override
-	public SimpleResponse changeEndUserLoginPassword(String seriesId, EndUserCredential curCredential, String newSecretKey) {
+	public SimpleResponse changeEndUserLoginPassword( EndUserCredential curCredential, String newSecretKey) {
 		SimpleResponse result = new SimpleResponse();
 		/* 参数检查 */
 		if (curCredential==null || EEBeanUtils.isNULL(newSecretKey)) {
 			result.setSuccessful(false);
 			result.addMessage("要修改的最终用户登录密码未知("+this.getClass().getName()+")");
 			return result;
-		} else if (EEBeanUtils.isNULL(curCredential.getPassword()) || curCredential.getEndUser()==null || EEBeanUtils.isNULL(curCredential.getEndUser().getAtid())) {
-			result.setSuccessful(false);
-			result.addMessage("要修改的最终用户登录秘钥参数不全，END USER标识、当前登录密码均不可为空("+this.getClass().getName()+")");
 		}
 		if (!result.isSuccessful())
 			return result;
@@ -134,7 +135,7 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 		if ( app.getBusinessSeries()!=null && !EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) )
 			vSeriesId = app.getBusinessSeries().getAtid();
 		else
-			vSeriesId = seriesId;
+			vSeriesId = OPOwner.getCurrentSeries();
 		if ( EEBeanUtils.isNULL(vSeriesId) ) {
 			result.setSuccessful(false);
 			result.addMessage("未知要修改那个业务体系的密码");
@@ -142,7 +143,7 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 		}
 		
 		/* 判断最终用户是否已设置过密码，没有则返回错误信息 */
-		EndUserCredential existCredential = this.retrieveEndUserCredentialInfo(vSeriesId, curCredential.getEndUser().getAtid());
+		EndUserCredential existCredential = this.retrieveEndUserCredentialInfo(curCredential.getEndUser().getAtid());
 		if (!existCredential.isSuccessful()) {
 			result.setSuccessful(false);
 			result.addMessage(existCredential.getStrMessage());
@@ -203,22 +204,21 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 	}
 	
 	@Override
-	public SimpleResponse changeEndUserLoginPassword(String seriesId, EndUserCredential curCredential,EndUserLoginAccount account, String newSecretKey) {
+	public SimpleResponse changeEndUserLoginPassword(EndUserCredential curCredential,EndUserLoginAccount account, String newSecretKey) {
+		
+		
 		SimpleResponse result = new SimpleResponse();
 		
 		/* 登陆账户为空，只修改用户主登录密码 */
 		if ( account==null || EEBeanUtils.isNULL(account.getLoginAccount()) )
-			return this.changeEndUserLoginPassword(seriesId, curCredential, newSecretKey);
+			return this.changeEndUserLoginPassword(curCredential, newSecretKey);
 		
 		/* 参数检查 */
 		if (curCredential==null || EEBeanUtils.isNULL(newSecretKey)) {
 			result.setSuccessful(false);
 			result.addMessage("参数缺失，必须提供原密码和要修改的新密码("+this.getClass().getName()+")");
 			return result;
-		} else if (EEBeanUtils.isNULL(curCredential.getPassword()) || curCredential.getEndUser()==null || EEBeanUtils.isNULL(curCredential.getEndUser().getAtid())) {
-			result.setSuccessful(false);
-			result.addMessage("要修改的最终用户登录秘钥参数不全，最终用户标识、当前登录密码均不可为空("+this.getClass().getName()+")");
-		}
+		} 
 		if (!result.isSuccessful())
 			return result;
 		
@@ -236,7 +236,7 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 		if ( app.getBusinessSeries()!=null && !EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) )
 			vSeriesId = app.getBusinessSeries().getAtid();
 		else
-			vSeriesId = seriesId;
+			vSeriesId = OPOwner.getCurrentSeries();
 		if ( EEBeanUtils.isNULL(vSeriesId) ) {
 			result.setSuccessful(false);
 			result.addMessage("未知要修改那个业务体系的密码");
@@ -352,7 +352,9 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 	
 
 	@Override
-	public SimpleResponse resetEndUserLoginPassword(String seriesId, String endUserId) {
+	public SimpleResponse resetEndUserLoginPassword(String endUserId) {
+		
+		String seriesId =  OPOwner.getCurrentSeries();
 		SimpleResponse response = new SimpleResponse();
 		
 		System.out.println("传入的seriesId :"+seriesId +"  传入的appId：" +OPOwner.getCurrentSys());
@@ -383,7 +385,7 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 	}
 	
 	@Override
-	public EndUserCredential retrieveEndUserCredentialInfo (String seriesId, String endUserId) {
+	public EndUserCredential retrieveEndUserCredentialInfo (String endUserId) {
 		EndUserCredential result = new EndUserCredential();
 		/* 参数检查 */
 		if (EEBeanUtils.isNULL(endUserId)) {
@@ -394,7 +396,7 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 		/* 从数据库取秘钥对象 */
 		QueryCondition query = new QueryCondition();
 		query.addCondition(new ConditionItem("endUser.atid",RangeType.EQUAL,endUserId,null));
-		query.addCondition(new ConditionItem("businessSeries.atid",RangeType.EQUAL,seriesId,null));
+		query.addCondition(new ConditionItem("businessSeries.atid",RangeType.EQUAL,OPOwner.getCurrentSeries(),null));
 		SimpleResultSet<EndUserCredential> existCredential = super.query(query, EndUserCredential.class);
 		if (!existCredential.isSuccessful()) {
 			result.setSuccessful(false);
@@ -413,7 +415,8 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 	}
 
 	@Override
-	public EndUserCredential retrieveEndUserSecretKey(String seriesId, String endUserId) {
+	public EndUserCredential retrieveEndUserSecretKey( String endUserId) {
+		
 		EndUserCredential result = new EndUserCredential();
 		result.setSuccessful(false);
 		/* 参数检查 */
@@ -423,13 +426,13 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 		}
 		
 		/* 从缓存取数据 */
-		String ciphertext = SynEndUserCredential2Redis.get(getRedisClient(), seriesId, endUserId);
+		String ciphertext = SynEndUserCredential2Redis.get(getRedisClient(), OPOwner.getCurrentSeries(), endUserId);
 		
 		
 		
 		/* 从数据库取数据 */
 		if (EEBeanUtils.isNULL(ciphertext)) {
-			result = this.retrieveEndUserCredentialInfo(seriesId ,endUserId);
+			result = this.retrieveEndUserCredentialInfo(endUserId);
 			if (result.isSuccessful())
 				SynEndUserCredential2Redis.syn(getRedisClient(), result);
 			return result;
@@ -452,12 +455,11 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 	}
 
 	@Override
-	public EndUserCredential retrieveEndUserSecretKey(String seriesId, String endUserId, RSADecrypt decrypt) {
+	public EndUserCredential retrieveEndUserSecretKey( String endUserId, RSADecrypt decrypt) {
 		
 		/* 取秘钥密文（未取到或不是RSA密文都直接返回结果） */
 		
-//		EndUserCredential result = this.retrieveEndUserCredentialInfo(endUserId);
-		EndUserCredential result = this.retrieveEndUserSecretKey(seriesId ,endUserId);
+		EndUserCredential result = this.retrieveEndUserSecretKey(endUserId);
 		
 		if (!result.isSuccessful() || !"RSA".equals(result.getEncryptionType()))
 			return result;

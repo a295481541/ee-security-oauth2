@@ -6,6 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.eenet.authen.BusinessSeries;
 import com.eenet.authen.EndUserLoginAccount;
 import com.eenet.authen.EndUserLoginAccountBizService;
 import com.eenet.authen.cacheSyn.SynEndUserLoginAccount2Redis;
@@ -42,12 +43,7 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 			log.error("[registeEndUserLoginAccount("+Thread.currentThread().getId()+")] account null ");
 			result.setSuccessful(false);
 			result.addMessage("要注册的用户登录账号未知("+this.getClass().getName()+")");
-		} else if (account.getBusinessSeries() == null || EEBeanUtils.isNULL(account.getBusinessSeries().getAtid())){
-			log.error("[registeEndUserLoginAccount("+Thread.currentThread().getId()+")] BusinessSeries not nul or BusinessSeries id null");
-			result.setSuccessful(false);
-			result.addMessage("要注册的用户登录账号参数不全，业务体系不可为空("+this.getClass().getName()+")");
-			
-		} else if (account.getUserInfo()==null || EEBeanUtils.isNULL(account.getUserInfo().getAtid()) || EEBeanUtils.isNULL(account.getLoginAccount()) || account.getAccountType()==null ) {
+		}  else if (account.getUserInfo()==null || EEBeanUtils.isNULL(account.getUserInfo().getAtid()) || EEBeanUtils.isNULL(account.getLoginAccount()) || account.getAccountType()==null ) {
 			log.error("[registeEndUserLoginAccount("+Thread.currentThread().getId()+")] atid not nul or account null");
 			result.setSuccessful(false);
 			result.addMessage("要注册的用户登录账号参数不全，END USER标识、登录账号、账号类型均不可为空("+this.getClass().getName()+")");
@@ -55,9 +51,12 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 		if (!result.isSuccessful())
 			return result;
 		log.error("[registeEndUserLoginAccount("+Thread.currentThread().getId()+")] check over");
+		BusinessSeries businessSeries = new BusinessSeries();
+		businessSeries.setAtid(OPOwner.getCurrentSeries());
+		account.setBusinessSeries(businessSeries);
 		
 		/* 检查要注册的账号是否存在 */
-		EndUserLoginAccount existAccount = this.retrieveEndUserLoginAccountInfo(account.getBusinessSeries().getAtid() ,account.getLoginAccount());
+		EndUserLoginAccount existAccount = this.retrieveEndUserLoginAccountInfo(account.getLoginAccount());
 		log.error("[registeEndUserLoginAccount("+Thread.currentThread().getId()+")] exist account check: "+EEBeanUtils.object2Json(account));
 		log.error("[registeEndUserLoginAccount("+Thread.currentThread().getId()+")] exist account check: "+EEBeanUtils.object2Json(existAccount));
 		if ( existAccount.isSuccessful() && account.getUserInfo().getAtid().equals(existAccount.getUserInfo().getAtid()) ) {//账号存在并且指向同一个用户
@@ -79,7 +78,7 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 	}
 
 	@Override
-	public SimpleResponse removeEndUserLoginAccount(String seriesId, String... loginAccounts) {
+	public SimpleResponse removeEndUserLoginAccount( String... loginAccounts) {
 		SimpleResponse result = null;
 		/* 参数检查 */
 		if (loginAccounts==null || loginAccounts.length==0) {
@@ -88,6 +87,7 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 			result.addMessage("要废弃的最终用户登录账号未知("+this.getClass().getName()+")");
 			return result;
 		}
+		String seriesId = OPOwner.getCurrentSeries();
 		if (EEBeanUtils.isNULL(seriesId)) {
 			result = new SimpleResponse();
 			result.setSuccessful(false);
@@ -145,7 +145,16 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 	}
 	
 	@Override
-	public EndUserLoginAccount retrieveEndUserLoginAccountInfo(String seriesId, String loginAccount) {
+	public EndUserLoginAccount retrieveEndUserLoginAccountInfo(String loginAccount) {
+		String seriesId = OPOwner.getCurrentSeries();
+		
+		return retrieveEndUserLoginAccountInfo(seriesId, loginAccount);
+	}
+
+	
+	@Override
+	public EndUserLoginAccount retrieveEndUserLoginAccountInfo(String seriesId,String loginAccount) {
+		
 		EndUserLoginAccount err = new EndUserLoginAccount();
 		err.setSuccessful(false);
 		/* 参数检查 */
@@ -177,9 +186,12 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 		
 		return queryResult.getResultSet().get(0);
 	}
-
+	
 	@Override
-	public EndUserInfo retrieveEndUserInfo(String seriesId,String loginAccount) {
+	public EndUserInfo retrieveEndUserInfo(String seriesId, String loginAccount) {
+		
+		
+		
 		EndUserLoginAccount account = this.retrieveEndUserLoginAccountInfo(seriesId ,loginAccount);
 		if (account.isSuccessful())
 			return account.getUserInfo();
@@ -192,9 +204,24 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 	}
 
 	@Override
-	public EndUserLoginAccount retrieveEndUserAccountPassword(String seriesId, String loginAccount, RSADecrypt StorageRSAEncrypt) {
+	public EndUserLoginAccount retrieveEndUserAccountPassword(String loginAccount, RSADecrypt StorageRSAEncrypt) {
+		
+		return retrieveEndUserAccountPassword(null, loginAccount , StorageRSAEncrypt);
+	}
+	
+	
+	
+	@Override
+	public EndUserLoginAccount retrieveEndUserAccountPassword(String seriesId,String loginAccount, RSADecrypt StorageRSAEncrypt) {
 		/* 取秘钥密文（未取到或不是RSA密文都直接返回结果） */
-		EndUserLoginAccount result = this.retrieveEndUserLoginAccountInfo(seriesId ,loginAccount);
+		EndUserLoginAccount result =null;
+		
+		if (EEBeanUtils.isNULL(seriesId)) 
+			
+			result = this.retrieveEndUserLoginAccountInfo(loginAccount);
+		else
+			result = this.retrieveEndUserLoginAccountInfo(seriesId ,loginAccount);
+		
 		if (!result.isSuccessful() || !"RSA".equals(result.getEncryptionType()))
 			return result;
 		
@@ -217,6 +244,7 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 		}
 		return result;
 	}
+	
 	
 	@Override
 	public SimpleResultSet<EndUserLoginAccount> query(QueryCondition condition) {

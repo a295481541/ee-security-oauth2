@@ -178,7 +178,7 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 		}
 		
 		/* 获取手机所属用户个人信息 */
-		EndUserInfo user = getPreRegistEndUserBizService().retrieveEndUserInfo(app.getAppId(), app.getBusinessSeries().getAtid(), String.valueOf(mobile));
+		EndUserInfo user = getPreRegistEndUserBizService().retrieveEndUserInfo(appRequest.getAppId(),appRequest.getBizSeriesId(), String.valueOf(mobile));
 		
 		System.out.println("	/* 获取手机所属用户个人信息 */" +EEBeanUtils.object2Json(user));
 		

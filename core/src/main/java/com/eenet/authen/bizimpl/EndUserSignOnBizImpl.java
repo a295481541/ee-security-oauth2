@@ -487,7 +487,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 			return grant;
 		}
 		EndUserInfo endUser = loginAccountInfo.getUserInfo();
-		EndUserCredential credential = getEndUserCredentialBizService().retrieveEndUserSecretKey(app.getBusinessSeries().getAtid(),endUser.getAtid(), getStorageRSADecrypt());
+		EndUserCredential credential = getEndUserCredentialBizService().retrieveEndUserSecretKey(endUser.getAtid(), getStorageRSADecrypt());
 		
 		/*
 		 * 用户可能使用账号私有密码登录，所以取统一密码失败也应该继续

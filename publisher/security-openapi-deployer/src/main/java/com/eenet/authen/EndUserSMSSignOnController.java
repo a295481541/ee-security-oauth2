@@ -59,8 +59,10 @@ public class EndUserSMSSignOnController {
 			return EEBeanUtils.object2Json(response);
 		}
 		
+		
+		
 		/* 校验快速登录验证码 */
-		response = endUserSMSSignOnBizService.validateSMSCode4Login(identity.getAppId(),identity.getSeriesId(), mobile, smsCode, false);
+		response = endUserSMSSignOnBizService.validateSMSCode4Login(identity.getAppId(),identity.getBizSeriesId(), mobile, smsCode, false);
 		return EEBeanUtils.object2Json(response);
 	}
 	

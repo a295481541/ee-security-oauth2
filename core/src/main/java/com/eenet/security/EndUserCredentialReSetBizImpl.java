@@ -26,6 +26,7 @@ import com.eenet.base.query.QueryCondition;
 import com.eenet.base.query.RangeType;
 import com.eenet.baseinfo.user.EndUserInfo;
 import com.eenet.baseinfo.user.EndUserInfoBizService;
+import com.eenet.common.OPOwner;
 import com.eenet.common.cache.RedisClient;
 import com.eenet.common.exception.RedisOPException;
 import com.eenet.security.bizComponent.ReSetLoginPasswordCom;
@@ -223,20 +224,19 @@ public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizS
 			result.addMessage("要重置密码的用户标识、新密码和短信验证码均不可为空("+this.getClass().getName()+")");
 			return result;
 		}
-		if (credential.getBusinessSeries() ==null || EEBeanUtils.isNULL(credential.getBusinessSeries().getAtid())) {
-			result.addMessage("要重置密码的业务系统未指定("+this.getClass().getName()+")");
-			return result;
-		}
+		
+		String seriesId = OPOwner.getCurrentSeries();
+		
 		
 		/* 校验并删除短信验证码 */
-		SimpleResponse smsCodeCorrect = validateSMSCode4ResetPassword(credential.getEndUser().getAtid(), smsCode, true);
+		SimpleResponse smsCodeCorrect = validateSMSCode4ResetPassword(seriesId, smsCode, true);
 		if ( !smsCodeCorrect.isSuccessful()) {
 			result.addMessage(smsCodeCorrect.getStrMessage());
 			return result;
 		}
 		
 		/* 检查指定的用户标识和手机所属用户是否一致 */
-		EndUserInfo user = getEndUserLoginAccountBizService().retrieveEndUserInfo(credential.getBusinessSeries().getAtid() ,String.valueOf(mobile));
+		EndUserInfo user = getEndUserLoginAccountBizService().retrieveEndUserInfo(seriesId ,String.valueOf(mobile));
 		if (!user.isSuccessful()) {
 			result.addMessage(user.getStrMessage());
 			return result;
@@ -277,7 +277,7 @@ public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizS
 			result.addMessage(e.toString());
 			return result;
 		}
-		result = getResetLoginPasswordCom().resetEndUserLoginPassword(credential.getBusinessSeries().getAtid(),credential.getEndUser().getAtid(),
+		result = getResetLoginPasswordCom().resetEndUserLoginPassword(seriesId,credential.getEndUser().getAtid(),
 				newPasswordPlainText, getStorageRSAEncrypt());
 		
 		return result;

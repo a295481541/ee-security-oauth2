@@ -12,6 +12,7 @@ import com.eenet.authen.AdminUserLoginAccount;
 import com.eenet.authen.AdminUserLoginAccountBizService;
 import com.eenet.authen.BusinessApp;
 import com.eenet.authen.BusinessAppBizService;
+import com.eenet.authen.BusinessSeries;
 import com.eenet.authen.BusinessSeriesBizService;
 import com.eenet.authen.EndUserCredential;
 import com.eenet.authen.EndUserCredentialBizService;
@@ -40,7 +41,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 	
 
 	@Override
-	public AccessToken registEndUserWithLogin(String seriesId ,EndUserInfo endUser, EndUserLoginAccount account,
+	public AccessToken registEndUserWithLogin(EndUserInfo endUser, EndUserLoginAccount account,
 			EndUserCredential credential) {
 		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] start..........." +OPOwner.getUsertype());
 		AccessToken result = new AccessToken();
@@ -61,29 +62,15 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 			return result;
 		}
 		
+		String seriesId  = OPOwner.getCurrentSeries();
 		
 		System.out.println("传入的seriesId :"+seriesId +"  传入的appId：" +OPOwner.getCurrentSys());
 		
-		BusinessApp app = businessAppBizService.retrieveApp(OPOwner.getCurrentSys());
-		
-		
-		System.out.println("appp get " +EEBeanUtils.object2Json(app));
-		if ( (app.getBusinessSeries()==null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid())) && !EEBeanUtils.isNULL(seriesId) ) 
-			app.setBusinessSeries(businessSeriesBizService.retrieveBusinessSeries(seriesId, null));
-		
-		
-		if (!app.isSuccessful() || !app.getBusinessSeries().isSuccessful() || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
-			result.addMessage("该体系系统不存在("+this.getClass().getName()+")");
-			return result;
-		}
-		System.out.println("seriesId:" +seriesId +"   " +app.getBusinessSeries().getAtid());
-		if (!EEBeanUtils.isNULL(seriesId)&&!seriesId.equals(app.getBusinessSeries().getAtid())) {
-			result.addMessage("指定的业务体系与系统所隶属的业务体系不一致("+this.getClass().getName()+")");
-			return result;
-		}
-		
-		account.setBusinessSeries(app.getBusinessSeries());
-		credential.setBusinessSeries(app.getBusinessSeries());
+
+		BusinessSeries businessSeries = new BusinessSeries();
+		businessSeries.setAtid(seriesId);
+		account.setBusinessSeries(businessSeries);
+		credential.setBusinessSeries(businessSeries);
 		
 		
 		
@@ -135,7 +122,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		/* 初始化登陆密码，已存在的用户不初始化 */
 		if ( !existEndUser ) {
 			credential.setEndUser(savedEndUser);
-			SimpleResponse savedCredential = getEndUserCredentialBizService().initEndUserLoginPassword(seriesId,credential);
+			SimpleResponse savedCredential = getEndUserCredentialBizService().initEndUserLoginPassword(credential);
 			log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] saved password result : "+ EEBeanUtils.object2Json(savedCredential));
 			if (!savedCredential.isSuccessful()) {
 				result.setRSBizCode(savedCredential.getRSBizCode());
@@ -161,7 +148,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 	}
 	
 	@Override
-	public AccessToken registEndUserWithMulAccountAndLogin(String seriesId ,EndUserInfo endUser, List<EndUserLoginAccount> accounts,
+	public AccessToken registEndUserWithMulAccountAndLogin(EndUserInfo endUser, List<EndUserLoginAccount> accounts,
 			EndUserCredential credential) {
 		log.info("start........... userType: " + OPOwner.getUsertype() + " appId: " + OPOwner.getCurrentSys());
 		AccessToken result = new AccessToken();
@@ -181,33 +168,17 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 			return result;
 		}
 		
-		
+		String seriesId  = OPOwner.getCurrentSeries();
 		
 		System.out.println("传入的seriesId :"+seriesId +"  传入的appId：" +OPOwner.getCurrentSys());
 		
-		BusinessApp app = businessAppBizService.retrieveApp(OPOwner.getCurrentSys());
-		
-		
-		System.out.println("appp get " +EEBeanUtils.object2Json(app));
-		if ( (app.getBusinessSeries()==null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid())) && !EEBeanUtils.isNULL(seriesId) ) 
-			app.setBusinessSeries(businessSeriesBizService.retrieveBusinessSeries(seriesId, null));
-		
-		
-		if (!app.isSuccessful() || !app.getBusinessSeries().isSuccessful() || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
-			result.addMessage("该体系系统不存在("+this.getClass().getName()+")");
-			return result;
-		}
-		System.out.println("seriesId:" +seriesId +"   " +app.getBusinessSeries().getAtid());
-		if (!EEBeanUtils.isNULL(seriesId)&&!seriesId.equals(app.getBusinessSeries().getAtid())) {
-			result.addMessage("指定的业务体系与系统所隶属的业务体系不一致("+this.getClass().getName()+")");
-			return result;
-		}
-		
-		credential.setBusinessSeries(app.getBusinessSeries());
+		BusinessSeries businessSeries = new BusinessSeries();
+		businessSeries.setAtid(seriesId);
+		credential.setBusinessSeries(businessSeries);
 		
 		/* 检查该账号是否已被使用 */
 		for (EndUserLoginAccount account : accounts) {
-			account.setBusinessSeries(app.getBusinessSeries());
+			account.setBusinessSeries(businessSeries);
 			EndUserLoginAccount existAccount = getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(account.getBusinessSeries().getAtid() ,account.getLoginAccount());
 			if (existAccount.isSuccessful()) {
 				result.addMessage("该账号已被该体系使用("+this.getClass().getName()+")");
@@ -219,7 +190,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		}
 		
 		/* 注册最终用户、第一个账号和密码，并检查注册结果 */
-		result = this.registEndUserWithLogin(seriesId,endUser, accounts.get(0), credential);
+		result = this.registEndUserWithLogin(endUser, accounts.get(0), credential);
 		log.info("注册最终用户、第一个账号和密码结果: " + EEBeanUtils.object2Json(result));
 		if (!result.isSuccessful())
 			return result;

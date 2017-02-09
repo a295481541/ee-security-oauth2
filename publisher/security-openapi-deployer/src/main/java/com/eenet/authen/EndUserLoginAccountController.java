@@ -82,14 +82,14 @@ public class EndUserLoginAccountController {
 	
 	@RequestMapping(value = "/initEndUserLoginPassword", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
-	public String initEndUserLoginPassword(APIRequestIdentity identity,String seriesId, EndUserCredential credential) {
-		SimpleResponse result = endUserCredentialBizService.initEndUserLoginPassword(seriesId,credential);
+	public String initEndUserLoginPassword(APIRequestIdentity identity,EndUserCredential credential) {
+		SimpleResponse result = endUserCredentialBizService.initEndUserLoginPassword(credential);
 		return EEBeanUtils.object2Json(result);
 	}
 	
 	@RequestMapping(value = "/changeEndUserLoginPassword", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
-	public String changeEndUserLoginPassword(APIRequestIdentity identity, String seriesId,EndUserCredential curCredential, String newSecretKey) {
+	public String changeEndUserLoginPassword(APIRequestIdentity identity, EndUserCredential curCredential, String newSecretKey) {
 		//endUser(self)
 		SimpleResponse response = new SimpleResponse();
 		response.setSuccessful(false);
@@ -128,7 +128,7 @@ public class EndUserLoginAccountController {
 		}
 		
 		/* 执行业务 */
-		SimpleResponse result = endUserCredentialBizService.changeEndUserLoginPassword(seriesId,curCredential, newSecretKey);
+		SimpleResponse result = endUserCredentialBizService.changeEndUserLoginPassword(curCredential, newSecretKey);
 		return EEBeanUtils.object2Json(result);
 	}
 	
@@ -137,7 +137,7 @@ public class EndUserLoginAccountController {
 	
 	@RequestMapping(value = "/changeEndUserLoginPasswordNew", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
-	public String changeEndUserLoginPasswordNew(APIRequestIdentity identity,String seriesId, EndUserCredential curCredential, EndUserLoginAccount account, String newSecretKey) {
+	public String changeEndUserLoginPasswordNew(APIRequestIdentity identity, EndUserCredential curCredential, EndUserLoginAccount account, String newSecretKey) {
 		
 		//endUser(self)
 		SimpleResponse response = new SimpleResponse();
@@ -178,7 +178,7 @@ public class EndUserLoginAccountController {
 		}
 		
 		/* 执行业务 */
-		SimpleResponse result = endUserCredentialBizService.changeEndUserLoginPassword(seriesId,curCredential, account, newSecretKey);
+		SimpleResponse result = endUserCredentialBizService.changeEndUserLoginPassword(curCredential, account, newSecretKey);
 		return EEBeanUtils.object2Json(result);
 	}
 	
@@ -187,7 +187,7 @@ public class EndUserLoginAccountController {
 	
 	@RequestMapping(value = "/resetEndUserLoginPassword", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
-	public String resetEndUserLoginPassword(APIRequestIdentity identity, String seriedId,String endUserId) {
+	public String resetEndUserLoginPassword(APIRequestIdentity identity,String endUserId) {
 		SimpleResponse response = new SimpleResponse();
 		response.setSuccessful(false);
 		/* 参数检查 */
@@ -211,7 +211,7 @@ public class EndUserLoginAccountController {
 		}
 		
 		/* 执行业务 */
-		SimpleResponse result = endUserCredentialBizService.resetEndUserLoginPassword(seriedId,endUserId);
+		SimpleResponse result = endUserCredentialBizService.resetEndUserLoginPassword(endUserId);
 		return EEBeanUtils.object2Json(result);
 	}
 }

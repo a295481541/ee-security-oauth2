@@ -60,7 +60,7 @@ public class RegistNewUserController {
 		}
 		
 		/* 执行业务 */
-		BooleanResponse result = this.preRegistEndUserBizService.existAccount(identity.getAppId(), identity.getSeriesId(), mobile);
+		BooleanResponse result = this.preRegistEndUserBizService.existAccount( mobile);
 		return EEBeanUtils.object2Json(result);
 	}
 	
@@ -108,13 +108,13 @@ public class RegistNewUserController {
 		}
 		
 		/* 执行业务 */
-		EndUserInfo result = preRegistEndUserBizService.retrieveEndUserInfo(identity.getAppId(), identity.getSeriesId(), mobile);
+		EndUserInfo result = preRegistEndUserBizService.retrieveEndUserInfo(identity.getAppId(),identity.getBizSeriesId(),mobile);
 		return EEBeanUtils.object2Json(result);
 	}
 	
 	@RequestMapping(value = "/registEndUserWithLogin", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
-	public String registEndUserWithLogin(String redirectURI, String seriesId,@ModelAttribute("user")EndUserInfo user, @ModelAttribute("account")EndUserLoginAccount account, @ModelAttribute("credential")EndUserCredential credential) {
+	public String registEndUserWithLogin(String redirectURI,@ModelAttribute("user")EndUserInfo user, @ModelAttribute("account")EndUserLoginAccount account, @ModelAttribute("credential")EndUserCredential credential) {
 		SimpleResponse response = new SimpleResponse();
 		response.setSuccessful(false);
 		
@@ -124,7 +124,7 @@ public class RegistNewUserController {
 			response.setRSBizCode(SystemCode.AA0002);
 			return EEBeanUtils.object2Json(response);
 		}
-		AccessToken token = registNewUserBizService.registEndUserWithLogin(seriesId ,user, account, credential);
+		AccessToken token = registNewUserBizService.registEndUserWithLogin(user, account, credential);
 		return EEBeanUtils.object2Json(token);
 	}
 	
@@ -151,7 +151,7 @@ public class RegistNewUserController {
 			return EEBeanUtils.object2Json(response);
 		}
 		
-		AccessToken token = registNewUserBizService.registEndUserWithMulAccountAndLogin(seriesId,info, list, endUserCredential);
+		AccessToken token = registNewUserBizService.registEndUserWithMulAccountAndLogin(info, list, endUserCredential);
 		return EEBeanUtils.object2Json(token);
 	}
 	
