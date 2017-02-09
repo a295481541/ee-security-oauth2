@@ -48,15 +48,6 @@ public class GatherAppNUserIdentifierFilter implements Filter {
 		/* 尝试从cookie中获得当前用户和当前应用信息（应用标识、应用秘钥、应用跳转地址、当前用户标识、当前用户访问令牌、用户类型） */
 		if (cookies!=null && cookies.length>0) {
 			for (Cookie c : cookies) {
-//				if ( AppID_PARAM_TAG.equals(c.getName()) ) //应用标识
-//					OPOwner.setCurrentSys(c.getValue());
-//				
-//				if ( AppSecretKey_PARAM_TAG.equals(c.getName()) ) //应用秘钥
-//					CallerIdentityInfo.setAppsecretkey(c.getValue());
-//				
-//				if ( RedirectURI_PARAM_TAG.equals(c.getName()) ) //应用跳转地址
-//					CallerIdentityInfo.setRedirecturi(c.getValue());
-				
 				if ( UserId_PARAM_TAG.equals(c.getName()) ) //当前用户标识
 					OPOwner.setCurrentUser(c.getValue());
 				
@@ -65,6 +56,9 @@ public class GatherAppNUserIdentifierFilter implements Filter {
 				
 				if ( UserType_PARAM_TAG.equals(c.getName()) ) //用户类型
 					OPOwner.setUsertype(c.getValue());
+				
+				if ( SeriesID_PARAM_TAG.equals(c.getName()) )
+					OPOwner.setCurrentSeries(c.getValue());
 			}
 		}
 		
@@ -87,8 +81,9 @@ public class GatherAppNUserIdentifierFilter implements Filter {
 		
 		if ( !EEBeanUtils.isNULL(request.getParameter(UserType_PARAM_TAG)) )
 			OPOwner.setUsertype( request.getParameter(UserType_PARAM_TAG) );
-		if ( !EEBeanUtils.isNULL(request.getParameter(BIZ_SERIES_TAG)) )
-			OPOwner.setSeriesId(request.getParameter(BIZ_SERIES_TAG) );
+		
+		if ( !EEBeanUtils.isNULL(request.getParameter(SeriesID_PARAM_TAG)) )
+			OPOwner.setCurrentSeries(request.getParameter(SeriesID_PARAM_TAG) );
 	}
 	
 	@Override
@@ -129,5 +124,5 @@ public class GatherAppNUserIdentifierFilter implements Filter {
 	/**
 	 * 业务体系
 	 */
-	public static final String BIZ_SERIES_TAG = "seriesId";
+	public static final String SeriesID_PARAM_TAG = "seriesId";
 }

@@ -78,11 +78,13 @@ public class IdentityInjectFilter implements Filter, ApplicationContextAware {
 				result.setAppId(configRequest.getAppId());
 				result.setAppSecretKey(RSAUtil.encrypt(encrypt, configRequest.getAppSecretKey()+"##"+System.currentTimeMillis() ));
 				result.setRedirectURI(configRequest.getRedirectURI());
+				result.setBizSeriesId(configRequest.getBizSeriesId());
 			}
 		} else {
 			result.setAppId( OPOwner.getCurrentSys() );
 			result.setAppSecretKey( CallerIdentityInfo.getAppsecretkey() );
 			result.setRedirectURI( CallerIdentityInfo.getRedirecturi() );
+			result.setBizSeriesId( OPOwner.getCurrentSeries() );
 		}
 		return result;
 	}
