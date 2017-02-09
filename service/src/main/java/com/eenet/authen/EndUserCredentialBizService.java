@@ -17,7 +17,7 @@ public interface EndUserCredentialBizService {
 	 * 2016年3月31日
 	 * @author Orion
 	 */
-	public SimpleResponse initEndUserLoginPassword(EndUserCredential credential);
+	public SimpleResponse initEndUserLoginPassword(String seriesId,EndUserCredential credential);
 	
 	
 	
@@ -29,7 +29,7 @@ public interface EndUserCredentialBizService {
 	 * 2016年3月31日
 	 * @author Orion
 	 */
-	public SimpleResponse changeEndUserLoginPassword(EndUserCredential curCredential, String newSecretKey);
+	public SimpleResponse changeEndUserLoginPassword(String seriesId,EndUserCredential curCredential, String newSecretKey);
 	
 	
 	
@@ -43,7 +43,7 @@ public interface EndUserCredentialBizService {
 	 * 2016年12月9日
 	 * @author Orion
 	 */
-	public SimpleResponse changeEndUserLoginPassword(EndUserCredential curCredential,EndUserLoginAccount account, String newSecretKey);
+	public SimpleResponse changeEndUserLoginPassword(String seriesId,EndUserCredential curCredential,EndUserLoginAccount account, String newSecretKey);
 	
 	/**
 	 * 重置用户登录密码（适合忘记密码）

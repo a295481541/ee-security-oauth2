@@ -65,7 +65,7 @@ public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizS
 		
 		
 		BusinessSeries businessSeries = businessSeriesBizService.retrieveBusinessSeries(bizSeriesId, appId);
-		if (businessSeries == null || EEBeanUtils.isNULL(businessSeries.getAtid())) {
+		if (!businessSeries.isSuccessful() || EEBeanUtils.isNULL(businessSeries.getAtid())) {
 			result.addMessage("业务系统未指定("+this.getClass().getName()+")");
 			return result;
 		}

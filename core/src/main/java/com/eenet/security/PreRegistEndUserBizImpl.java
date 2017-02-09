@@ -30,7 +30,7 @@ public class PreRegistEndUserBizImpl implements PreRegistEndUserBizService {
 			app.setBusinessSeries(businessSeriesBizService.retrieveBusinessSeries(seriesId, null));
 		
 		
-		if (!app.isSuccessful() || app.getBusinessSeries()== null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
+		if (!app.isSuccessful() || !app.getBusinessSeries().isSuccessful()|| EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
 			result.addMessage("该体系系统不存在("+this.getClass().getName()+")");
 			return result;
 		}
@@ -71,7 +71,7 @@ public class PreRegistEndUserBizImpl implements PreRegistEndUserBizService {
 			app.setBusinessSeries(businessSeriesBizService.retrieveBusinessSeries(seriesId, null));
 		
 		
-		if (!app.isSuccessful() || app.getBusinessSeries()== null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
+		if (!app.isSuccessful() || !app.getBusinessSeries().isSuccessful()|| EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
 			result.addMessage("该体系系统不存在("+this.getClass().getName()+")");
 			return result;
 		}

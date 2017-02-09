@@ -20,11 +20,10 @@ public class BusinessSeriesBizImpl  extends SimpleBizImpl implements BusinessSer
 
 	@Override
 	public BusinessSeries retrieveBusinessSeries(String seriesId, String appId) {
-		System.out.println("retrieveBusinessSeries start :" );
-		
+		BusinessSeries result = null;
 		
 		if (EEBeanUtils.isNULL(seriesId) && EEBeanUtils.isNULL(appId))  {
-			BusinessSeries result = new BusinessSeries();
+			result = new BusinessSeries();
 			result.setSuccessful(false);
 			result.addMessage("seriesId 或者 appid 必须指定("+this.getClass().getName()+")");
 			return result;
@@ -32,16 +31,14 @@ public class BusinessSeriesBizImpl  extends SimpleBizImpl implements BusinessSer
 		
 		if (!EEBeanUtils.isNULL(appId)) {//是否有传业务系统标识
 			BusinessApp  businessApp = businessAppBizService.retrieveApp(appId); //数据库中取数据
-			System.out.println(businessApp);
 			System.out.println("businessApp retieApp :" +EEBeanUtils.object2Json(businessApp) );
 			if (businessApp !=null &&businessApp.getBusinessSeries() != null ) {
 				return businessApp.getBusinessSeries();
 			}
 		}
 		
-		
 		if (!EEBeanUtils.isNULL(seriesId)) {//是否有传业务体系标识
-			BusinessSeries   result = SynBusinessSeries2Redis.get(getRedisClient(), seriesId);//缓存中取数据
+			result = SynBusinessSeries2Redis.get(getRedisClient(), seriesId);//缓存中取数据
 			System.out.println(result);
 			System.out.println("businessSeries redis :" +EEBeanUtils.object2Json(result) );
 			if (result != null )
@@ -49,13 +46,20 @@ public class BusinessSeriesBizImpl  extends SimpleBizImpl implements BusinessSer
 			
 			result   = super.get(seriesId);//数据库中取数据
 			if (result != null ){
-				System.out.println(result);
 				System.out.println("businessSeries db :" +EEBeanUtils.object2Json(result) );
 				SynBusinessSeries2Redis.syn(getRedisClient(), result);
 				return result;
 			}
 		}
-		return null;
+		
+		/* 缓存和数据库中都取不到指定id的数据 */
+		if (result==null) {
+			result = new BusinessSeries();
+			result.setSuccessful(false);
+			result.addMessage("未找到对应的业务体系！");
+		}
+		
+		return result;
 	
 	}
 

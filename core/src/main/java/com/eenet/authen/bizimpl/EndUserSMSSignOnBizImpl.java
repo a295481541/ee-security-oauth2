@@ -69,7 +69,7 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 			app.setBusinessSeries(businessSeriesBizService.retrieveBusinessSeries(seriesId, null));
 		
 		
-		if (!app.isSuccessful() || app.getBusinessSeries()== null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
+		if (!app.isSuccessful() || !app.getBusinessSeries().isSuccessful() || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
 			result.addMessage("该体系系统不存在("+this.getClass().getName()+")");
 			return result;
 		}
@@ -159,7 +159,7 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 			app.setBusinessSeries(businessSeriesBizService.retrieveBusinessSeries(appRequest.getBizSeriesId(), null));
 		
 		
-		if (!app.isSuccessful() || app.getBusinessSeries()== null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
+		if (!app.isSuccessful() || !app.getBusinessSeries().isSuccessful() || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
 			result.addMessage("该体系系统不存在("+this.getClass().getName()+")");
 			return result;
 		}
@@ -237,7 +237,7 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 		String sentSmsCode = null;
 		try {
 			System.out.println("smsCode:" +smsCode);
-			System.out.println(SecurityCacheKey.ENDUSER_FASTLOGIN_SMS_CODE_PREFIX + ":" + appId + ":"+seriesId+":"  + mobile + smsCode);
+			System.out.println(SecurityCacheKey.ENDUSER_FASTLOGIN_SMS_CODE_PREFIX + ":" + appId + ":"+seriesId+":"  + mobile +":" +smsCode);
 			sentSmsCode = getRedisClient().getObject(SecurityCacheKey.ENDUSER_FASTLOGIN_SMS_CODE_PREFIX + ":" + appId + ":"+seriesId+":" + mobile, String.class);
 			System.out.println("sentSmsCode:" +sentSmsCode);
 			if (EEBeanUtils.isNULL(sentSmsCode) || !sentSmsCode.equals(smsCode)) {

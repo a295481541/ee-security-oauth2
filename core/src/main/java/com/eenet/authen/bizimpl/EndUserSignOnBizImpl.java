@@ -99,7 +99,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		String seriesId = getUserIdResult.getSeriesId();
 		String userId =  getUserIdResult.getUserId();
 		
-		System.out.println("/* 验证授权码 */ :" +userId+":"+userId);
+		System.out.println("/* 验证授权码 */ :" +seriesId+":"+userId);
 		
 		/* 删除授权码（授权码只能用一次） */
 		SimpleResponse rmCodeResult = 
@@ -466,7 +466,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 			app.setBusinessSeries(businessSeriesBizService.retrieveBusinessSeries(seriesId, null));
 		
 		
-		if (!app.isSuccessful() || app.getBusinessSeries()== null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
+		if (!app.isSuccessful() || !app.getBusinessSeries().isSuccessful() || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
 			grant.addMessage("该业务体系不存在或未指定("+this.getClass().getName()+")");
 			return grant;
 		}
