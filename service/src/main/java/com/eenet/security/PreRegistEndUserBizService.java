@@ -19,7 +19,7 @@ public interface PreRegistEndUserBizService {
 	 * 2017年1月10日
 	 * @author Orion
 	 */
-	public BooleanResponse existAccount(String appId, String seriesId, String... accounts);
+	public BooleanResponse existAccount( String... accounts);
 	
 	/**
 	 * 根据账户获取用户
