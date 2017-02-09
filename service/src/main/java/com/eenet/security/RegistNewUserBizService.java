@@ -26,7 +26,7 @@ public interface RegistNewUserBizService {
 	 * 2016年7月8日
 	 * @author Orion
 	 */
-	public AccessToken registEndUserWithLogin(EndUserInfo endUser, EndUserLoginAccount account, EndUserCredential credential);
+	public AccessToken registEndUserWithLogin(String seriesId,EndUserInfo endUser, EndUserLoginAccount account, EndUserCredential credential);
 	
 	/**
 	 * 注册最终用户（含多个账号和密码）并登陆
@@ -37,7 +37,7 @@ public interface RegistNewUserBizService {
 	 * 2016年9月19日
 	 * @author Orion
 	 */
-	public AccessToken registEndUserWithMulAccountAndLogin(EndUserInfo endUser, List<EndUserLoginAccount> accounts, EndUserCredential credential);
+	public AccessToken registEndUserWithMulAccountAndLogin(String seriesId,EndUserInfo endUser, List<EndUserLoginAccount> accounts, EndUserCredential credential);
 	
 	/**
 	 * 注册服务人员（含账号和密码）

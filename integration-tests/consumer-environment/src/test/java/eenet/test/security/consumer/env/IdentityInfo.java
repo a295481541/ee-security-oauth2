@@ -6,7 +6,7 @@ package eenet.test.security.consumer.env;
  * @author Orion
  */
 public class IdentityInfo {
-	public static final String userLoginAccount = "13922202252";
+	public static final String userLoginAccount = "13533594930";
 	public static final String userPassword = "999999";
 	
 	public static final String adminLoginAccount = "superman";

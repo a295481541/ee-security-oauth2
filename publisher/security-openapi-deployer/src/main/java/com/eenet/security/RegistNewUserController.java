@@ -114,7 +114,7 @@ public class RegistNewUserController {
 	
 	@RequestMapping(value = "/registEndUserWithLogin", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
-	public String registEndUserWithLogin(String redirectURI, @ModelAttribute("user")EndUserInfo user, @ModelAttribute("account")EndUserLoginAccount account, @ModelAttribute("credential")EndUserCredential credential) {
+	public String registEndUserWithLogin(String redirectURI, String seriesId,@ModelAttribute("user")EndUserInfo user, @ModelAttribute("account")EndUserLoginAccount account, @ModelAttribute("credential")EndUserCredential credential) {
 		SimpleResponse response = new SimpleResponse();
 		response.setSuccessful(false);
 		
@@ -124,14 +124,13 @@ public class RegistNewUserController {
 			response.setRSBizCode(SystemCode.AA0002);
 			return EEBeanUtils.object2Json(response);
 		}
-		
-		AccessToken token = registNewUserBizService.registEndUserWithLogin(user, account, credential);
+		AccessToken token = registNewUserBizService.registEndUserWithLogin(seriesId ,user, account, credential);
 		return EEBeanUtils.object2Json(token);
 	}
 	
 	@RequestMapping(value = "/regist/endUserWithMulAccountAndLogin", produces = {"application/json;charset=UTF-8"}, method = RequestMethod.POST)
 	@ResponseBody
-	public String registEndUserWithMulAccountAndLogin(@ModelAttribute("user")String user, @ModelAttribute("account")String account, @ModelAttribute("credential")String credential) {
+	public String registEndUserWithMulAccountAndLogin( String seriesId,@ModelAttribute("user")String user, @ModelAttribute("account")String account, @ModelAttribute("credential")String credential) {
 		
 		EndUserInfo info  = EEBeanUtils.json2Object(user, EndUserInfo.class);
 		
@@ -152,7 +151,7 @@ public class RegistNewUserController {
 			return EEBeanUtils.object2Json(response);
 		}
 		
-		AccessToken token = registNewUserBizService.registEndUserWithMulAccountAndLogin(info, list, endUserCredential);
+		AccessToken token = registNewUserBizService.registEndUserWithMulAccountAndLogin(seriesId,info, list, endUserCredential);
 		return EEBeanUtils.object2Json(token);
 	}
 	

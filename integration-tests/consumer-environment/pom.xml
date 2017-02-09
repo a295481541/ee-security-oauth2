@@ -13,7 +13,8 @@
 			<id>test</id>
 			<properties>
 				<!-- zookeeper配置 -->
-				<zookeeper.address>172.16.146.152:2181,172.16.146.155:2181</zookeeper.address>
+<!-- 				<zookeeper.address>172.16.146.152:2181,172.16.146.155:2181</zookeeper.address> -->
+				<zookeeper.address>127.0.0.1:2181</zookeeper.address>
 			</properties>
 			<activation>
 				<activeByDefault>true</activeByDefault>
@@ -56,9 +57,8 @@
 				<version>2.19.1</version>
 				<configuration>
 					<includes>
-						<include> **/*Tester.java</include>
-						<!-- <include> **/NewAppNUser.java</include> -->
-						<!-- <include> **/*Tester.java</include> <include> **/Test*.java</include> -->
+						<include> **/EndUserLoginThroughAppWithoutSeriesTester.java</include>
+						<!-- <include> **/*Tester.java</include> -->
 					</includes>
 					<forkMode>once</forkMode>
 					<argLine>-Xms1050m -Xmx1050m -XX:PermSize=512m -XX:MaxPermSize=512m</argLine>
