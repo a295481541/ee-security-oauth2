@@ -76,6 +76,8 @@ public class IdentityInjectFilter implements Filter, ApplicationContextAware {
 				
 				AppAuthenRequest configRequest = (AppAuthenRequest)applicationContext.getBean(AppIdentityBeanId);
 				
+				
+				
 				result.setAppId(configRequest.getAppId());
 				result.setAppSecretKey(RSAUtil.encrypt(encrypt, configRequest.getAppSecretKey()+"##"+System.currentTimeMillis() ));
 				result.setRedirectURI(configRequest.getRedirectURI());
@@ -87,6 +89,7 @@ public class IdentityInjectFilter implements Filter, ApplicationContextAware {
 			result.setRedirectURI( CallerIdentityInfo.getRedirecturi() );
 			result.setBizSeriesId( OPOwner.getCurrentSeries() );
 		}
+		System.out.println("result :" +EEBeanUtils.object2Json(result));
 		return result;
 	}
 	

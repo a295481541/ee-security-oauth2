@@ -66,6 +66,10 @@ public class IdentityUtil {
 		
 		result.setSuccessful(true);
 		result.setResult(app.getSeriesId());
+		
+		System.out.println("validateAPP :" +EEBeanUtils.object2Json(app));
+		System.out.println("validateAPP :" +EEBeanUtils.object2Json(result));
+		
 		return result;
 	}
 	

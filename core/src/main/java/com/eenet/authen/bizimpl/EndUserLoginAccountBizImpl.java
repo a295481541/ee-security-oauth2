@@ -48,7 +48,8 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 			result.setSuccessful(false);
 			result.addMessage("要注册的用户登录账号参数不全，END USER标识、登录账号、账号类型均不可为空("+this.getClass().getName()+")");
 		} else if ( OPOwner.UNKNOW_SERIES_FLAG.equals(OPOwner.getCurrentSeries()) ) {
-			//......
+			result.setSuccessful(false);
+			result.addMessage("业务体系必须指定("+this.getClass().getName()+")");
 		}
 		
 		

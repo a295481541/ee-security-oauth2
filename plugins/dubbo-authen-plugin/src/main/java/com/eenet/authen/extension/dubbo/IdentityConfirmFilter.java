@@ -96,12 +96,14 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 				appAuthenReq.setAppSecretKey(userAuthenReq.getAppSecretKey());
 				appAuthenReq.setBizSeriesId(invocation.getAttachment(RPCAuthenParamKey.BIZ_SERIES_ID,""));
 				AppAuthenResponse authenResponse = this.appAuthen(appAuthenReq);
+				System.out.println("IdentityConfirmFilter invoke :" +EEBeanUtils.object2Json(authenResponse));
 				authenConfirm = authenResponse.isAppIdentityConfirm();
 				if ( !authenConfirm )
 					authenFailReason = authenResponse.getStrMessage();
 				seriesId = authenResponse.getBizSeriesId();
 			}
 		}
+		System.out.println("IdentityConfirmFilter : invoke seriesId :" +seriesId  +"  "+userType +"   " +appAuthenLimit);
 		
 		/* 认证失败：返回失败信息 */
 		if ( !authenConfirm ) {

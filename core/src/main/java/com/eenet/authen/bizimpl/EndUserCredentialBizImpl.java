@@ -64,8 +64,6 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 			return result;
 		}
 		
-		
-		
 		if (!result.isSuccessful())
 			return result;
 		
@@ -93,8 +91,11 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 		
 		/* 判断是否已经设置过登录密码 */
 		
+		System.out.println("/* 判断是否已经设置过登录密码 */" +OPOwner.getCurrentSeries());
+		
 		EndUserCredential credentialCache = retrieveEndUserCredentialInfo(OPOwner.getCurrentSeries(), credential.getEndUser().getAtid());
-		if ( !credentialCache.isSuccessful() ) {
+		System.out.println(EEBeanUtils.object2Json(credentialCache));
+		if ( credentialCache.isSuccessful() ) {
 			result.setSuccessful(false);
 			result.addMessage("已在该体系中初始化过用户登录密码("+existEndUser.getStrMessage()+")");
 			return result;
@@ -415,6 +416,7 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 		query.addCondition(new ConditionItem("endUser.atid",RangeType.EQUAL,endUserId,null));
 		query.addCondition(new ConditionItem("businessSeries.atid",RangeType.EQUAL,seriesId,null));
 		SimpleResultSet<EndUserCredential> existCredential = super.query(query, EndUserCredential.class);
+		System.out.println("existCredential :" +EEBeanUtils.object2Json(existCredential));
 		if (!existCredential.isSuccessful()) {
 			result.setSuccessful(false);
 			result.addMessage(existCredential.getStrMessage());

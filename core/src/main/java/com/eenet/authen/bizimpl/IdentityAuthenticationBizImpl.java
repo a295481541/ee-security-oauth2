@@ -70,7 +70,7 @@ public class IdentityAuthenticationBizImpl implements IdentityAuthenticationBizS
 			result.setBizSeriesId(validateResult.getResult());
 		else if ( !EEBeanUtils.isNULL(request.getBizSeriesId()) )
 			result.setBizSeriesId(request.getBizSeriesId());
-		
+		System.out.println("appAuthen:" +EEBeanUtils.object2Json(result) );
 		return result;
 	}
 	
