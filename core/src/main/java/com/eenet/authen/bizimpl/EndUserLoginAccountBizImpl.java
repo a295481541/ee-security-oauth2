@@ -92,13 +92,13 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 			result.addMessage("要废弃的最终用户登录账号未知("+this.getClass().getName()+")");
 			return result;
 		}
-		String seriesId = OPOwner.getCurrentSeries();
-		if (EEBeanUtils.isNULL(seriesId)) {
+		if ( OPOwner.UNKNOW_SERIES_FLAG.equals(OPOwner.getCurrentSeries()) ) {
 			result = new SimpleResponse();
 			result.setSuccessful(false);
 			result.addMessage("要废弃的最终用户登录账号未指定业务体系未知("+this.getClass().getName()+")");
 			return result;
 		}
+		String seriesId = OPOwner.getCurrentSeries();
 		
 		/* （1/2）从缓存中取得要删除登录账号的对象 */
 		List<EndUserLoginAccount> accountInCacheObj = new ArrayList<EndUserLoginAccount>();//已经在缓存中的登录账号对象(list中放对象)
@@ -152,9 +152,12 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 	
 	@Override
 	public EndUserLoginAccount retrieveEndUserLoginAccountInfo(String loginAccount) {
-		String seriesId = OPOwner.getCurrentSeries();
-		
-		return retrieveEndUserLoginAccountInfo(seriesId, loginAccount);
+		if ( OPOwner.UNKNOW_SERIES_FLAG.equals(OPOwner.getCurrentSeries()) ) {
+			EndUserLoginAccount error = new EndUserLoginAccount();
+			error.setSuccessful(false);
+			error.addMessage("业务体系必须指定("+this.getClass().getName()+")");
+		}
+		return retrieveEndUserLoginAccountInfo(OPOwner.getCurrentSeries(), loginAccount);
 	}
 
 	
