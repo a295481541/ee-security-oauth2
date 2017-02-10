@@ -116,12 +116,16 @@ public class IdentityConfirmFilter implements Filter,ApplicationContextAware {
 			seriesCanNull = true;
 		if ( "anonymous".equals(userType) && !appAuthenLimit )
 			seriesCanNull = true;
-		if ( EEBeanUtils.isNULL(seriesId) &&  !seriesCanNull ) {//业务上不允许为空但实际上为空
+		
+		if ( EEBeanUtils.isNULL(seriesId) && !seriesCanNull ) {//业务上不允许为空但实际上为空
 			RpcResult rpcRS = new RpcResult();
 			rpcRS.setException(new AuthenException("业务体系未知"));
 			return rpcRS;
-		} else
-			OPOwner.setCurrentSeries(seriesId);
+		}
+		if ( EEBeanUtils.isNULL(seriesId) )//尽可能不让seriesId为空
+			seriesId = invocation.getAttachment(RPCAuthenParamKey.BIZ_SERIES_ID,"");
+		OPOwner.setCurrentSeries(seriesId);
+			
 		
 		/* 认证成功：记录当前用户、当前调用服务的消费者 */
 		OPOwner.setUsertype(userType);
