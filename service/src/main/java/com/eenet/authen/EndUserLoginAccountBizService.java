@@ -28,6 +28,7 @@ public interface EndUserLoginAccountBizService {
 	public SimpleResponse removeEndUserLoginAccount(String... loginAccounts);
 	/**
 	 * 根据登录账号获得人员基本信息（返回信息不包含登录账号的私有密码）
+	 * @param seriesId 业务体系标识
 	 * @param loginAccount 登录账号
 	 * @return 该账号所属的用户信息，未找到则返回结果设置为false
 	 * 2016年4月7日
@@ -43,17 +44,15 @@ public interface EndUserLoginAccountBizService {
 	 */
 	public EndUserLoginAccount retrieveEndUserLoginAccountInfo(String loginAccount);
 	
-	
 	/**
 	 * 根据登录账号获得最终用户登陆账号其他信息
-	 * @param seriesId
+	 * @param seriesId 业务体系标识
 	 * @param loginAccount
 	 * @return 返回对象中带有已经加密的账号登录秘钥
 	 * 2016年6月8日
 	 * @author Orion
 	 */
 	public EndUserLoginAccount retrieveEndUserLoginAccountInfo(String seriesId,String loginAccount);
-	
 	
 	/**
 	 * 获得登录账号私有密码（明文）
@@ -62,8 +61,6 @@ public interface EndUserLoginAccountBizService {
 	 * @return 如果是RSA加密形式则返回明文，否则返回密文。返回对象只包含加密方式和密码明文（或密文）
 	 */
 	public EndUserLoginAccount retrieveEndUserAccountPassword( String loginAccount, RSADecrypt StorageRSAEncrypt);
-	
-	
 	
 	/**
 	 * 获得登录账号私有密码（明文）
@@ -81,8 +78,6 @@ public interface EndUserLoginAccountBizService {
 	 * @author Orion
 	 */
 	public SimpleResultSet<EndUserLoginAccount> query (QueryCondition condition);
-	
-	
 	
 	/**
 	 * 保存用户账户
