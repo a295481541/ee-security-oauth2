@@ -19,10 +19,8 @@ public class PreRegistEndUserBizImpl implements PreRegistEndUserBizService {
 	
 	
 	@Override
-	public BooleanResponse existAccount( String... accounts) {
+	public BooleanResponse existAccount(String appId,String seriesId, String... accounts) {
 		
-		String appId = OPOwner.getCurrentSys();
-		String seriesId = OPOwner.getCurrentSeries();
 		
 		System.out.println("传入的seriesId :"+seriesId +"  传入的appId：" +appId);
 		

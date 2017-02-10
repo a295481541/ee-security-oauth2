@@ -459,6 +459,9 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 		}
 		
 		System.out.println("传入的seriesId :"+seriesId +"  传入的appId：" +appId);
+		
+		String vSeriesId=null;
+		
 		BusinessApp app = businessAppBizService.retrieveApp(appId);
 		
 		System.out.println("appp get " +EEBeanUtils.object2Json(app));
@@ -476,9 +479,11 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 			return grant;
 		}
 		
+		vSeriesId = app.getBusinessSeries().getAtid();
+		
 		/* 获得最终用户当前登录账号信息、统一登录秘钥信息 */
 		EndUserLoginAccount loginAccountInfo = 
-				getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(app.getBusinessSeries().getAtid() , loginAccount);
+				getEndUserLoginAccountBizService().retrieveEndUserLoginAccountInfo(vSeriesId , loginAccount);
 		
 			
 		if (!loginAccountInfo.isSuccessful()) {
@@ -487,7 +492,7 @@ public class EndUserSignOnBizImpl implements EndUserSignOnBizService {
 			return grant;
 		}
 		EndUserInfo endUser = loginAccountInfo.getUserInfo();
-		EndUserCredential credential = getEndUserCredentialBizService().retrieveEndUserSecretKey(endUser.getAtid(), getStorageRSADecrypt());
+		EndUserCredential credential = getEndUserCredentialBizService().retrieveEndUserSecretKey(vSeriesId,endUser.getAtid(), getStorageRSADecrypt());
 		
 		/*
 		 * 用户可能使用账号私有密码登录，所以取统一密码失败也应该继续

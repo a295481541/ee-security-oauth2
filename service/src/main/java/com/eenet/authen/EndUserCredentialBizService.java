@@ -57,7 +57,7 @@ public interface EndUserCredentialBizService {
 	 * 2016年6月9日
 	 * @author Orion
 	 */
-	public EndUserCredential retrieveEndUserCredentialInfo ( String endUserId);
+	public EndUserCredential retrieveEndUserCredentialInfo (String seriesId , String endUserId);
 	/**
 	 * 获得用户登录密码（密文）
 	 * @param endUserId 用户标识
@@ -65,7 +65,7 @@ public interface EndUserCredentialBizService {
 	 * 2016年4月7日
 	 * @author Orion
 	 */
-	public EndUserCredential retrieveEndUserSecretKey( String endUserId);
+	public EndUserCredential retrieveEndUserSecretKey(String seriesId , String endUserId);
 	
 	/**
 	 * 获得用户登录密码（明文）
@@ -75,5 +75,5 @@ public interface EndUserCredentialBizService {
 	 * 2016年4月7日
 	 * @author Orion
 	 */
-	public EndUserCredential retrieveEndUserSecretKey( String endUserId, RSADecrypt decrypt);
+	public EndUserCredential retrieveEndUserSecretKey(String seriesId ,String endUserId, RSADecrypt decrypt);
 }

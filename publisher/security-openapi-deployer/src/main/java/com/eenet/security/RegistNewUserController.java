@@ -60,7 +60,7 @@ public class RegistNewUserController {
 		}
 		
 		/* 执行业务 */
-		BooleanResponse result = this.preRegistEndUserBizService.existAccount( mobile);
+		BooleanResponse result = this.preRegistEndUserBizService.existAccount(identity.getAppId(),identity.getBizSeriesId(), mobile);
 		return EEBeanUtils.object2Json(result);
 	}
 	

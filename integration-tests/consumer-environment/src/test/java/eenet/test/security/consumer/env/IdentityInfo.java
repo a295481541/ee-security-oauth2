@@ -8,6 +8,7 @@ package eenet.test.security.consumer.env;
 public class IdentityInfo {
 	public static final String userLoginAccount = "13533594930";
 	public static final String userPassword = "999999";
+	public static final String userId = "C49D2E96847D43C4840E9A04CC7FD829";
 	
 	public static final String adminLoginAccount = "superman";
 	public static final String adminPassword = "sEPp$341##";
