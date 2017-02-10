@@ -14,7 +14,7 @@ import com.eenet.base.StringResponse;
 public interface EndUserCredentialReSetBizService {
 	
 	/**
-	 * 发送重置密码短信验证码
+	 * 发送重置密码短信验证码+
 	 * 仅限已知业务体系的系统使用
 	 * @param appId
 	 * @param mobile

@@ -47,9 +47,9 @@ public class EndUserLoginThroughAppWithoutSeriesTester extends SpringEnvironment
 		System.out.println(EEBeanUtils.object2Json(result));
 	}
 	
-	@Test
+//	@Test
 	public void loginBySMS() throws EncryptException {
-		String smsCode = "581572";
+		String smsCode = "930655";
 		
 		AppAuthenRequest appRequest = new AppAuthenRequest();
 		appRequest.setAppId(appId);appRequest.setAppSecretKey(RSAUtil.encrypt(transferRSAEncrypt, appSecret+"##"+System.currentTimeMillis()));appRequest.setBizSeriesId(seriesId);
@@ -92,14 +92,14 @@ public class EndUserLoginThroughAppWithoutSeriesTester extends SpringEnvironment
 //		System.out.println(EEBeanUtils.object2Json(result_2));
 		
 		//失败原因三：验证短信时的体系ID与发短信时的体系ID不一致
-		SimpleResponse result_3 = userSMSSignOnService.sendSMSCode4Login(appId, seriesId, Long.parseLong(loginAccount));
-		if ( result_3==null || result_3.isSuccessful()==false )
-			Assert.fail(result_3.getStrMessage());
-		AppAuthenRequest appRequest = new AppAuthenRequest();
-		appRequest.setAppId(appId);appRequest.setAppSecretKey(RSAUtil.encrypt(transferRSAEncrypt, appSecret+"##"+System.currentTimeMillis()));appRequest.setBizSeriesId(seriesId2);
-		AccessToken tokenObj = userSMSSignOnService.getAccessToken(appRequest, Long.parseLong(loginAccount), "792081");
-		Assert.assertFalse(tokenObj.isSuccessful());
-		System.out.println(EEBeanUtils.object2Json(tokenObj));
+//		SimpleResponse result_3 = userSMSSignOnService.sendSMSCode4Login(appId, seriesId, Long.parseLong(loginAccount));
+//		if ( result_3==null || result_3.isSuccessful()==false )
+//			Assert.fail(result_3.getStrMessage());
+//		AppAuthenRequest appRequest = new AppAuthenRequest();
+//		appRequest.setAppId(appId);appRequest.setAppSecretKey(RSAUtil.encrypt(transferRSAEncrypt, appSecret+"##"+System.currentTimeMillis()));appRequest.setBizSeriesId(seriesId2);
+//		AccessToken tokenObj = userSMSSignOnService.getAccessToken(appRequest, Long.parseLong(loginAccount), "920039");
+//		Assert.assertFalse(tokenObj.isSuccessful());
+//		System.out.println(EEBeanUtils.object2Json(tokenObj));
 	}
 	
 	private EndUserSignOnBizService userSignOnService = (EndUserSignOnBizService)super.getContext().getBean("EndUserSignOnBizService");

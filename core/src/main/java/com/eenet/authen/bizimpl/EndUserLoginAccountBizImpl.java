@@ -141,9 +141,10 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 		
 		/* 从缓存和数据库中删除存在的对象 */
 		for (int i = 0; i < loginAccounts.length; i++) 
-			loginAccounts[i]=  loginAccounts[i]+":" +seriesId;
+			loginAccounts[i]=  loginAccounts[i];
 		
 		SynEndUserLoginAccount2Redis.remove(getRedisClient(), seriesId, loginAccounts);
+		
 		result = super.delete(EndUserLoginAccount.class, loginAccountIDs);
 		
 		return result;

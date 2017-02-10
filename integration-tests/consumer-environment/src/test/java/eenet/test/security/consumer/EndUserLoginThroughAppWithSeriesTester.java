@@ -57,7 +57,7 @@ public class EndUserLoginThroughAppWithSeriesTester extends SpringEnvironment {
 	
 //	@Test
 	public void loginBySMS() throws EncryptException {
-		String smsCode = "880065";
+		String smsCode = "669425";
 		
 		AppAuthenRequest appRequest = new AppAuthenRequest();
 		appRequest.setAppId(appId);appRequest.setAppSecretKey(RSAUtil.encrypt(transferRSAEncrypt, appSecret+"##"+System.currentTimeMillis()));
@@ -76,17 +76,17 @@ public class EndUserLoginThroughAppWithSeriesTester extends SpringEnvironment {
 //	@Test
 	public void loginByAccountFail() throws EncryptException {
 		//失败原因一：指定的业务体系ID与应用所隶属的业务体系不一致
-		SignOnGrant grantObj_1 = userSignOnService.getSignOnGrant(appId, seriesId+"AAA", redirectURI, loginAccount, RSAUtil.encrypt(transferRSAEncrypt, password+"##"+System.currentTimeMillis()));
-		Assert.assertFalse(grantObj_1.isSuccessful());
-		System.out.println(EEBeanUtils.object2Json(grantObj_1));
-		
-		//失败原因二：密码错误
-		SignOnGrant grantObj_2 = userSignOnService.getSignOnGrant(appId, redirectURI, loginAccount,RSAUtil.encrypt(transferRSAEncrypt, password+"AAA"+"##"+System.currentTimeMillis()));
-		Assert.assertFalse(grantObj_2.isSuccessful());
-		System.out.println(EEBeanUtils.object2Json(grantObj_2));
+//		SignOnGrant grantObj_1 = userSignOnService.getSignOnGrant(appId, seriesId+"AAA", redirectURI, loginAccount, RSAUtil.encrypt(transferRSAEncrypt, password+"##"+System.currentTimeMillis()));
+//		Assert.assertFalse(grantObj_1.isSuccessful());
+//		System.out.println(EEBeanUtils.object2Json(grantObj_1));
+//		
+//		//失败原因二：密码错误
+//		SignOnGrant grantObj_2 = userSignOnService.getSignOnGrant(appId, redirectURI, loginAccount,RSAUtil.encrypt(transferRSAEncrypt, password+"AAA"+"##"+System.currentTimeMillis()));
+//		Assert.assertFalse(grantObj_2.isSuccessful());
+//		System.out.println(EEBeanUtils.object2Json(grantObj_2));
 	}
 	
-//	@Test
+	@Test
 	public void sentSMS4LoginFail() throws EncryptException {
 //		//失败原因一：指定的业务体系ID与应用所隶属的业务体系不一致
 //		SimpleResponse result_1 = userSMSSignOnService.sendSMSCode4Login(appId, seriesId+"AAA", Long.parseLong(loginAccount));
@@ -104,7 +104,7 @@ public class EndUserLoginThroughAppWithSeriesTester extends SpringEnvironment {
 //			Assert.fail(result_3.getStrMessage());
 		AppAuthenRequest appRequest = new AppAuthenRequest();
 		appRequest.setAppId(appId);appRequest.setAppSecretKey(RSAUtil.encrypt(transferRSAEncrypt, appSecret+"##"+System.currentTimeMillis()));appRequest.setBizSeriesId(seriesId2);
-		AccessToken tokenObj = userSMSSignOnService.getAccessToken(appRequest, Long.parseLong(loginAccount), "967909");
+		AccessToken tokenObj = userSMSSignOnService.getAccessToken(appRequest, Long.parseLong(loginAccount), "692543");
 		Assert.assertFalse(tokenObj.isSuccessful());
 		System.out.println(EEBeanUtils.object2Json(tokenObj));
 	}
