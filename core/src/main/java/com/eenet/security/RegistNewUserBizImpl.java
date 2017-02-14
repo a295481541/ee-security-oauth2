@@ -46,6 +46,9 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] start..........." +OPOwner.getUsertype());
 		AccessToken result = new AccessToken();
 		result.setSuccessful(false);
+		String vSeriesId  = OPOwner.getCurrentSeries();
+		
+		String vAppId  = OPOwner.getCurrentSys();
 		
 		/* 参数检查 */
 		if (endUser==null || account==null || credential==null) {
@@ -62,13 +65,21 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 			return result;
 		}
 		
-		String seriesId  = OPOwner.getCurrentSeries();
+		 if ( OPOwner.UNKNOW_SERIES_FLAG.equals(vSeriesId) ) {
+			result.setSuccessful(false);
+			result.addMessage("业务体系必须指定("+this.getClass().getName()+")");
+			return result;
+		}
 		
-		System.out.println("传入的seriesId :"+seriesId +"  传入的appId：" +OPOwner.getCurrentSys());
+		
+		
+		
+		
+		System.out.println("传入的seriesId :"+vSeriesId +"  传入的appId：" +vAppId);
 		
 
 		BusinessSeries businessSeries = new BusinessSeries();
-		businessSeries.setAtid(seriesId);
+		businessSeries.setAtid(vSeriesId);
 		account.setBusinessSeries(businessSeries);
 		credential.setBusinessSeries(businessSeries);
 		
@@ -82,7 +93,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 			return result;
 		}
 		
-		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] check over, current app :"+OPOwner.getCurrentSys()+", current user :" + OPOwner.getCurrentUser() + ", current userType :" + OPOwner.getUsertype());
+		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] check over, current app :"+vAppId+", current user :" + OPOwner.getCurrentUser() + ", current userType :" + OPOwner.getUsertype());
 		
 		/* 新增用户 */
 		EndUserInfo savedEndUser = getEndUserInfoBizService().save(endUser);
@@ -95,7 +106,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 			} else {//用户已存在，完善个人信息，继续剩余流程
 				endUser.setAtid(savedEndUser.getAtid());
 				savedEndUser = getEndUserInfoBizService().save(endUser);
-				existEndUser = true;//IAMSMART53GEI6 0.11 //IAMSMART5YA8FO 0.12 IAMSMART5C48JJ 0.14   
+				existEndUser = true;
 			}
 		}
 		
@@ -132,7 +143,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		}
 		
 		/* 获得认证授权码 */
-		SignOnGrant grant = getEndUserSignOnBizService().getSignOnGrant(OPOwner.getCurrentSys(), CallerIdentityInfo.getRedirecturi(), account.getLoginAccount(),
+		SignOnGrant grant = getEndUserSignOnBizService().getSignOnGrant(vAppId, CallerIdentityInfo.getRedirecturi(), account.getLoginAccount(),
 				userCipherPassword);
 		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] get grant code result : "+EEBeanUtils.object2Json(grant));
 		if (!grant.isSuccessful()) {
@@ -142,7 +153,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		}
 		
 		/* 获得访问令牌 */
-		result = getEndUserSignOnBizService().getAccessToken(OPOwner.getCurrentSys(), CallerIdentityInfo.getAppsecretkey(), grant.getGrantCode());
+		result = getEndUserSignOnBizService().getAccessToken(vAppId, CallerIdentityInfo.getAppsecretkey(), grant.getGrantCode());
 		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] get token result : "+EEBeanUtils.object2Json(result));
 		return result;
 	}
@@ -150,7 +161,9 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 	@Override
 	public AccessToken registEndUserWithMulAccountAndLogin(EndUserInfo endUser, List<EndUserLoginAccount> accounts,
 			EndUserCredential credential) {
-		log.info("start........... userType: " + OPOwner.getUsertype() + " appId: " + OPOwner.getCurrentSys());
+		String vSeriesId  = OPOwner.getCurrentSeries();
+		String vAppId = OPOwner.getCurrentSys();
+		log.info("start........... userType: " + OPOwner.getUsertype() + " appId: " +vAppId);
 		AccessToken result = new AccessToken();
 		result.setSuccessful(false);
 		
@@ -168,12 +181,26 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 			return result;
 		}
 		
-		String seriesId  = OPOwner.getCurrentSeries();
 		
-		System.out.println("传入的seriesId :"+seriesId +"  传入的appId：" +OPOwner.getCurrentSys());
+
+		if ( OPOwner.UNKNOW_SERIES_FLAG.equals(vSeriesId) ) {
+			result.setSuccessful(false);
+			result.addMessage("业务体系必须指定("+this.getClass().getName()+")");
+			return result;
+		}
+		
+		if ( OPOwner.UNKNOW_APP_FLAG.equals(vAppId) ) {
+			result.setSuccessful(false);
+			result.addMessage("业务体系必须指定("+this.getClass().getName()+")");
+			return result;
+		}
+
+		
+		
+		System.out.println("传入的seriesId :"+vSeriesId +"  传入的appId：" +vAppId);
 		
 		BusinessSeries businessSeries = new BusinessSeries();
-		businessSeries.setAtid(seriesId);
+		businessSeries.setAtid(vSeriesId);
 		credential.setBusinessSeries(businessSeries);
 		
 		/* 检查该账号是否已被使用 */

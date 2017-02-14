@@ -57,7 +57,7 @@
 				<version>2.19.1</version>
 				<configuration>
 					<includes>
-						<include> **/EndUserLoginThroughAppWithoutSeriesTester.java</include>
+						<include> **/RegistNewUserBizTester.java</include>
 						<!-- <include> **/*Tester.java</include> -->
 					</includes>
 					<forkMode>once</forkMode>

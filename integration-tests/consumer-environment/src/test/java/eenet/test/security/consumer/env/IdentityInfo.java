@@ -16,7 +16,7 @@ public class IdentityInfo {
 	public static final String seriesId = "544A1FB8166D4E979E32DD87E346544D";//广东职工教育网
 	
 	public static final String seriesedAppId = "5215065683F6418AA8202ED24C0D25C0";
-	public static final String seriesedRedirectURI = "http://www.gdzgjy.com";
+	public static final String seriesedRedirectURI = "http://gd.saas.workeredu.com";
 	public static final String seriesedAppSecret = "pASS3#";
 	
 	

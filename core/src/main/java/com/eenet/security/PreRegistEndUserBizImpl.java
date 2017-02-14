@@ -48,7 +48,7 @@ public class PreRegistEndUserBizImpl implements PreRegistEndUserBizService {
 		EndUserInfo endUserInfo = null;
 		for(String account : accounts){
 			endUserInfo = endUserLoginAccountBizService.retrieveEndUserInfo(seriesId, account);
-			if (endUserInfo == null ||!endUserInfo.isSuccessful()) {
+			if (endUserInfo != null &&endUserInfo.isSuccessful()) {
 				result.setSuccessful(true);
 				result.setResult(true);
 				result.addMessage("账户"+account+"已存在("+this.getClass().getName()+")");

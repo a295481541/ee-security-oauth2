@@ -39,7 +39,7 @@
 	<bean id="seriesedApp" class="com.eenet.authen.request.AppAuthenRequest">
 		<property name="appId" value="5215065683F6418AA8202ED24C0D25C0"></property><!-- 有体系系统 -->
 		<property name="appSecretKey" value="pASS3#"></property>
-		<property name="redirectURI" value="http://www.gdzgjy.com"></property>
+		<property name="redirectURI" value="http://gd.saas.workeredu.com"></property>
 	</bean>
 	
 	<bean id="commonApp" class="com.eenet.authen.request.AppAuthenRequest">

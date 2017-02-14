@@ -86,19 +86,22 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 	public SimpleResponse removeEndUserLoginAccount( String... loginAccounts) {
 		SimpleResponse result = null;
 		/* 参数检查 */
+		
+		String seriesId = OPOwner.getCurrentSeries();
+		
 		if (loginAccounts==null || loginAccounts.length==0) {
 			result = new SimpleResponse();
 			result.setSuccessful(false);
 			result.addMessage("要废弃的最终用户登录账号未知("+this.getClass().getName()+")");
 			return result;
 		}
-		if ( OPOwner.UNKNOW_SERIES_FLAG.equals(OPOwner.getCurrentSeries()) ) {
+		if ( OPOwner.UNKNOW_SERIES_FLAG.equals(seriesId) ) {
 			result = new SimpleResponse();
 			result.setSuccessful(false);
 			result.addMessage("要废弃的最终用户登录账号未指定业务体系未知("+this.getClass().getName()+")");
 			return result;
 		}
-		String seriesId = OPOwner.getCurrentSeries();
+		
 		
 		/* （1/2）从缓存中取得要删除登录账号的对象 */
 		List<EndUserLoginAccount> accountInCacheObj = new ArrayList<EndUserLoginAccount>();//已经在缓存中的登录账号对象(list中放对象)

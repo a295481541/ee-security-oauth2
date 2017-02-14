@@ -375,7 +375,6 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 	
 	@Override
 	public EndUserCredential retrieveEndUserCredentialInfo (String seriesId, String endUserId) {
-		System.out.println("retrieveEndUserCredentialInfo :" +endUserId +"  " +OPOwner.getCurrentSeries());
 		EndUserCredential result = new EndUserCredential();
 		/* 参数检查 */
 		if (EEBeanUtils.isNULL(endUserId)) {

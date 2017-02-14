@@ -219,13 +219,19 @@ public class EndUserCredentialReSetBizImpl implements EndUserCredentialReSetBizS
 	public SimpleResponse resetPasswordBySMSCodeWithoutLogin(EndUserCredential credential, String smsCode, String mobile) {
 		SimpleResponse result = new SimpleResponse();
 		result.setSuccessful(false);
+		String seriesId = OPOwner.getCurrentSeries();
 		/* 参数检查 */
 		if ( credential==null || EEBeanUtils.isNULL(credential.getEndUser().getAtid()) || EEBeanUtils.isNULL(smsCode) ) {
 			result.addMessage("要重置密码的用户标识、新密码和短信验证码均不可为空("+this.getClass().getName()+")");
 			return result;
 		}
+		if ( OPOwner.UNKNOW_SERIES_FLAG.equals(seriesId) ) {
+			result.setSuccessful(false);
+			result.addMessage("业务体系必须指定("+this.getClass().getName()+")");
+			return result;
+		}
 		
-		String seriesId = OPOwner.getCurrentSeries();
+		
 		
 		
 		/* 校验并删除短信验证码 */
