@@ -35,6 +35,7 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 	private RedisClient RedisClient;//Redis客户端
 	@Override
 	public EndUserLoginAccount registeEndUserLoginAccount(EndUserLoginAccount account) {
+		String vSeriesId = OPOwner.getCurrentSeries();
 		log.error("[registeEndUserLoginAccount("+Thread.currentThread().getId()+")] start..........." +OPOwner.getUsertype());
 		EndUserLoginAccount result = new EndUserLoginAccount();
 		result.setSuccessful(true);
@@ -47,7 +48,7 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 			log.error("[registeEndUserLoginAccount("+Thread.currentThread().getId()+")] atid not nul or account null");
 			result.setSuccessful(false);
 			result.addMessage("要注册的用户登录账号参数不全，END USER标识、登录账号、账号类型均不可为空("+this.getClass().getName()+")");
-		} else if ( OPOwner.UNKNOW_SERIES_FLAG.equals(OPOwner.getCurrentSeries()) ) {
+		} else if ( OPOwner.UNKNOW_SERIES_FLAG.equals(vSeriesId) ) {
 			result.setSuccessful(false);
 			result.addMessage("业务体系必须指定("+this.getClass().getName()+")");
 		}
@@ -57,7 +58,7 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 			return result;
 		log.error("[registeEndUserLoginAccount("+Thread.currentThread().getId()+")] check over");
 		BusinessSeries businessSeries = new BusinessSeries();
-		businessSeries.setAtid(OPOwner.getCurrentSeries());
+		businessSeries.setAtid(vSeriesId);
 		account.setBusinessSeries(businessSeries);
 		
 		/* 检查要注册的账号是否存在 */
@@ -87,7 +88,7 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 		SimpleResponse result = null;
 		/* 参数检查 */
 		
-		String seriesId = OPOwner.getCurrentSeries();
+		String vSeriesId = OPOwner.getCurrentSeries();
 		
 		if (loginAccounts==null || loginAccounts.length==0) {
 			result = new SimpleResponse();
@@ -95,7 +96,7 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 			result.addMessage("要废弃的最终用户登录账号未知("+this.getClass().getName()+")");
 			return result;
 		}
-		if ( OPOwner.UNKNOW_SERIES_FLAG.equals(seriesId) ) {
+		if ( OPOwner.UNKNOW_SERIES_FLAG.equals(vSeriesId) ) {
 			result = new SimpleResponse();
 			result.setSuccessful(false);
 			result.addMessage("要废弃的最终用户登录账号未指定业务体系未知("+this.getClass().getName()+")");
@@ -107,7 +108,7 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 		List<EndUserLoginAccount> accountInCacheObj = new ArrayList<EndUserLoginAccount>();//已经在缓存中的登录账号对象(list中放对象)
 		List<String> accountNoInCache = new ArrayList<String>();//未在缓存中的登录账号对象(list中放登录账号字符串)
 		for (String account : loginAccounts) {
-			EndUserLoginAccount accountObj = SynEndUserLoginAccount2Redis.get(getRedisClient(), seriesId,account);
+			EndUserLoginAccount accountObj = SynEndUserLoginAccount2Redis.get(getRedisClient(), vSeriesId,account);
 			if (accountObj == null)
 				accountNoInCache.add(account);
 			else
@@ -122,7 +123,7 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 			for (String account : accountNoInCache) {
 				query.cleanAllCondition();
 				query.addCondition(new ConditionItem("loginAccount",RangeType.EQUAL,account,null));
-				query.addCondition(new ConditionItem("businessSeries.atid",RangeType.EQUAL,seriesId,null));
+				query.addCondition(new ConditionItem("businessSeries.atid",RangeType.EQUAL,vSeriesId,null));
 				queryResult = super.query(query, EndUserLoginAccount.class);
 				accountNoInCacheObj.addAll(queryResult.getResultSet());
 			}
@@ -146,7 +147,7 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 		for (int i = 0; i < loginAccounts.length; i++) 
 			loginAccounts[i]=  loginAccounts[i];
 		
-		SynEndUserLoginAccount2Redis.remove(getRedisClient(), seriesId, loginAccounts);
+		SynEndUserLoginAccount2Redis.remove(getRedisClient(), vSeriesId, loginAccounts);
 		
 		result = super.delete(EndUserLoginAccount.class, loginAccountIDs);
 		
@@ -155,12 +156,13 @@ public class EndUserLoginAccountBizImpl extends SimpleBizImpl implements EndUser
 	
 	@Override
 	public EndUserLoginAccount retrieveEndUserLoginAccountInfo(String loginAccount) {
-		if ( OPOwner.UNKNOW_SERIES_FLAG.equals(OPOwner.getCurrentSeries()) ) {
+		String vSeriesId = OPOwner.getCurrentSeries();
+		if ( OPOwner.UNKNOW_SERIES_FLAG.equals(vSeriesId) ) {
 			EndUserLoginAccount error = new EndUserLoginAccount();
 			error.setSuccessful(false);
 			error.addMessage("业务体系必须指定("+this.getClass().getName()+")");
 		}
-		return retrieveEndUserLoginAccountInfo(OPOwner.getCurrentSeries(), loginAccount);
+		return retrieveEndUserLoginAccountInfo(vSeriesId, loginAccount);
 	}
 
 	

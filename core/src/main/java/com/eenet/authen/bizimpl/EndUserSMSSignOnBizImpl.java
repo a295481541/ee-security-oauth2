@@ -8,6 +8,7 @@ import java.util.Map;
 import com.eenet.authen.AccessToken;
 import com.eenet.authen.BusinessApp;
 import com.eenet.authen.BusinessAppBizService;
+import com.eenet.authen.BusinessSeries;
 import com.eenet.authen.BusinessSeriesBizService;
 import com.eenet.authen.EndUserSMSSignOnBizService;
 import com.eenet.authen.IdentityAuthenticationBizService;
@@ -27,6 +28,7 @@ import com.eenet.sms.SendSMSBizService;
 import com.eenet.sms.SendSMSBizType;
 import com.eenet.sms.ShortMessageBody;
 import com.eenet.util.EEBeanUtils;
+import com.mongodb.AggregationOptions.Builder;
 
 public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 	
@@ -64,29 +66,29 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 		System.out.println("传入的seriesId :"+seriesId +"  传入的appId：" +appId);
 		BusinessApp app = businessAppBizService.retrieveApp(appId);
 		
+		BusinessSeries businessSeries = app.getBusinessSeries();
+		
 		System.out.println("appp get " +EEBeanUtils.object2Json(app));
-		if ( (app.getBusinessSeries()==null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid())) && !EEBeanUtils.isNULL(seriesId) ) 
+		if ( (businessSeries==null || EEBeanUtils.isNULL(businessSeries.getAtid())) && !EEBeanUtils.isNULL(seriesId) ) 
 			app.setBusinessSeries(businessSeriesBizService.retrieveBusinessSeries(seriesId, null));
+		businessSeries = app.getBusinessSeries();
 		
+		String vSeriesId  = businessSeries.getAtid();
 		
-		if (!app.isSuccessful() || !app.getBusinessSeries().isSuccessful() || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
+		if (!app.isSuccessful() || !businessSeries.isSuccessful() || EEBeanUtils.isNULL(vSeriesId) ) {
 			result.addMessage("该体系系统不存在("+this.getClass().getName()+")");
 			return result;
 		}
-		System.out.println("seriesId:" +seriesId +"   " +app.getBusinessSeries().getAtid());
-		if (!EEBeanUtils.isNULL(seriesId)&&!seriesId.equals(app.getBusinessSeries().getAtid())) {
+		System.out.println("seriesId:" +seriesId +"   " +vSeriesId);
+		if (!EEBeanUtils.isNULL(seriesId)&&!seriesId.equals(vSeriesId)) {
 			result.addMessage("指定的业务体系与系统所隶属的业务体系不一致("+this.getClass().getName()+")");
 			return result;
 		}
 		
 		
 		
-		seriesId = app.getBusinessSeries().getAtid();
-		
-		
-		
 		/* 检查该手机所属用户信息 */
-		BooleanResponse existUser = getPreRegistEndUserBizService().existAccount(appId, seriesId, String.valueOf(mobile));
+		BooleanResponse existUser = getPreRegistEndUserBizService().existAccount(appId, vSeriesId, String.valueOf(mobile));
 		System.out.println(EEBeanUtils.object2Json(existUser));
 		
 		if ( existUser.isResult() ) {
@@ -99,8 +101,8 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 		try {
 			getRedisClient().addMapItem(SecurityCacheKey.RECENT_SEND_SMS, String.valueOf(mobile), System.currentTimeMillis(), 62);
 			//已记录短信验证码
-			System.out.println(SecurityCacheKey.ENDUSER_FASTLOGIN_SMS_CODE_PREFIX + ":" + appId + ":"+seriesId+":" + mobile    +":" +smsCode);
-			boolean cached = getRedisClient().setObject(SecurityCacheKey.ENDUSER_FASTLOGIN_SMS_CODE_PREFIX + ":" + appId + ":"+seriesId+":" + mobile , smsCode, 600);
+			System.out.println(SecurityCacheKey.ENDUSER_FASTLOGIN_SMS_CODE_PREFIX + ":" + appId + ":"+vSeriesId+":" + mobile    +":" +smsCode);
+			boolean cached = getRedisClient().setObject(SecurityCacheKey.ENDUSER_FASTLOGIN_SMS_CODE_PREFIX + ":" + appId + ":"+vSeriesId+":" + mobile , smsCode, 600);
 			if ( !cached )
 				throw new RedisOPException("记录短信验证码失败("+this.getClass().getName()+")");
 		} catch (RedisOPException e) {
@@ -154,31 +156,41 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 		System.out.println("传入的seriesId :"+appRequest.getBizSeriesId() +"  传入的appId：" +appRequest.getAppId());
 		BusinessApp app = businessAppBizService.retrieveApp(appRequest.getAppId());
 		
+		BusinessSeries businessSeries = app.getBusinessSeries();
+		
 		System.out.println("appp get " +EEBeanUtils.object2Json(app));
-		if ( (app.getBusinessSeries()==null || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid())) && !EEBeanUtils.isNULL(appRequest.getBizSeriesId()) ) 
+		if ( (businessSeries==null || EEBeanUtils.isNULL(businessSeries.getAtid())) && !EEBeanUtils.isNULL(appRequest.getBizSeriesId()) ) 
 			app.setBusinessSeries(businessSeriesBizService.retrieveBusinessSeries(appRequest.getBizSeriesId(), null));
 		
+		businessSeries = app.getBusinessSeries();
 		
-		if (!app.isSuccessful() || !app.getBusinessSeries().isSuccessful() || EEBeanUtils.isNULL(app.getBusinessSeries().getAtid()) ) {
+		
+		String appId = app.getAppId();
+		String seriesId =  businessSeries.getAtid();
+		String requestSeriesId= appRequest.getBizSeriesId();
+		
+		if (!app.isSuccessful() || !businessSeries.isSuccessful() || EEBeanUtils.isNULL(seriesId) ) {
 			result.addMessage("该体系系统不存在("+this.getClass().getName()+")");
 			return result;
 		}
-		System.out.println("seriesId:" +appRequest.getBizSeriesId() +"   " +app.getBusinessSeries().getAtid());
-		if (!EEBeanUtils.isNULL(appRequest.getBizSeriesId())&&!appRequest.getBizSeriesId().equals(app.getBusinessSeries().getAtid())) {
+		System.out.println("seriesId:" +appRequest.getBizSeriesId() +"   " +seriesId);
+		if (!EEBeanUtils.isNULL(requestSeriesId)&&!requestSeriesId.equals(seriesId)) {
 			result.addMessage("指定的业务体系与系统所隶属的业务体系不一致("+this.getClass().getName()+")");
 			return result;
 		}
 		
 		
+		
+		
 		/* 校验并删除短信验证码 */
-		SimpleResponse smsCodeCorrect = validateSMSCode4Login(app.getAppId(), app.getBusinessSeries().getAtid() ,mobile, smsCode, true);
+		SimpleResponse smsCodeCorrect = validateSMSCode4Login(appId, seriesId ,mobile, smsCode, true);
 		if ( !smsCodeCorrect.isSuccessful() ) {
 			result.addMessage(smsCodeCorrect.getStrMessage());
 			return result;
 		}
 		
 		/* 获取手机所属用户个人信息 */
-		EndUserInfo user = getPreRegistEndUserBizService().retrieveEndUserInfo(appRequest.getAppId(),appRequest.getBizSeriesId(), String.valueOf(mobile));
+		EndUserInfo user = getPreRegistEndUserBizService().retrieveEndUserInfo(appId,seriesId, String.valueOf(mobile));
 		
 		System.out.println("	/* 获取手机所属用户个人信息 */" +EEBeanUtils.object2Json(user));
 		
@@ -190,11 +202,11 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 		/* 删除访问令牌（防止一个用户可以通过两个令牌登录） */
 		getSignOnUtil().removeUserTokenInApp(SecurityCacheKey.ENDUSER_CACHED_TOKEN,
 				SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, SecurityCacheKey.ENDUSER_REFRESHTOKEN_PREFIX,
-				app.getAppId(), user.getAtid(), app.getBusinessSeries().getAtid());
+				appId, user.getAtid(), seriesId);
 		
 		/* 生成并记录访问令牌 */
 		StringResponse mkAccessTokenResult = 
-				getSignOnUtil().makeAccessToken(SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, app.getAppId(), user.getAtid(), app.getBusinessSeries().getAtid());
+				getSignOnUtil().makeAccessToken(SecurityCacheKey.ENDUSER_ACCESSTOKEN_PREFIX, appId, user.getAtid(), seriesId);
 		
 		if (!mkAccessTokenResult.isSuccessful()) {
 			result.addMessage(mkAccessTokenResult.getStrMessage());
@@ -203,16 +215,16 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 		
 		/* 生成并记录刷新令牌 */
 		StringResponse mkFreshTokenResult = getSignOnUtil().makeRefreshToken(
-				SecurityCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, app.getAppId(), user.getAtid(),
-				app.getBusinessSeries().getAtid());
+				SecurityCacheKey.ENDUSER_REFRESHTOKEN_PREFIX, appId, user.getAtid(),
+				seriesId);
 		if (!mkFreshTokenResult.isSuccessful()) {
 			result.addMessage(mkFreshTokenResult.getStrMessage());
 			return result;
 		}
 		
 		/* 标记最终用户已缓存令牌 */
-		getSignOnUtil().markUserTokenInApp(SecurityCacheKey.ENDUSER_CACHED_TOKEN, app.getAppId(), user.getAtid(),
-				app.getBusinessSeries().getAtid(), mkAccessTokenResult.getResult(), mkFreshTokenResult.getResult());
+		getSignOnUtil().markUserTokenInApp(SecurityCacheKey.ENDUSER_CACHED_TOKEN, appId, user.getAtid(),
+				seriesId, mkAccessTokenResult.getResult(), mkFreshTokenResult.getResult());
 		
 		/* 所有参数已缓存，拼返回对象 */
 		result.setUserInfo(user);
