@@ -101,6 +101,7 @@ public class RegistNewUserBizImpl implements RegistNewUserBizService {
 		log.error("[registEndUserWithLogin("+Thread.currentThread().getId()+")] saved user result : "+ EEBeanUtils.object2Json(savedEndUser));
 		if ( !savedEndUser.isSuccessful() ) {//新增用户失败
 			if ( EEBeanUtils.isNULL(savedEndUser.getAtid()) ) {//不是用户已存在，属于系统错误，返回
+				result.setRSBizCode(savedEndUser.getRSBizCode());
 				result.addMessage(savedEndUser.getStrMessage());
 				return result;
 			} else {//用户已存在，完善个人信息，继续剩余流程

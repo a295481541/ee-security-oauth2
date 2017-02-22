@@ -27,16 +27,17 @@ import eenet.test.security.consumer.env.IdentityInfo;
 import eenet.test.security.consumer.env.SpringEnvironment;
 
 public class RegistNewUserBizTester extends SpringEnvironment  {
-//	@Test
+	@Test
 	public void registEndUserWithLogin() throws Exception {
 		
 		EndUserInfo endUser = new EndUserInfo();
-		endUser.setName("张三");
+		endUser.setName("黄琬云");
+		endUser.setIdCard("150105198506029369");
 		
 		
 		EndUserLoginAccount account  =  new EndUserLoginAccount();
 		account.setAccountType(LoginAccountType.USERNAME);
-		account.setLoginAccount("13533594931");
+		account.setLoginAccount("150105198506029369");
 		
 		
 		
@@ -52,7 +53,7 @@ public class RegistNewUserBizTester extends SpringEnvironment  {
 		
 	}
 	
-	@Test
+//	@Test
 	public void registEndUserWithMulAccountAndLogin() throws Exception {
 		EndUserInfo endUser = new EndUserInfo();
 		endUser.setName("张三");

@@ -49,7 +49,7 @@ public class EndUserLoginThroughAppWithoutSeriesTester extends SpringEnvironment
 	
 //	@Test
 	public void loginBySMS() throws EncryptException {
-		String smsCode = "930655";
+		String smsCode = "513492";
 		
 		AppAuthenRequest appRequest = new AppAuthenRequest();
 		appRequest.setAppId(appId);appRequest.setAppSecretKey(RSAUtil.encrypt(transferRSAEncrypt, appSecret+"##"+System.currentTimeMillis()));appRequest.setBizSeriesId(seriesId);
@@ -81,25 +81,25 @@ public class EndUserLoginThroughAppWithoutSeriesTester extends SpringEnvironment
 	
 //	@Test
 	public void sentSMS4LoginFail() throws EncryptException {
-//		//失败原因一：公共系统没有指定业务体系ID
+//		失败原因一：公共系统没有指定业务体系ID
 //		SimpleResponse result_1 = userSMSSignOnService.sendSMSCode4Login(appId, Long.parseLong(loginAccount));
 //		Assert.assertFalse(result_1.isSuccessful());
 //		System.out.println(EEBeanUtils.object2Json(result_1));
-//		
-//		//失败原因二：手机号码不存在
+		
+//		失败原因二：手机号码不存在
 //		SimpleResponse result_2 = userSMSSignOnService.sendSMSCode4Login(appId, seriesId, Long.parseLong("13812345678"));
 //		Assert.assertFalse(result_2.isSuccessful());
 //		System.out.println(EEBeanUtils.object2Json(result_2));
 		
-		//失败原因三：验证短信时的体系ID与发短信时的体系ID不一致
+//		失败原因三：验证短信时的体系ID与发短信时的体系ID不一致
 //		SimpleResponse result_3 = userSMSSignOnService.sendSMSCode4Login(appId, seriesId, Long.parseLong(loginAccount));
 //		if ( result_3==null || result_3.isSuccessful()==false )
 //			Assert.fail(result_3.getStrMessage());
-//		AppAuthenRequest appRequest = new AppAuthenRequest();
-//		appRequest.setAppId(appId);appRequest.setAppSecretKey(RSAUtil.encrypt(transferRSAEncrypt, appSecret+"##"+System.currentTimeMillis()));appRequest.setBizSeriesId(seriesId2);
-//		AccessToken tokenObj = userSMSSignOnService.getAccessToken(appRequest, Long.parseLong(loginAccount), "920039");
-//		Assert.assertFalse(tokenObj.isSuccessful());
-//		System.out.println(EEBeanUtils.object2Json(tokenObj));
+		AppAuthenRequest appRequest = new AppAuthenRequest();
+		appRequest.setAppId(appId);appRequest.setAppSecretKey(RSAUtil.encrypt(transferRSAEncrypt, appSecret+"##"+System.currentTimeMillis()));appRequest.setBizSeriesId(seriesId2);
+		AccessToken tokenObj = userSMSSignOnService.getAccessToken(appRequest, Long.parseLong(loginAccount), "210547");
+		Assert.assertFalse(tokenObj.isSuccessful());
+		System.out.println(EEBeanUtils.object2Json(tokenObj));
 	}
 	
 	private EndUserSignOnBizService userSignOnService = (EndUserSignOnBizService)super.getContext().getBean("EndUserSignOnBizService");

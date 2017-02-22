@@ -91,7 +91,7 @@ public class EndUserSMSSignOnBizImpl implements EndUserSMSSignOnBizService {
 		BooleanResponse existUser = getPreRegistEndUserBizService().existAccount(appId, vSeriesId, String.valueOf(mobile));
 		System.out.println(EEBeanUtils.object2Json(existUser));
 		
-		if ( existUser.isResult() ) {
+		if ( !existUser.isResult() ) {
 			result.addMessage("未找到该手机所属用户");
 			return result;
 		}

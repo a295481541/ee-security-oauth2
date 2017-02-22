@@ -45,10 +45,10 @@ public class EndUserLoginAccountTester extends SpringEnvironment  {
 	
 	
 	
-//	@Test
+	@Test
 	public void removeEndUserLoginAccount() throws Exception {
 		
-		SimpleResponse response_1 = endUserLoginAccountBizService.removeEndUserLoginAccount("13922990914");
+		SimpleResponse response_1 = endUserLoginAccountBizService.removeEndUserLoginAccount("13922990915");
 		System.out.println(EEBeanUtils.object2Json(response_1));
 		
 		if ( response_1!=null)
@@ -105,7 +105,7 @@ public class EndUserLoginAccountTester extends SpringEnvironment  {
 	
 	
 	
-	@Test
+//	@Test
 	public void retrieveEndUserAccountPassword2() throws Exception {
 		
 		EndUserLoginAccount response_1 = endUserLoginAccountBizService.retrieveEndUserAccountPassword("544A1FB8166D4E979E32DD87E346544D","13922990914",StorageRSADecrypt);

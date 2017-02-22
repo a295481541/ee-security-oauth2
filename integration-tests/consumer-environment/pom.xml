@@ -13,8 +13,8 @@
 			<id>test</id>
 			<properties>
 				<!-- zookeeper配置 -->
-<!-- 				<zookeeper.address>172.16.146.152:2181,172.16.146.155:2181</zookeeper.address> -->
-				<zookeeper.address>127.0.0.1:2181</zookeeper.address>
+				<zookeeper.address>172.16.146.152:2181,172.16.146.155:2181</zookeeper.address>
+<!-- 				<zookeeper.address>127.0.0.1:2181</zookeeper.address> -->
 			</properties>
 			<activation>
 				<activeByDefault>true</activeByDefault>
@@ -57,7 +57,7 @@
 				<version>2.19.1</version>
 				<configuration>
 					<includes>
-						<include> **/RegistNewUserBizTester.java</include>
+						<include> **/RegistNewUserBizTester.java</include> 
 						<!-- <include> **/*Tester.java</include> -->
 					</includes>
 					<forkMode>once</forkMode>
