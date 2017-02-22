@@ -12,6 +12,7 @@ import com.eenet.authen.EndUserLoginAccount;
 import com.eenet.authen.EndUserLoginAccountBizService;
 import com.eenet.authen.cacheSyn.SynEndUserCredential2Redis;
 import com.eenet.authen.cacheSyn.SynEndUserLoginAccount2Redis;
+import com.eenet.base.BooleanResponse;
 import com.eenet.base.SimpleResponse;
 import com.eenet.base.SimpleResultSet;
 import com.eenet.base.biz.SimpleBizImpl;
@@ -67,7 +68,7 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 		}
 		
 		/* 判断指定的最终用户是否存在 */
-		SimpleResponse existEndUser = getEndUserInfoBizService().exist(credential.getEndUser().getAtid());
+		BooleanResponse existEndUser = getEndUserInfoBizService().exist(credential.getEndUser().getAtid());
 		if ( !existEndUser.isSuccessful() ) {
 			result.setSuccessful(false);
 			result.addMessage("未找到指定要设置登录密码对应的最终用户("+existEndUser.getStrMessage()+")");
