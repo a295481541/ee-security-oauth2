@@ -20,6 +20,7 @@ public interface EndUserLoginAccountBizService {
 	public EndUserLoginAccount registeEndUserLoginAccount(EndUserLoginAccount account);
 	/**
 	 * 最终用户登录账号废弃
+	 * 只允许废弃与当前用户/系统在同一业务体系内的账号
 	 * @param code
 	 * @return
 	 * 2016年3月30日
@@ -36,7 +37,17 @@ public interface EndUserLoginAccountBizService {
 	 */
 	public EndUserInfo retrieveEndUserInfo(String seriesId, String loginAccount);
 	/**
-	 * 根据登录账号获得最终用户登陆账号其他信息
+	 * 根据登录账号获得人员基本信息（返回信息不包含登录账号的私有密码）
+	 * 账号为当前用户/系统在同一业务体系内的账号
+	 * @param loginAccount 登录账号
+	 * @return
+	 * 2017年2月22日
+	 * @author Orion
+	 */
+	public EndUserInfo retrieveEndUserInfo(String loginAccount);
+	
+	/**
+	 * 根据登录账号获得（当前业务体系的）最终用户登陆账号其他信息
 	 * @param loginAccount
 	 * @return 返回对象中带有已经加密的账号登录秘钥
 	 * 2016年6月8日
@@ -89,27 +100,4 @@ public interface EndUserLoginAccountBizService {
 	/**
 	 * 不应该再考虑维护账号的私有密码
 	 */
-//	/**
-//	 * 初始化登录账号私有密码
-//	 * @param loginAccount
-//	 * @param secretKey
-//	 * @return
-//	 */
-//	public SimpleResponse initAccountLoginPassword(String loginAccount, String secretKey);
-//	
-//	/**
-//	 * 修改登录账号私有密码
-//	 * @param loginAccount
-//	 * @param curSecretKey
-//	 * @param newSecretKey
-//	 * @return
-//	 */
-//	public SimpleResponse changeAccountLoginPassword(String loginAccount, String curSecretKey, String newSecretKey);
-//	
-//	/**
-//	 * 重置登录账号私有密码（适合忘记密码）
-//	 * @param loginAccount
-//	 * @return
-//	 */
-//	public SimpleResponse resetUserLoginPassword(String loginAccount);
 }
