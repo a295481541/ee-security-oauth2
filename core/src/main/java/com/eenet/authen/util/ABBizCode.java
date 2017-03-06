@@ -23,4 +23,10 @@ public class ABBizCode {
 	public static final BizCode AB0009 = new BizCode("AB0009","已存在身份证、手机或邮箱和登录账号");
 	/** 已存在身份证、手机或邮箱但没有登录账号 */
 	public static final BizCode AB0010 = new BizCode("AB0010","已存在身份证、手机或邮箱但没有登录账号");
+	/** 公共密码初始化失败：已设置过统一密码 */
+	public static final BizCode AB0011 = new BizCode("AB0011","公共密码初始化失败：已设置过统一密码");
+	/** 密码初始化/修改失败：指定的用户不存在 */
+	public static final BizCode AB0012 = new BizCode("AB0012","密码初始化/修改失败：指定的用户不存在");
+	/** 密码修改失败：找不到已设置过的密码 */
+	public static final BizCode AB0013 = new BizCode("AB0013","密码修改失败：找不到已设置过的密码");
 }

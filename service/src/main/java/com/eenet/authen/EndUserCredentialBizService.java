@@ -35,7 +35,7 @@ public interface EndUserCredentialBizService {
 	 * @param curCredential 登录密码属性必须是：带时间戳加密的形式，endUser属性的atid为目标用户标识
 	 * @param account 登陆账户，为空则表示只修改用户主登录密码
 	 * @param newSecretKey 新密码：明文直接加密的形式（不带时间戳）
-	 * @return
+	 * @return false:主登录密码和账号私有密码均修改失败；true:主登录密码和账号私有密码任一修改成功
 	 * 2016年12月9日
 	 * @author Orion
 	 */

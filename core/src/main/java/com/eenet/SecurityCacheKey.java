@@ -39,7 +39,7 @@ public final class SecurityCacheKey {
 	public final static String ENDUSER_LOGIN_ACCOUNT = "ENDUSER_LOGIN_ACCOUNT";
 	/**
 	 * 最终用户登录密码
-	 * redisKey = ENDUSER_CREDENTIAL, mapKey = [seriesId]:[endUserId], value = 最终用户登录密码对象(@see com.eenet.authen.EndUserCredential)
+	 * redisKey = ENDUSER_CREDENTIAL, mapKey = [seriesId]:[endUserId], value = [EncryptionType]##[密码密文]
 	 */
 	public final static String ENDUSER_CREDENTIAL = "ENDUSER_CREDENTIAL";
 	/**

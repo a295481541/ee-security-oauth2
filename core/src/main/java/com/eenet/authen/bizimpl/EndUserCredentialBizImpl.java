@@ -16,6 +16,7 @@ import com.eenet.authen.EndUserLoginAccount;
 import com.eenet.authen.EndUserLoginAccountBizService;
 import com.eenet.authen.cacheSyn.SynEndUserCredential2Redis;
 import com.eenet.authen.cacheSyn.SynEndUserLoginAccount2Redis;
+import com.eenet.authen.util.ABBizCode;
 import com.eenet.base.SimpleResponse;
 import com.eenet.base.SimpleResultSet;
 import com.eenet.base.biz.SimpleBizImpl;
@@ -39,67 +40,40 @@ import com.eenet.util.cryptography.RSAUtil;
  * 2016年6月9日
  */
 public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCredentialBizService {
-	private static final Logger log = LoggerFactory.getLogger(EndUserCredentialBizImpl.class);
-	private RedisClient RedisClient;//Redis客户端
-	private RSAEncrypt StorageRSAEncrypt;//数据存储加密公钥
-	private RSADecrypt StorageRSADecrypt;//数据存储解密私钥
-	private RSADecrypt TransferRSADecrypt;//数据传输解密私钥
-	private EndUserInfoBizService endUserInfoBizService;//最终用户信息服务
-	private ReSetLoginPasswordCom reSetLoginPasswordCom;//重置密码业务组件
-	private EndUserLoginAccountBizService endUserLoginAccountBizService;//最终用户账户服务
-	private BusinessSeriesBizService businessSeriesBizService;//业务体系服务
-	private BusinessAppBizService businessAppBizService;
-	
 	@Override
-	public SimpleResponse initEndUserLoginPassword( EndUserCredential credential) {
-		
-		
+	public SimpleResponse initEndUserLoginPassword( EndUserCredential credential ) {
 		String vSeriesId = OPOwner.getCurrentSeries();
-		
 		SimpleResponse result = new SimpleResponse();
+		
 		/* 参数检查 */
 		if (credential == null) {
 			result.setSuccessful(false);
 			result.addMessage("要初始化的最终用户登录秘钥未知("+this.getClass().getName()+")");
 			return result;
-		} else if ( OPOwner.UNKNOW_SERIES_FLAG.equals(vSeriesId) ) {
+		} 
+		if ( OPOwner.UNKNOW_SERIES_FLAG.equals(vSeriesId) ) {
 			result.setSuccessful(false);
 			result.addMessage("业务体系必须指定("+this.getClass().getName()+")");
 			return result;
 		}
-		
-		
-		if (!result.isSuccessful())
-			return result;
-		
 		
 		/* 判断指定的最终用户是否存在 */
 		EndUserInfo existEndUser = endUserInfoBizService.get(credential.getEndUser().getAtid());
 		if ( !existEndUser.isSuccessful() ) {
 			result.setSuccessful(false);
 			result.addMessage("未找到指定要设置登录密码对应的最终用户("+existEndUser.getStrMessage()+")");
+			result.setRSBizCode(ABBizCode.AB0012);
 			return result;
 		}
 		
-		
 		/* 判断是否已经设置过登录密码 */
-		
-		System.out.println("/* 判断是否已经设置过登录密码 */" +vSeriesId);
-		
 		EndUserCredential credentialCache = retrieveEndUserCredentialInfo(vSeriesId, credential.getEndUser().getAtid());
-		System.out.println(EEBeanUtils.object2Json(credentialCache));
 		if ( credentialCache.isSuccessful() ) {
 			result.setSuccessful(false);
 			result.addMessage("已在该体系中初始化过用户登录密码("+existEndUser.getStrMessage()+")");
+			result.setRSBizCode(ABBizCode.AB0011);
 			return result;
 		}
-		
-		
-		BusinessSeries  businessSeries= new BusinessSeries();
-		businessSeries.setAtid(vSeriesId);
-		
-		credential.setBusinessSeries(businessSeries);
-		
 		
 		/* 秘钥加密 */
 		try {
@@ -130,30 +104,27 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 
 	@Override
 	public SimpleResponse changeEndUserLoginPassword( EndUserCredential curCredential, String newSecretKey) {
-		
 		String vSeriesId=OPOwner.getCurrentSeries();
-		
 		SimpleResponse result = new SimpleResponse();
+		
 		/* 参数检查 */
 		if (curCredential==null || EEBeanUtils.isNULL(newSecretKey)) {
 			result.setSuccessful(false);
 			result.addMessage("要修改的最终用户登录密码未知("+this.getClass().getName()+")");
 			return result;
-		}else if ( OPOwner.UNKNOW_SERIES_FLAG.equals(vSeriesId) ) {
+		}
+		if ( OPOwner.UNKNOW_SERIES_FLAG.equals(vSeriesId) ) {
 			result.setSuccessful(false);
 			result.addMessage("业务体系必须指定("+this.getClass().getName()+")");
 			return result;
 		}
-		
-		if (!result.isSuccessful())
-			return result;
-		
 		
 		/* 判断最终用户是否已设置过密码，没有则返回错误信息 */
 		EndUserCredential existCredential = this.retrieveEndUserCredentialInfo(vSeriesId,curCredential.getEndUser().getAtid());
 		if (!existCredential.isSuccessful()) {
 			result.setSuccessful(false);
 			result.addMessage(existCredential.getStrMessage());
+			result.setRSBizCode(ABBizCode.AB0013);
 			return result;
 		}
 		
@@ -164,6 +135,7 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 			if (!existEndUser.isSuccessful() || EEBeanUtils.isNULL(existEndUser.getAtid())) {
 				result.setSuccessful(false);
 				result.addMessage("未找到指定要设置登录密码对应的最终用户");
+				result.setRSBizCode(ABBizCode.AB0012);
 				return result;
 			}
 		}
@@ -212,9 +184,7 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 	
 	@Override
 	public SimpleResponse changeEndUserLoginPassword(EndUserCredential curCredential,EndUserLoginAccount account, String newSecretKey) {
-		
 		String vSeriesId=OPOwner.getCurrentSeries();
-		
 		SimpleResponse result = new SimpleResponse();
 		
 		/* 登陆账户为空，只修改用户主登录密码 */
@@ -226,24 +196,21 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 			result.setSuccessful(false);
 			result.addMessage("参数缺失，必须提供原密码和要修改的新密码("+this.getClass().getName()+")");
 			return result;
-		} else if ( OPOwner.UNKNOW_SERIES_FLAG.equals(vSeriesId) ) {
+		}
+		if ( OPOwner.UNKNOW_SERIES_FLAG.equals(vSeriesId) ) {
 			result.setSuccessful(false);
 			result.addMessage("业务体系必须指定("+this.getClass().getName()+")");
 			return result;
 		}
-		
-		if (!result.isSuccessful())
-			return result;
 		
 		/* 判断指定的最终用户是否存在 */
 		EndUserInfo existEndUser = this.getEndUserInfoBizService().get(curCredential.getEndUser().getAtid());
 		if ( !existEndUser.isSuccessful() || EEBeanUtils.isNULL(existEndUser.getAtid()) ) {
 			result.setSuccessful(false);
 			result.addMessage("未找到指定要设置登录密码对应的最终用户");
+			result.setRSBizCode(ABBizCode.AB0012);
 			return result;
 		}
-		
-		/* 计算业务体系标识 */
 		
 		/* 获得传入原密码明文 */
 		String passwordPlainText = null;//传入原密码明文
@@ -283,39 +250,40 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 			/* 新密码加密 */
 			String newPasswordPlainText = RSAUtil.decrypt(getTransferRSADecrypt(), newSecretKey);//用传输私钥解出新密码明文
 			String newPasswordCipherText = RSAUtil.encrypt(getStorageRSAEncrypt(), newPasswordPlainText);//用存储公钥加密新密码
+			if (EEBeanUtils.isNULL(newPasswordCipherText))
+				throw new EncryptException("修改密码前加密失败（空字符）");
 			
-			/* 修改账号私有密码 */
+			/* 设置账号私有密码信息 */
 			existLoginAccount.setAccountLoginPassword(newPasswordCipherText);
-			EndUserLoginAccount savedLoginAccount = endUserLoginAccountBizService.save(existLoginAccount);
-			result.setSuccessful(savedLoginAccount.isSuccessful());
-			/* 账号对象同步到缓存 */
-			if (savedLoginAccount.isSuccessful())
-				SynEndUserLoginAccount2Redis.syn(getRedisClient(), savedLoginAccount);
-			else {
-				result.addMessage(savedLoginAccount.getStrMessage());
-				return result;
-			}
-				
-			/* 修改公共密码 */
+			
+			/* 设置公共密码信息 */
 			if (existCredential == null)
 				existCredential = new EndUserCredential();
 			existCredential.setBusinessSeries(new BusinessSeries());existCredential.getBusinessSeries().setAtid(vSeriesId);
 			existCredential.setEndUser(existEndUser);
 			existCredential.setPassword(newPasswordCipherText);
-			EndUserCredential savedCredential = super.save(existCredential);
-			result.setSuccessful(savedCredential.isSuccessful());
-			if (savedCredential.isSuccessful())
-				SynEndUserCredential2Redis.syn(getRedisClient(), savedCredential);
-			else {
-				result.addMessage(savedCredential.getStrMessage());
-				return result;
-			}
-		} catch (EncryptException e) {
+		}  catch (EncryptException e) {
 			result.setSuccessful(false);
 			result.addMessage(e.toString());
 			return result;
 		}
 		
+		/* 修改账号私有密码 */
+		EndUserLoginAccount savedLoginAccount = endUserLoginAccountBizService.save(existLoginAccount);
+		/* 账号对象同步到缓存 */
+		if (savedLoginAccount.isSuccessful())
+			SynEndUserLoginAccount2Redis.syn(getRedisClient(), savedLoginAccount);
+		else
+			result.addMessage(savedLoginAccount.getStrMessage());
+		
+		/* 修改公共密码 */
+		EndUserCredential savedCredential = super.save(existCredential);
+		if (savedCredential.isSuccessful())
+			SynEndUserCredential2Redis.syn(getRedisClient(), savedCredential);
+		else
+			result.addMessage(savedCredential.getStrMessage());
+		
+		result.setSuccessful(savedLoginAccount.isSuccessful() || savedCredential.isSuccessful());
 		return result;
 	}
 	
@@ -355,7 +323,6 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 
 	@Override
 	public SimpleResponse resetEndUserLoginPassword(String endUserId) {
-		
 		String vSeriesId =  OPOwner.getCurrentSeries();
 		SimpleResponse response = new SimpleResponse();
 		
@@ -483,6 +450,17 @@ public class EndUserCredentialBizImpl extends SimpleBizImpl implements EndUserCr
 	**                           Getter & Setter                               **
 	**                                                                         **
 	****************************************************************************/
+	private static final Logger log = LoggerFactory.getLogger(EndUserCredentialBizImpl.class);
+	private RedisClient RedisClient;//Redis客户端
+	private RSAEncrypt StorageRSAEncrypt;//数据存储加密公钥
+	private RSADecrypt StorageRSADecrypt;//数据存储解密私钥
+	private RSADecrypt TransferRSADecrypt;//数据传输解密私钥
+	private EndUserInfoBizService endUserInfoBizService;//最终用户信息服务
+	private ReSetLoginPasswordCom reSetLoginPasswordCom;//重置密码业务组件
+	private EndUserLoginAccountBizService endUserLoginAccountBizService;//最终用户账户服务
+	private BusinessSeriesBizService businessSeriesBizService;//业务体系服务
+	private BusinessAppBizService businessAppBizService;
+	
 	@Override
 	public Class<?> getPojoCLS() {
 		return EndUserCredential.class;
